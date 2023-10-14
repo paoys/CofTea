@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "68357056263",
+    "project_id": "coftea-c90ae",
+    "storage_bucket": "coftea-c90ae.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:68357056263:android:2802d04a3926c4149c47a2",
+        "android_client_info": {
+          "package_name": "com.example.coftea"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAOypo1ho4J09NT-_stbcd89qKMVyd6YjY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
