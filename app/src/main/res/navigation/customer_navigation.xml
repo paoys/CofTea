@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/customer_navigation"
+    app:startDestination="@id/navigation_products">
+
+    <fragment
+        android:id="@+id/navigation_products"
+        android:name="com.example.coftea.Customer.products.ProductsFragment"
+        android:label="Products Available"
+        tools:layout="@layout/fragment_products" />
+
+    <fragment
+        android:id="@+id/navigation_advance_order"
+        android:name="com.example.coftea.Customer.advance_order.AdvanceOrderFragment"
+        android:label="Advance Order"
+        tools:layout="@layout/fragment_advance_order" />
+
+    <fragment
+        android:id="@+id/navigation_settings_customer"
+        android:name="com.example.coftea.Customer.settings.SettingsFragment"
+        android:label="Settings"
+        tools:layout="@layout/fragment_settings_customer" />
+
+</navigation>
