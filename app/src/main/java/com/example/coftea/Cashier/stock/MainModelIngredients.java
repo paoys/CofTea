@@ -1,15 +1,24 @@
 package com.example.coftea.Cashier.stock;
 
 public class MainModelIngredients {
-    String id, name, qty, turl, measurement, category;
+    private String id;
+    private String name;
+    private String category;
+    private String measurement;
+    private String qty;
+    private String turl; // Image URL
 
-    public MainModelIngredients(String id, String name, String qty, String turl, String measurement) {
+    public MainModelIngredients() {
+        // Default constructor required for Firebase
+    }
+
+    public MainModelIngredients(String id, String name, String category, String measurement, String qty, String turl) {
         this.id = id;
         this.name = name;
+        this.category = category;
+        this.measurement = measurement;
         this.qty = qty;
         this.turl = turl;
-        this.measurement = measurement;
-        this.category = category;
     }
 
     public String getId() {
@@ -28,6 +37,22 @@ public class MainModelIngredients {
         this.name = name;
     }
 
+    public String getCategory() {
+        return category;
+    }
+
+    public void setCategory(String category) {
+        this.category = category;
+    }
+
+    public String getMeasurement() {
+        return measurement;
+    }
+
+    public void setMeasurement(String measurement) {
+        this.measurement = measurement;
+    }
+
     public String getQty() {
         return qty;
     }
@@ -42,13 +67,5 @@ public class MainModelIngredients {
 
     public void setTurl(String turl) {
         this.turl = turl;
-    }
-
-    public String getMeasurement() {
-        return measurement;
-    }
-
-    public void setMeasurement(String measurement) {
-        this.measurement = measurement;
     }
 }

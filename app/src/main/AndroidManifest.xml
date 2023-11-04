@@ -28,9 +28,18 @@
         <activity
             android:name=".Cashier.stock.AddIngredients"
             android:exported="false" />
+
+        <activity
+            android:name=".Cashier.stock.AddProductActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Cashier.stock.ManageProductActivityList"
+            android:exported="false" />
         <activity
             android:name=".Cashier.stock.StockIngredients"
             android:exported="false" />
+        <activity android:name="com.example.coftea.Cashier.order.ProductListActivity" />
+        <activity android:name=".Cashier.order.ManageCartActivitiyList" />
         <activity
             android:name=".Cashier.CashierMain"
             android:exported="false" />

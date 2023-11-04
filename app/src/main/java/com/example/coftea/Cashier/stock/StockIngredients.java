@@ -14,47 +14,44 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 
 import com.example.coftea.R;
+import com.firebase.ui.database.FirebaseRecyclerOptions;
 import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.Query;
 
 public class StockIngredients extends AppCompatActivity {
+
+    RecyclerView recyclerView;
+    MainAdapterIngredientsStock mainAdapter;
+    FloatingActionButton floatingActionButton;
+    Spinner spinnerCategory;
 
     private boolean isSearchVisible = false;
     private EditText editTextSearch;
     private ImageView searchIcon;
-    RecyclerView recyclerView;
-    Spinner spinnerCategory;
-    FloatingActionButton floatingActionButton;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_stock_ingredients);
 
-        // Initialize your UI elements
-        editTextSearch = findViewById(R.id.editTextSearch);
-        searchIcon = findViewById(R.id.searchIcon);
         recyclerView = findViewById(R.id.rv);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+
         spinnerCategory = findViewById(R.id.category);
 
         // Create an ArrayAdapter for the category spinner
-        String[] categoryOptions = {"All", "Materials", "Ingredients"};
+        String[] categoryOptions = {"All", "Material", "Ingredients"};
         ArrayAdapter<String> categoryAdapter = new ArrayAdapter<>(this, android.R.layout.simple_spinner_item, categoryOptions);
         categoryAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         spinnerCategory.setAdapter(categoryAdapter);
 
-        // Set an onClickListener for the search icon
-        searchIcon.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                toggleSearch();
-            }
-        });
+        FirebaseRecyclerOptions<MainModelIngredients> options = new FirebaseRecyclerOptions.Builder<MainModelIngredients>()
+                .setQuery(FirebaseDatabase.getInstance().getReference().child("Ingredients"), MainModelIngredients.class)
+                .build();
 
-        /*FirebaseRecyclerOptions<MainModelIngredients> options = new FirebaseRecyclerOptions.Builder<MainModelIngredients>()
-                .setQuery(FirebaseDatabase.getInstance().getReference().child("ingredients"), MainModelIngredients.class)
-                .build();*/
+        mainAdapter = new MainAdapterIngredientsStock(options);
+        recyclerView.setAdapter(mainAdapter);
 
         floatingActionButton = findViewById(R.id.floatingActionButton);
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -64,7 +61,7 @@ public class StockIngredients extends AppCompatActivity {
             }
         });
 
-        /*spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        spinnerCategory.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parentView, View selectedItemView, int position, long id) {
                 // Get the selected category
@@ -76,9 +73,25 @@ public class StockIngredients extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> parentView) {
                 // Handle nothing selected if needed
             }
-        });*/
-
+        });
     }
+
+    private void filterItemsByCategory(String selectedCategory) {
+        Query query;
+        if ("All".equals(selectedCategory)) {
+            query = FirebaseDatabase.getInstance().getReference().child("Ingredients");
+        } else {
+            query = FirebaseDatabase.getInstance().getReference().child("Ingredients").orderByChild("category").equalTo(selectedCategory);
+        }
+
+        FirebaseRecyclerOptions<MainModelIngredients> filteredOptions = new FirebaseRecyclerOptions.Builder<MainModelIngredients>()
+                .setQuery(query, MainModelIngredients.class)
+                .build();
+
+        mainAdapter.updateOptions(filteredOptions);
+    }
+
+
 
     public void toggleSearch() {
         // Toggle the visibility of the search EditText and hide/show related views
@@ -104,11 +117,18 @@ public class StockIngredients extends AppCompatActivity {
 
         // Hide the "X" button
         findViewById(R.id.exitSearch).setVisibility(View.GONE);
+
     }
 
+    @Override
+    protected void onStart() {
+        super.onStart();
+        mainAdapter.startListening();
+    }
 
-
-    public void btn_back(View view) {
-        finish(); // This will finish the current activity and return to the previous activity.
+    @Override
+    protected void onStop() {
+        super.onStop();
+        mainAdapter.stopListening();
     }
 }

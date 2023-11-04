@@ -1,0 +1,19 @@
+<!-- spinner_border.xml -->
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Background -->
+    <item>
+        <shape>
+            <solid android:color="@android:color/white" /> <!-- Background color -->
+            <corners android:radius="4dp" /> <!-- Adjust the radius as needed -->
+        </shape>
+    </item>
+
+    <!-- Border -->
+    <item>
+        <shape>
+            <solid android:color="@android:color/transparent" /> <!-- Transparent color to hide this layer -->
+            <stroke android:color="#000000" android:width="1dp" /> <!-- Border color and width -->
+            <corners android:radius="4dp" /> <!-- Adjust the radius to match the background -->
+        </shape>
+    </item>
+</layer-list>

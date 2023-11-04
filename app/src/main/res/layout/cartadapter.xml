@@ -1,0 +1,102 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="50dp"
+    android:orientation="vertical"
+    android:background="@drawable/product_item_background"
+    android:padding="16dp">
+
+    <!-- Default image, you can change this -->
+
+    <ImageView
+        android:id="@+id/productImageView"
+        android:layout_width="140dp"
+        android:layout_height="140dp"
+        android:layout_centerVertical="true"
+        android:layout_marginRight="20dp"
+        android:src="@drawable/ic_menu_gallery" />
+
+    <TextView
+        android:id="@+id/productId"
+        android:layout_width="wrap_content"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        android:layout_toRightOf="@+id/productImageView"
+        android:layout_height="wrap_content"
+        android:text="Product ID" />
+
+    <TextView
+        android:id="@+id/productIdTextView"
+        android:layout_width="wrap_content"
+        android:textSize="25dp"
+        android:layout_toRightOf="@+id/productImageView"
+        android:layout_below="@+id/productId"
+        android:layout_height="wrap_content"
+        android:text="Product ID" />
+
+    <TextView
+        android:id="@+id/productName"
+        android:layout_width="wrap_content"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        android:layout_toRightOf="@+id/productImageView"
+        android:layout_below="@+id/productIdTextView"
+        android:layout_height="wrap_content"
+        android:text="Product Name" />
+
+    <TextView
+        android:id="@+id/productNameTextView"
+        android:layout_width="wrap_content"
+        android:textSize="25dp"
+        android:layout_toRightOf="@+id/productImageView"
+        android:layout_below="@+id/productName"
+        android:layout_height="wrap_content"
+        android:text="Product Name" />
+    <TextView
+        android:id="@+id/productPrice"
+        android:layout_width="wrap_content"
+        android:textSize="25dp"
+        android:textStyle="bold"
+        android:layout_toRightOf="@+id/productImageView"
+        android:layout_below="@+id/productNameTextView"
+        android:layout_height="wrap_content"
+        android:text="Price" />
+
+    <TextView
+        android:id="@+id/productPriceEditText"
+        android:layout_width="wrap_content"
+        android:textSize="25dp"
+        android:layout_toRightOf="@+id/productImageView"
+        android:layout_below="@+id/productPrice"
+        android:layout_height="wrap_content"
+        android:text="Product Name" />
+
+    <Button
+        android:id="@+id/BTNDelete"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/productPriceEditText"
+        android:text="Delete"
+        android:layout_marginLeft="200dp"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="@color/black"
+        android:textColor="@color/white"
+        />
+
+    <Button
+        android:id="@+id/BTNEdit"
+        android:layout_width="150dp"
+        android:layout_height="50dp"
+        android:layout_below="@+id/productPriceEditText"
+        android:text="Edit"
+        android:layout_marginLeft="20dp"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="@color/black"
+        android:textColor="@color/white"
+        />
+
+
+</RelativeLayout>

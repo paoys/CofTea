@@ -5,4 +5,9 @@
 
     <!-- TODO: Remove or change this placeholder text -->
 
+    <string-array name="price_options">
+        <item>39.00</item>
+        <item>49.00</item>
+    </string-array>
+
 </resources>

@@ -1,0 +1,5 @@
+<shape xmlns:android="http://schemas.android.com/apk/res/android"
+    android:shape="rectangle">
+    <solid android:color="#CCCCCC"/> <!-- Use a specific color for the placeholder -->
+    <!-- You can specify the size of the placeholder here as well -->
+</shape>
