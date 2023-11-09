@@ -21,7 +21,7 @@ public class CustomerDashboard extends AppCompatActivity {
         super.onCreate(savedInstanceState);
 
         // Set the content view using the data binding layout
-        binding =ActivityCustomerDashboardBinding.inflate(getLayoutInflater());
+        binding = ActivityCustomerDashboardBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
         // Set up the ActionBar for this activity
