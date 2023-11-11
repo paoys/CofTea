@@ -2,4 +2,10 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+    <color name="danger">#d63031</color>
+    <color name="danger_text">#dfe6e9</color>
+    <color name="proceed">#55efc4</color>
+    <color name="success">#55efc4</color>
+    <color name="success_text">#2d3436</color>
+
 </resources>

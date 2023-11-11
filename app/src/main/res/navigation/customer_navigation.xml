@@ -12,6 +12,10 @@
         tools:layout="@layout/fragment_products" />
 
     <fragment
+        android:id="@+id/navigation_cart"
+        android:name="com.example.coftea.Customer.cart.CartFragment"
+        android:label="Cart" />
+    <fragment
         android:id="@+id/navigation_advance_order"
         android:name="com.example.coftea.Customer.advance_order.AdvanceOrderFragment"
         android:label="Advance Order"
