@@ -171,7 +171,6 @@ public class OrderItemDialogFragment extends DialogFragment {
     @Override
     public void onDestroy() {
         this.orderItemDialogViewModel.clearOrderItem();
-        Log.d("=AdvanceOrderFragment=","onDestroy");
         super.onDestroy();
     }
 
@@ -180,21 +179,18 @@ public class OrderItemDialogFragment extends DialogFragment {
         if(hidden) {
             this.orderItemDialogViewModel.clearOrderItem();
         }
-        Log.d("=AdvanceOrderFragment=","onHiddenChanged");
         super.onHiddenChanged(hidden);
     }
 
     @Override
     public void onDetach() {
         this.orderItemDialogViewModel.clearOrderItem();
-        Log.d("=AdvanceOrderFragment=","onDetach");
         super.onDetach();
     }
 
     @Override
     public void onDestroyView() {
         this.orderItemDialogViewModel.clearOrderItem();
-        Log.d("=AdvanceOrderFragment=","onDestroyView");
         super.onDestroyView();
     }
 }
