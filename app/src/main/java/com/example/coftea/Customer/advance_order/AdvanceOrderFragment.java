@@ -5,6 +5,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageButton;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -15,6 +17,9 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coftea.OrderItem.OrderItemDialogFragment;
 import com.example.coftea.OrderItem.OrderItemDialogViewModel;
+import com.example.coftea.OrderItemList.OrderItemListDialogFragment;
+import com.example.coftea.OrderItemList.OrderItemListViewModel;
+import com.example.coftea.OrderItemList.OrderItemListViewModelFactory;
 import com.example.coftea.data.Product;
 import com.example.coftea.databinding.FragmentAdvanceOrderBinding;
 import com.example.coftea.utilities.UserProvider;
@@ -24,21 +29,34 @@ import java.util.ArrayList;
 public class AdvanceOrderFragment extends Fragment {
     private final UserProvider userProvider = UserProvider.getInstance();
 
+    private ImageButton ibCartButton;
+    private TextView tvOrderItemCount;
+
     private FragmentAdvanceOrderBinding binding;
     private CustomerAdvancedOrderAdapter customerAdvancedOrderAdapter;
     private AdvanceOrderViewModel advanceOrderViewModel;
     private OrderItemDialogViewModel orderItemDialogViewModel;
+    private OrderItemListViewModel orderItemListViewModel;
     private ArrayList<Product> _products = new ArrayList<>();
     OrderItemDialogFragment orderToCartDialogFragment;
+    OrderItemListDialogFragment orderItemListDialogFragment;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
+        String userName = userProvider.getUser().first;
+        String userMobileNo = userProvider.getUser().second;
 
         binding = FragmentAdvanceOrderBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
+        ibCartButton = binding.ibCartButton;
+        tvOrderItemCount = binding.tvOrderItemCount;
+
+        ibCartButton.setEnabled(false);
+
         advanceOrderViewModel = new ViewModelProvider(this).get(AdvanceOrderViewModel.class);
         orderItemDialogViewModel = new ViewModelProvider(this).get(OrderItemDialogViewModel.class);
+        orderItemListViewModel = new ViewModelProvider(this, new OrderItemListViewModelFactory(userMobileNo)).get(OrderItemListViewModel.class);
 
         RecyclerView rvCustomerProductList = binding.rvAdvanceOrderList;
 
@@ -56,18 +74,29 @@ public class AdvanceOrderFragment extends Fragment {
 
         orderItemDialogViewModel.orderItem.observe(getViewLifecycleOwner(), orderItem -> {
             if (orderItem == null) return;
-            Log.e("TEST========11",orderItem.getId());
             OrderItemDialogFragment existingFragment = (OrderItemDialogFragment) getParentFragmentManager().findFragmentByTag("ItemToOrderFragment");
 
-            if (existingFragment == null){
+            if (existingFragment == null)
                 orderToCartDialogFragment.show(getParentFragmentManager(), "ItemToOrderFragment");
-                Log.e("TEST========22",orderItem.getId());
-            }
-            else{
+            else
                 existingFragment.getDialog().show();
-                Log.e("TEST========33",orderItem.getId());
-            }
+        });
+        orderItemListViewModel = new OrderItemListViewModel(userMobileNo);
+        orderItemListViewModel.orderItems.observe(getViewLifecycleOwner(), orderItems -> {
+            ibCartButton.setEnabled(orderItems.size() != 0);
+            tvOrderItemCount.setText(String.valueOf(orderItems.size()));
+        });
 
+        orderItemListDialogFragment = new OrderItemListDialogFragment(orderItemListViewModel, orderItemDialogViewModel);
+
+        ibCartButton.setOnClickListener(view -> {
+
+            OrderItemListDialogFragment existingFragment = (OrderItemListDialogFragment) getParentFragmentManager().findFragmentByTag("OrderItemListFragment");
+
+            if (existingFragment == null)
+                orderItemListDialogFragment.show(getParentFragmentManager(), "OrderItemListFragment");
+            else
+                existingFragment.getDialog().show();
         });
 
         return root;
