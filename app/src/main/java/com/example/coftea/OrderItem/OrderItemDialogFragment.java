@@ -176,6 +176,7 @@ public class OrderItemDialogFragment extends DialogFragment {
 
     @Override
     public void onHiddenChanged(boolean hidden) {
+
         if(hidden) {
             this.orderItemDialogViewModel.clearOrderItem();
         }
