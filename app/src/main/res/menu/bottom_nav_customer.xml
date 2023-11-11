@@ -12,6 +12,11 @@
         android:title="Advance Order"/>
 
     <item
+        android:id="@+id/navigation_cart"
+        android:icon="@drawable/baseline_shopping_cart_checkout_24"
+        android:title="Cart"/>
+
+    <item
         android:id="@+id/navigation_settings_customer"
         android:icon="@drawable/baseline_settings_24"
         android:title="Settings"/>

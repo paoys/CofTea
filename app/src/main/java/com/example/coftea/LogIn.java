@@ -14,8 +14,10 @@ import android.widget.Button;
 
 import com.example.coftea.Cashier.CashierMain;
 import com.example.coftea.Customer.CustomerDashboard;
+import com.example.coftea.utilities.UserProvider;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.FirebaseApp;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -30,6 +32,7 @@ public class LogIn extends AppCompatActivity {
     Button callSignUp, btn_signIn;
     TextInputLayout mobileNo, password;
 
+    UserProvider userProvider = UserProvider.getInstance();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,6 +134,7 @@ public class LogIn extends AppCompatActivity {
     }
 
     private void isUser() {
+        FirebaseApp.initializeApp(getApplicationContext());
         final String userEnteredMobileNo = mobileNo.getEditText().getText().toString().trim();
         final String userEnteredPassword = password.getEditText().getText().toString().trim();
 
@@ -158,6 +162,7 @@ public class LogIn extends AppCompatActivity {
                                 // User is the cashier, pass the specific mobile number to CashierOrders activity
                                 Intent intent = new Intent(getApplicationContext(), CashierMain.class);
                                 intent.putExtra("mobileNo", "9475774920"); // Pass the specific mobile number for the cashier
+                                userProvider.setUser("Cashier","9475774920");
                                 startActivity(intent);
                             } else {
                                 // User is a customer, pass the customer's mobile number
@@ -166,7 +171,7 @@ public class LogIn extends AppCompatActivity {
                                 Intent intent = new Intent(getApplicationContext(), CustomerDashboard.class);
                                 intent.putExtra("name", nameFromDB); // Pass the customer's name
                                 intent.putExtra("mobileNo", mobileNoFromDB); // Pass the customer's mobile number
-
+                                userProvider.setUser(nameFromDB,mobileNoFromDB);
                                 startActivity(intent);
                             }
 
