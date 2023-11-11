@@ -6,9 +6,10 @@ import com.google.firebase.database.Query;
 
 public class RealtimeDB<T> {
     private DatabaseReference databaseReference;
+    FirebaseDatabase db;
     public RealtimeDB(String path){
-        FirebaseDatabase db = FirebaseDatabase.getInstance();
-        databaseReference = db.getReference(path);
+        this.db = FirebaseDatabase.getInstance();
+        databaseReference = this.db.getReference(path);
     }
     public void addObject(T value){
         databaseReference.push().setValue(value);
@@ -19,5 +20,9 @@ public class RealtimeDB<T> {
 
     public DatabaseReference getDatabaseReference(){
         return databaseReference;
+    }
+
+    public FirebaseDatabase getDB() {
+        return this.db;
     }
 }

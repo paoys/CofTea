@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.coftea.data.OrderItem;
 import com.example.coftea.data.Product;
+import com.example.coftea.repository.RealtimeDB;
 
 import java.util.Date;
 
@@ -61,4 +62,8 @@ public class OrderItemDialogViewModel extends ViewModel {
         _orderItemResult.postValue(result);
     }
 
+    public void removeOrderItem(String pathToOrder){
+        RealtimeDB realtimeDB = new RealtimeDB<>("order_item/"+pathToOrder);
+        realtimeDB.getDatabaseReference().removeValue();
+    }
 }
