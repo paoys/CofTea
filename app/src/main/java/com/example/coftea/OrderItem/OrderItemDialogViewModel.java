@@ -1,5 +1,7 @@
 package com.example.coftea.OrderItem;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -41,13 +43,13 @@ public class OrderItemDialogViewModel extends ViewModel {
         OrderItem item = _orderItem.getValue();
         if(item == null) return;
         item.addQuantity();
-        _orderItem.setValue(item);
+        _orderItem.postValue(item);
     }
     public boolean minusOrderItemQuantity() {
         OrderItem item = _orderItem.getValue();
         if(item == null) return false;
         boolean isValid = item.minusQuantity();
-        _orderItem.setValue(item);
+        _orderItem.postValue(item);
         return isValid;
     }
     public void clearOrderItem() {
