@@ -33,7 +33,7 @@
         android:layout_marginStart="8dp"
         android:layout_marginLeft="8dp"
         android:layout_marginBottom="8dp"
-        android:backgroundTint="@color/success"
+        android:backgroundTint="@color/black"
         android:text="Checkout"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"

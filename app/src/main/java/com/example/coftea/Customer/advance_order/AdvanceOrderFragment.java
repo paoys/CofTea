@@ -1,5 +1,7 @@
 package com.example.coftea.Customer.advance_order;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.example.coftea.OrderItem.OrderItemDialogFragment;
+import com.example.coftea.OrderItem.OrderItemDialogPlus;
 import com.example.coftea.OrderItem.OrderItemDialogViewModel;
 import com.example.coftea.OrderItemList.OrderItemListDialogFragment;
 import com.example.coftea.OrderItemList.OrderItemListViewModel;
@@ -40,6 +43,7 @@ public class AdvanceOrderFragment extends Fragment {
     private ArrayList<Product> _products = new ArrayList<>();
     OrderItemDialogFragment orderToCartDialogFragment;
     OrderItemListDialogFragment orderItemListDialogFragment;
+
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -81,6 +85,9 @@ public class AdvanceOrderFragment extends Fragment {
             else
                 existingFragment.getDialog().show();
         });
+
+//        OrderItemDialogPlus orderItemDialogPlus = new OrderItemDialogPlus(getViewLifecycleOwner(), getContext(), orderItemDialogViewModel);
+
         orderItemListViewModel = new OrderItemListViewModel(userMobileNo);
         orderItemListViewModel.orderItems.observe(getViewLifecycleOwner(), orderItems -> {
             ibCartButton.setEnabled(orderItems.size() != 0);
@@ -90,7 +97,6 @@ public class AdvanceOrderFragment extends Fragment {
         orderItemListDialogFragment = new OrderItemListDialogFragment(orderItemListViewModel, orderItemDialogViewModel);
 
         ibCartButton.setOnClickListener(view -> {
-
             OrderItemListDialogFragment existingFragment = (OrderItemListDialogFragment) getParentFragmentManager().findFragmentByTag("OrderItemListFragment");
 
             if (existingFragment == null)

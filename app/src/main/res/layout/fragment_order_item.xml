@@ -62,7 +62,6 @@
         app:layout_constraintTop_toBottomOf="@+id/materialDivider3"
         tools:text="Product Name" />
 
-
     <TextView
         android:id="@+id/tvOrderItemPrice"
         android:layout_width="wrap_content"
@@ -160,9 +159,8 @@
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/danger"
+        android:backgroundTint="@color/black"
         android:text="Cancel"
-        android:textColor="@color/danger_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvOrderItemTotalPrice"
@@ -176,9 +174,8 @@
         android:layout_marginLeft="8dp"
         android:layout_marginTop="8dp"
         android:layout_marginBottom="16dp"
-        android:backgroundTint="@color/success"
+        android:backgroundTint="@color/black"
         android:text="Confirm"
-        android:textColor="@color/success_text"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvOrderItemTotalPrice"
