@@ -1,14 +1,14 @@
-package com.example.coftea.Customer.cart;
+package com.example.coftea.Customer.checkout;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-public class CartViewModel extends ViewModel {
+public class CheckoutViewModel extends ViewModel {
 
     private final MutableLiveData<String> mText;
 
-    public CartViewModel() {
+    public CheckoutViewModel() {
         mText = new MutableLiveData<>();
         mText.setValue("This is advance order fragment");
     }

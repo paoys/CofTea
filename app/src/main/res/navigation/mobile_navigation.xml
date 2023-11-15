@@ -9,23 +9,27 @@
         android:id="@+id/navigation_order"
         android:name="com.example.coftea.Cashier.order.OrderFragment"
         android:label="Order"
+        app:navGraph="@navigation/customer_navigation"
         tools:layout="@layout/fragment_order" />
 
     <fragment
         android:id="@+id/navigation_queue"
         android:name="com.example.coftea.Cashier.queue.QueueFragment"
         android:label="Queue"
+        app:navGraph="@navigation/customer_navigation"
         tools:layout="@layout/fragment_queue" />
 
     <fragment
         android:id="@+id/navigation_stock"
         android:name="com.example.coftea.Cashier.stock.StockFragment"
         android:label="Stock"
+        app:navGraph="@navigation/customer_navigation"
         tools:layout="@layout/fragment_stock" />
 
     <fragment
         android:id="@+id/navigation_settings"
         android:name="com.example.coftea.Cashier.settings.SettingsFragment"
         android:label="Settings"
+        app:navGraph="@navigation/customer_navigation"
         tools:layout="@layout/fragment_settings" />
 </navigation>

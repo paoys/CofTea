@@ -32,11 +32,11 @@ public class CustomerDashboard extends AppCompatActivity {
 
         // Set up top-level destinations
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_products, R.id.navigation_advance_order, R.id.navigation_cart, R.id.navigation_settings_customer)
+                R.id.navigation_products, R.id.navigation_advance_order, R.id.navigation_checkout_customer, R.id.navigation_settings_customer)
                 .build();
 
         // Initialize NavController using the NavHostFragment
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_customer_activity);
 
         // Set up ActionBar with NavController and AppBarConfiguration
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
