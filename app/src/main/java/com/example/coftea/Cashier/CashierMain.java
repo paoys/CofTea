@@ -36,7 +36,7 @@ public class CashierMain extends AppCompatActivity {
                 .build();
 
         // Initialize NavController using the NavHostFragment
-        NavController navController = Navigation.findNavController(this, R.id.nav_host_fragment_activity_main);
+        NavController navController = Navigation.findNavController(this, R.id.nav_host_customer_activity);
 
         // Set up ActionBar with NavController and AppBarConfiguration
         NavigationUI.setupActionBarWithNavController(this, navController, appBarConfiguration);
