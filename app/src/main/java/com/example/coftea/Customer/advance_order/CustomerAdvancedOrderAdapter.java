@@ -1,6 +1,5 @@
 package com.example.coftea.Customer.advance_order;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,7 +10,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.coftea.OrderItem.OrderItemDialogViewModel;
+import com.example.coftea.Order.OrderDialogViewModel;
 import com.example.coftea.R;
 import com.example.coftea.data.Product;
 import com.example.coftea.utilities.PHPCurrencyFormatter;
@@ -23,12 +22,12 @@ import java.util.List;
 public class CustomerAdvancedOrderAdapter extends RecyclerView.Adapter<CustomerAdvancedOrderAdapter.CustomerOrderViewHolder> {
     private ArrayList<Product> productList;
     private AdvanceOrderViewModel advanceOrderViewModel;
-    private OrderItemDialogViewModel orderItemDialogViewModel;
+    private OrderDialogViewModel orderDialogViewModel;
 
-    public CustomerAdvancedOrderAdapter(ArrayList<Product> productList, AdvanceOrderViewModel advanceOrderViewModel, OrderItemDialogViewModel orderItemDialogViewModel) {
+    public CustomerAdvancedOrderAdapter(ArrayList<Product> productList, AdvanceOrderViewModel advanceOrderViewModel, OrderDialogViewModel orderDialogViewModel) {
         this.productList = productList;
         this.advanceOrderViewModel = advanceOrderViewModel;
-        this.orderItemDialogViewModel = orderItemDialogViewModel;
+        this.orderDialogViewModel = orderDialogViewModel;
     }
 
     public void UpdateList(ArrayList<Product> productList) {
@@ -53,7 +52,7 @@ public class CustomerAdvancedOrderAdapter extends RecyclerView.Adapter<CustomerA
         holder.tvProductName.setText(product.getName());
         holder.tvProductPrice.setText(price);
         holder.btnProductAddToCart.setOnClickListener(view -> {
-            orderItemDialogViewModel.setOrderItem(product);
+            orderDialogViewModel.setOrderItem(product);
         });
 
         // Load and display the image using Picasso

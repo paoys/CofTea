@@ -14,9 +14,9 @@ public class OrderItemListViewModelFactory implements ViewModelProvider.Factory 
     @NonNull
     @Override
     public <T extends ViewModel> T create(@NonNull Class<T> modelClass) {
-        if (modelClass.isAssignableFrom(OrderItemListViewModel.class)) {
+        if (modelClass.isAssignableFrom(OrderItemListViewModel .class)) {
             // Pass the argument to the ViewModel constructor
-            return (T) new OrderItemListViewModel(user_id);
+            return (T) new OrderItemListViewModel (user_id);
         }
         throw new IllegalArgumentException("Unknown ViewModel class");
     }

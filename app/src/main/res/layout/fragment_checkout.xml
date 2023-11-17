@@ -5,8 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:fitsSystemWindows="true"
-    android:orientation="vertical"
-    tools:context=".Customer.checkout.Checkout">
+    android:orientation="vertical">
 
     <TextView
         android:id="@+id/tvTotalAmountDue"
@@ -45,5 +44,29 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="PAY WITH GCASH"/>
+
+    <TextView
+        android:id="@+id/tvCheckoutStatus"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="..."
+        android:layout_marginTop="20sp"
+        android:gravity="center"
+        android:textSize="18sp"
+        app:layout_constraintEnd_toEndOf="@+id/tvTotalAmountDue"
+        app:layout_constraintStart_toStartOf="@+id/tvTotalAmountDue"
+        app:layout_constraintTop_toBottomOf="@+id/tvTotalAmountDue" />
+
+    <TextView
+        android:id="@+id/tvCheckoutDescription"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20sp"
+        android:gravity="start"
+        android:textSize="18sp"
+        android:paddingHorizontal="10dp"
+        app:layout_constraintEnd_toEndOf="@+id/tvTotalAmountDue"
+        app:layout_constraintStart_toStartOf="@+id/tvTotalAmountDue"
+        app:layout_constraintTop_toBottomOf="@+id/tvTotalAmountDue" />
 
 </LinearLayout>

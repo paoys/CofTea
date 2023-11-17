@@ -9,7 +9,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.coftea.OrderItem.OrderItemDialogViewModel;
+import com.example.coftea.Order.OrderDialogViewModel;
 import com.example.coftea.R;
 import com.example.coftea.data.OrderItem;
 import com.example.coftea.data.Product;
@@ -21,12 +21,12 @@ import java.util.ArrayList;
 public class OrderItemListItemAdapter extends RecyclerView.Adapter<OrderItemListItemAdapter.OrderItemListItemViewHolder> {
     private ArrayList<OrderItem> orderItemList;
     private UserProvider userProvider = UserProvider.getInstance();
-    private OrderItemDialogViewModel orderItemDialogViewModel;
-    private OrderItemListViewModel orderItemListViewModel;
+    private OrderDialogViewModel orderDialogViewModel;
+    private OrderItemListViewModel  orderItemListViewModel;
 
-    public OrderItemListItemAdapter(ArrayList<OrderItem> orderItemList, OrderItemDialogViewModel orderItemDialogViewModel, OrderItemListViewModel orderItemListViewModel) {
+    public OrderItemListItemAdapter(ArrayList<OrderItem> orderItemList, OrderDialogViewModel orderDialogViewModel, OrderItemListViewModel orderItemListViewModel) {
         this.orderItemList = orderItemList;
-        this.orderItemDialogViewModel = orderItemDialogViewModel;
+        this.orderDialogViewModel = orderDialogViewModel;
         this.orderItemListViewModel = orderItemListViewModel;
     }
 
@@ -62,7 +62,7 @@ public class OrderItemListItemAdapter extends RecyclerView.Adapter<OrderItemList
 
         holder.btnRemoveOrderItem.setOnClickListener(view -> {
             String userMobileNo = userProvider.getUser().second;
-            orderItemDialogViewModel.removeOrderItem(userMobileNo+"/"+orderItem.getId());
+            orderDialogViewModel.removeOrderItem(userMobileNo+"/items/"+orderItem.getId());
         });
 
 //        holder.btnRemoveOrderItem.setOnClickListener(view -> {

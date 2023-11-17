@@ -6,6 +6,8 @@ import androidx.navigation.Navigation;
 import androidx.navigation.ui.AppBarConfiguration;
 import androidx.navigation.ui.NavigationUI;
 
+import android.content.Intent;
+import android.net.Uri;
 import android.os.Bundle;
 
 import com.example.coftea.R;
@@ -32,7 +34,7 @@ public class CustomerDashboard extends AppCompatActivity {
 
         // Set up top-level destinations
         AppBarConfiguration appBarConfiguration = new AppBarConfiguration.Builder(
-                R.id.navigation_products, R.id.navigation_advance_order, R.id.navigation_checkout_customer, R.id.navigation_settings_customer)
+                R.id.navigation_products_customer, R.id.navigation_advance_order_customer, R.id.navigation_checkout_customer, R.id.navigation_settings_customer)
                 .build();
 
         // Initialize NavController using the NavHostFragment
@@ -43,5 +45,13 @@ public class CustomerDashboard extends AppCompatActivity {
 
         // Set up BottomNavigationView with NavController
         NavigationUI.setupWithNavController(binding.navView, navController);
+
+        Intent intent = getIntent();
+        Uri data = intent.getData();
+        if (data != null) {
+//            String param1 = deepLink.getQueryParameter("param1");
+//            String param2 = deepLink.getQueryParameter("param2");
+        }
     }
+
 }

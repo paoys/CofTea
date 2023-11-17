@@ -3,10 +3,10 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/customer_navigation"
-    app:startDestination="@id/navigation_products">
+    app:startDestination="@id/navigation_products_customer">
 
     <fragment
-        android:id="@+id/navigation_products"
+        android:id="@+id/navigation_products_customer"
         android:name="com.example.coftea.Customer.products.ProductsFragment"
         android:label="Products Available"
         app:navGraph="@navigation/customer_navigation"
@@ -19,7 +19,7 @@
         app:navGraph="@navigation/customer_navigation"
         android:label="Checkout" />
     <fragment
-        android:id="@+id/navigation_advance_order"
+        android:id="@+id/navigation_advance_order_customer"
         android:name="com.example.coftea.Customer.advance_order.AdvanceOrderFragment"
         android:label="Advance Order"
         app:navGraph="@navigation/customer_navigation"
