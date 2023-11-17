@@ -1,4 +1,4 @@
-package com.example.coftea.OrderItem;
+package com.example.coftea.OrderItemList;
 
 import com.example.coftea.data.OrderItem;
 

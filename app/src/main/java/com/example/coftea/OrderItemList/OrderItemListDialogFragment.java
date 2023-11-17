@@ -1,6 +1,5 @@
 package com.example.coftea.OrderItemList;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,7 +15,7 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.coftea.OrderItem.OrderItemDialogViewModel;
+import com.example.coftea.Order.OrderDialogViewModel;
 import com.example.coftea.R;
 import com.example.coftea.data.OrderItem;
 import com.example.coftea.databinding.FragmentOrderItemListBinding;
@@ -26,8 +25,8 @@ import java.util.ArrayList;
 
 public class OrderItemListDialogFragment extends DialogFragment {
     PHPCurrencyFormatter formatter = PHPCurrencyFormatter.getInstance();
-    private OrderItemListViewModel orderItemListViewModel;
-    private OrderItemDialogViewModel orderItemDialogViewModel;
+    private OrderItemListViewModel  orderItemListViewModel;
+    private OrderDialogViewModel orderDialogViewModel;
     private OrderItemListItemAdapter orderItemListItemAdapter;
     private @NonNull FragmentOrderItemListBinding binding;
 
@@ -36,9 +35,9 @@ public class OrderItemListDialogFragment extends DialogFragment {
     private TextView tvOrderItemListTotalPrice;
     private ArrayList<OrderItem> _orderItemList = new ArrayList<>();
 
-    public OrderItemListDialogFragment(OrderItemListViewModel orderItemListViewModel, OrderItemDialogViewModel orderItemDialogViewModel) {
+    public OrderItemListDialogFragment(com.example.coftea.OrderItemList.OrderItemListViewModel orderItemListViewModel, OrderDialogViewModel orderDialogViewModel) {
         this.orderItemListViewModel = orderItemListViewModel;
-        this.orderItemDialogViewModel = orderItemDialogViewModel;
+        this.orderDialogViewModel = orderDialogViewModel;
     }
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
@@ -62,7 +61,7 @@ public class OrderItemListDialogFragment extends DialogFragment {
         rvCustomerOrderItemList.setHasFixedSize(true);
         rvCustomerOrderItemList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        orderItemListItemAdapter = new OrderItemListItemAdapter(_orderItemList, orderItemDialogViewModel, orderItemListViewModel);
+        orderItemListItemAdapter = new OrderItemListItemAdapter(_orderItemList, orderDialogViewModel, orderItemListViewModel);
         rvCustomerOrderItemList.setAdapter(orderItemListItemAdapter);
 
         orderItemListViewModel.orderItems.observe(getViewLifecycleOwner(), orderItems -> {

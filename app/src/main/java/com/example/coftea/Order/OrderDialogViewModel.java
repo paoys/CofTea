@@ -1,25 +1,24 @@
-package com.example.coftea.OrderItem;
-
-import android.util.Log;
+package com.example.coftea.Order;
 
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.coftea.OrderItemList.OrderItemResult;
 import com.example.coftea.data.OrderItem;
 import com.example.coftea.data.Product;
 import com.example.coftea.repository.RealtimeDB;
 
 import java.util.Date;
 
-public class OrderItemDialogViewModel extends ViewModel {
+public class OrderDialogViewModel extends ViewModel {
     private MutableLiveData<OrderItem> _orderItem = new MutableLiveData<>();
     public LiveData<OrderItem> orderItem;
 
     private MutableLiveData<OrderItemResult> _orderItemResult = new MutableLiveData<>();
     public LiveData<OrderItemResult> orderItemResult;
 
-    public OrderItemDialogViewModel(){
+    public OrderDialogViewModel(){
         orderItem = _orderItem;
         orderItemResult = _orderItemResult;
     }
@@ -65,7 +64,7 @@ public class OrderItemDialogViewModel extends ViewModel {
     }
 
     public void removeOrderItem(String pathToOrder){
-        RealtimeDB realtimeDB = new RealtimeDB<>("order_item/"+pathToOrder);
+        RealtimeDB realtimeDB = new RealtimeDB<>("order/"+pathToOrder);
         realtimeDB.getDatabaseReference().removeValue();
     }
 }

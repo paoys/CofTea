@@ -1,6 +1,6 @@
 package com.example.coftea.Paymongo;
 
-public class PaymongoResponse {
+public class PaymongoCheckoutResponse {
     public String getId() {
         return id;
     }
@@ -41,7 +41,7 @@ public class PaymongoResponse {
         this.phone = phone;
     }
 
-    public PaymongoResponse(String id, String checkoutUrl, Double amount, String name, String phone) {
+    public PaymongoCheckoutResponse(String id, String checkoutUrl, Double amount, String name, String phone) {
         this.id = id;
         this.checkoutUrl = checkoutUrl;
         this.amount = amount;
@@ -49,7 +49,7 @@ public class PaymongoResponse {
         this.phone = phone;
     }
 
-    public PaymongoResponse(String errorMessage) {
+    public PaymongoCheckoutResponse(String errorMessage) {
         this.errorMessage = errorMessage;
     }
 
@@ -59,6 +59,32 @@ public class PaymongoResponse {
     private String name;
     private String phone;
     private String errorMessage;
+
+    public Double getFee() {
+        return fee;
+    }
+
+    public Double getNetAmount() {
+        return netAmount;
+    }
+
+    public String getPaymentID() {
+        return paymentID;
+    }
+
+    public boolean isCheckoutSessionPaid(){
+        return (fee != null && netAmount != null && paymentID != null);
+    }
+    private Double fee;
+    private Double netAmount;
+    private String paymentID;
+
+    public PaymongoCheckoutResponse(String paymentID, Double amount, Double fee, Double netAmount) {
+        this.paymentID = paymentID;
+        this.amount = amount;
+        this.fee = fee;
+        this.netAmount = netAmount;
+    }
 
     public String getErrorMessage() {
         return errorMessage;

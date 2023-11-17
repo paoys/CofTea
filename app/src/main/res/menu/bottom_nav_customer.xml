@@ -2,19 +2,19 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item
-        android:id="@+id/navigation_products"
+        android:id="@+id/navigation_products_customer"
         android:icon="@drawable/baseline_coffee_24"
         android:title="Products"/>
 
     <item
-        android:id="@+id/navigation_advance_order"
+        android:id="@+id/navigation_advance_order_customer"
         android:icon="@drawable/baseline_shopping_cart_24"
         android:title="Advance Order"/>
 
     <item
         android:id="@+id/navigation_checkout_customer"
         android:icon="@drawable/baseline_shopping_cart_checkout_24"
-        android:title="Cart"/>
+        android:title="Checkout"/>
 
     <item
         android:id="@+id/navigation_settings_customer"

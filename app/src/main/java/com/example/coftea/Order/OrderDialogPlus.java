@@ -1,17 +1,15 @@
-package com.example.coftea.OrderItem;
+package com.example.coftea.Order;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.View;
 import android.widget.Button;
 import android.widget.ImageButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.lifecycle.LifecycleOwner;
-import androidx.lifecycle.Observer;
 
+import com.example.coftea.OrderItemList.OrderItemResult;
 import com.example.coftea.data.OrderItem;
 import com.example.coftea.data.Product;
 import com.example.coftea.databinding.CustomerAddToCartBinding;
@@ -22,14 +20,13 @@ import com.orhanobut.dialogplus.DialogPlus;
 import com.orhanobut.dialogplus.DialogPlusBuilder;
 import com.orhanobut.dialogplus.ViewHolder;
 
-import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
-public class OrderItemDialogPlus {
+public class OrderDialogPlus {
     UserProvider userProvider = UserProvider.getInstance();
     private PHPCurrencyFormatter formatter = PHPCurrencyFormatter.getInstance();
     private DialogPlus dialogPlus;
-    private OrderItemDialogViewModel orderItemDialogViewModel;
+    private OrderDialogViewModel orderDialogViewModel;
     private CustomerAddToCartBinding binding;
 
 
@@ -46,10 +43,10 @@ public class OrderItemDialogPlus {
     private Button btnCustomerOrderItemCancel;
 
     private LifecycleOwner lifecycleOwner;
-    private OrderItemDatabase orderItemDatabase;
+    private OrderDatabase orderDatabase;
 
     private Context context;
-    public OrderItemDialogPlus(LifecycleOwner lifecycleOwner, Context context, OrderItemDialogViewModel orderItemDialogViewModel) {
+    public OrderDialogPlus(LifecycleOwner lifecycleOwner, Context context, OrderDialogViewModel orderDialogViewModel) {
         this.context = context;
         binding = CustomerAddToCartBinding.inflate(LayoutInflater.from(context));
         DialogPlusBuilder dialogBuilder = DialogPlus.newDialog(context);
@@ -59,7 +56,7 @@ public class OrderItemDialogPlus {
 
 //        View view = dialogPlus.getHolderView();
         this.lifecycleOwner = lifecycleOwner;
-        this.orderItemDialogViewModel = orderItemDialogViewModel;
+        this.orderDialogViewModel = orderDialogViewModel;
 
         init();
         listenOrderItem();
@@ -81,26 +78,26 @@ public class OrderItemDialogPlus {
         btnCustomerOrderItemAddToCart = binding.btnCustomerOrderItemAddToCart;
         btnCustomerOrderItemCancel = binding.btnCustomerOrderItemCancel;
 
-        ibCustomerOrderItemAddQuantity.setOnClickListener(view -> orderItemDialogViewModel.addOrderItemQuantity());
-        ibCustomerOrderItemMinusQuantity.setOnClickListener(view -> orderItemDialogViewModel.minusOrderItemQuantity());
+        ibCustomerOrderItemAddQuantity.setOnClickListener(view -> orderDialogViewModel.addOrderItemQuantity());
+        ibCustomerOrderItemMinusQuantity.setOnClickListener(view -> orderDialogViewModel.minusOrderItemQuantity());
 
         btnCustomerOrderItemAddToCart.setOnClickListener(view -> {
-            orderItemDialogViewModel.setOrderItemLoading();
+            orderDialogViewModel.setOrderItemLoading();
             new Thread(this::onAddOrderItem).start();
         });
 
         btnCustomerOrderItemCancel.setOnClickListener(view -> {
-            orderItemDialogViewModel.clearOrderItem();
+            orderDialogViewModel.clearOrderItem();
             cleanUp();
         });
 
         String name = userProvider.getUser().second;
-        orderItemDatabase = new OrderItemDatabase(name);
+        orderDatabase = new OrderDatabase(name);
     }
 
     private void listenOrderItem(){
-        orderItemDialogViewModel.orderItem.observe(lifecycleOwner, this::updateView);
-        orderItemDialogViewModel.orderItemResult.observe(lifecycleOwner, this::onAddOrderItemResult);
+        orderDialogViewModel.orderItem.observe(lifecycleOwner, this::updateView);
+        orderDialogViewModel.orderItemResult.observe(lifecycleOwner, this::onAddOrderItemResult);
     }
 
     private void updateView(OrderItem orderItem){
@@ -129,10 +126,10 @@ public class OrderItemDialogPlus {
 
     private void onAddOrderItem(){
         setActionState(false);
-        OrderItem orderItem = orderItemDialogViewModel.orderItem.getValue();
+        OrderItem orderItem = orderDialogViewModel.orderItem.getValue();
         OrderItemResult result;
         try {
-            boolean addOrderItemResult = Tasks.await(orderItemDatabase.AddOrderItemToCart(orderItem));
+            boolean addOrderItemResult = Tasks.await(orderDatabase.AddOrderItemToCart(orderItem));
 
             if(addOrderItemResult)
                 result = new OrderItemResult(orderItem);
@@ -141,9 +138,9 @@ public class OrderItemDialogPlus {
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
             result = new OrderItemResult("ADD TO CART FAILED!");
-            orderItemDialogViewModel.clearOrderItem();
+            orderDialogViewModel.clearOrderItem();
         }
-        orderItemDialogViewModel.postOrderItemResult(result);
+        orderDialogViewModel.postOrderItemResult(result);
     }
 
     private void onAddOrderItemResult(OrderItemResult result){
@@ -159,7 +156,7 @@ public class OrderItemDialogPlus {
         }
         if(result.success != null){
             Toast.makeText(context, "Order Added to Cart!", Toast.LENGTH_LONG).show();
-            orderItemDialogViewModel.clearOrderItem();
+            orderDialogViewModel.clearOrderItem();
             cleanUp();
         }
     }

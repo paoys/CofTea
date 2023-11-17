@@ -1,8 +1,7 @@
-package com.example.coftea.OrderItem;
+package com.example.coftea.Order;
 
 import android.os.Bundle;
 import android.text.InputFilter;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,7 +15,7 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.example.coftea.Cashier.stock.AddIngredients;
+import com.example.coftea.OrderItemList.OrderItemResult;
 import com.example.coftea.R;
 import com.example.coftea.data.OrderItem;
 import com.example.coftea.data.Product;
@@ -30,9 +29,9 @@ import com.squareup.picasso.Picasso;
 import java.util.Objects;
 import java.util.concurrent.ExecutionException;
 
-public class OrderItemDialogFragment extends DialogFragment {
+public class OrderDialogFragment extends DialogFragment {
 
-    private OrderItemDialogViewModel orderItemDialogViewModel;
+    private OrderDialogViewModel orderDialogViewModel;
     UserProvider userProvider = UserProvider.getInstance();
     FragmentOrderItemBinding binding;
     PHPCurrencyFormatter phpCurrencyFormatter;
@@ -46,10 +45,10 @@ public class OrderItemDialogFragment extends DialogFragment {
     ImageButton btnAddQuantity;
     ImageButton btnMinusQuantity;
 
-    OrderItemDatabase orderItemDatabase;
+    OrderDatabase orderDatabase;
 
-    public OrderItemDialogFragment(OrderItemDialogViewModel orderItemDialogViewModel) {
-        this.orderItemDialogViewModel = orderItemDialogViewModel;
+    public OrderDialogFragment(OrderDialogViewModel orderDialogViewModel) {
+        this.orderDialogViewModel = orderDialogViewModel;
     }
     @Nullable
     @Override
@@ -67,7 +66,7 @@ public class OrderItemDialogFragment extends DialogFragment {
 
         String name = userProvider.getUser().second;
 
-        orderItemDatabase = new OrderItemDatabase(name);
+        orderDatabase = new OrderDatabase(name);
 
         InputFieldFilter inputFieldFilter = InputFieldFilter.getInstance();
         phpCurrencyFormatter = PHPCurrencyFormatter.getInstance();
@@ -85,17 +84,17 @@ public class OrderItemDialogFragment extends DialogFragment {
         btnMinusQuantity = binding.btnOrderItemMinus;
 
         btnClose.setOnClickListener(view -> {
-            orderItemDialogViewModel.clearOrderItem();
+            orderDialogViewModel.clearOrderItem();
             Objects.requireNonNull(getDialog()).hide();
         });
 
         btnAddOrder.setOnClickListener(view -> {
-            orderItemDialogViewModel.setOrderItemLoading();
+            orderDialogViewModel.setOrderItemLoading();
             new Thread(this::onAddOrderItem).start();
         });
 
-        btnAddQuantity.setOnClickListener(view -> orderItemDialogViewModel.addOrderItemQuantity());
-        btnMinusQuantity.setOnClickListener(view -> orderItemDialogViewModel.minusOrderItemQuantity());
+        btnAddQuantity.setOnClickListener(view -> orderDialogViewModel.addOrderItemQuantity());
+        btnMinusQuantity.setOnClickListener(view -> orderDialogViewModel.minusOrderItemQuantity());
 
         InputFilter inputFilter = inputFieldFilter.createNumberFilter(etProductQuantity);
         etProductQuantity.setFilters(new InputFilter[]{inputFilter});
@@ -106,8 +105,8 @@ public class OrderItemDialogFragment extends DialogFragment {
     }
 
     private void listenOrderItem(){
-        this.orderItemDialogViewModel.orderItem.observe(getViewLifecycleOwner(), this::updateOrderItem);
-        this.orderItemDialogViewModel.orderItemResult.observe(getViewLifecycleOwner(), this::onAddOrderItemResult);
+        this.orderDialogViewModel.orderItem.observe(getViewLifecycleOwner(), this::updateOrderItem);
+        this.orderDialogViewModel.orderItemResult.observe(getViewLifecycleOwner(), this::onAddOrderItemResult);
     }
     private void updateOrderItem(OrderItem orderItem){
         if(orderItem == null) return;
@@ -126,10 +125,10 @@ public class OrderItemDialogFragment extends DialogFragment {
 
     private void onAddOrderItem(){
 
-        OrderItem orderItem = orderItemDialogViewModel.orderItem.getValue();
+        OrderItem orderItem = orderDialogViewModel.orderItem.getValue();
         OrderItemResult result;
         try {
-            boolean addOrderItemResult = Tasks.await(orderItemDatabase.AddOrderItemToCart(orderItem));
+            boolean addOrderItemResult = Tasks.await(orderDatabase.AddOrderItemToCart(orderItem));
 
             if(addOrderItemResult)
                 result = new OrderItemResult(orderItem);
@@ -140,7 +139,7 @@ public class OrderItemDialogFragment extends DialogFragment {
             e.printStackTrace();
             result = new OrderItemResult("ADD TO CART FAILED!");
         }
-        orderItemDialogViewModel.postOrderItemResult(result);
+        orderDialogViewModel.postOrderItemResult(result);
     }
 
     private void onAddOrderItemResult(OrderItemResult result){
@@ -156,7 +155,7 @@ public class OrderItemDialogFragment extends DialogFragment {
         }
         if(result.success != null){
             Toast.makeText(getContext(), "Order Added to Cart!", Toast.LENGTH_LONG).show();
-            orderItemDialogViewModel.clearOrderItem();
+            orderDialogViewModel.clearOrderItem();
             Objects.requireNonNull(getDialog()).hide();
         }
     }
@@ -170,7 +169,7 @@ public class OrderItemDialogFragment extends DialogFragment {
 
     @Override
     public void onDestroy() {
-        this.orderItemDialogViewModel.clearOrderItem();
+        this.orderDialogViewModel.clearOrderItem();
         super.onDestroy();
     }
 
@@ -178,20 +177,20 @@ public class OrderItemDialogFragment extends DialogFragment {
     public void onHiddenChanged(boolean hidden) {
 
         if(hidden) {
-            this.orderItemDialogViewModel.clearOrderItem();
+            this.orderDialogViewModel.clearOrderItem();
         }
         super.onHiddenChanged(hidden);
     }
 
     @Override
     public void onDetach() {
-        this.orderItemDialogViewModel.clearOrderItem();
+        this.orderDialogViewModel.clearOrderItem();
         super.onDetach();
     }
 
     @Override
     public void onDestroyView() {
-        this.orderItemDialogViewModel.clearOrderItem();
+        this.orderDialogViewModel.clearOrderItem();
         super.onDestroyView();
     }
 }

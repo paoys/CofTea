@@ -8,11 +8,9 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.coftea.OrderItem.OrderItemResult;
 import com.example.coftea.data.OrderItem;
 import com.example.coftea.data.Product;
 import com.example.coftea.repository.RealtimeDB;
-import com.example.coftea.utilities.UserProvider;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -28,7 +26,7 @@ public class OrderItemListViewModel extends ViewModel {
 
     public OrderItemListViewModel(String id){
         orderItems = _orderItems;
-        realtimeDB = new RealtimeDB<>("order_item/"+id);
+        realtimeDB = new RealtimeDB<>("order/"+id+"/items");
         listenUpdate();
     }
 
