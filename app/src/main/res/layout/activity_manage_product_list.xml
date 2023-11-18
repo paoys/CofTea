@@ -4,10 +4,11 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="vertical">
+    android:orientation="vertical"
+    tools:context=".Cashier.order.ProductListActivity">
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/recyclerView"
+        android:id="@+id/rvCashierProductList"
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_weight="1"
@@ -15,7 +16,7 @@
         android:padding="8dp" />
 
     <Button
-        android:id="@+id/cartBTN"
+        android:id="@+id/btnViewCart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:text="View Cart"

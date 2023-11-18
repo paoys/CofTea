@@ -1,17 +1,18 @@
 package com.example.coftea.Cashier.order;
 
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class ReceiptEntry {
-    private List<Cart> products;
+public class ReceiptEntry implements Serializable {
+    private List<CartItem> products;
     private double totalPayment;
     private String customerName;
     private String customerPhone;
     private Date date;
 
 
-    public ReceiptEntry(List<Cart> products, double totalPayment, String customerName, String customerPhone, Date date) {
+    public ReceiptEntry(List<CartItem> products, double totalPayment, String customerName, String customerPhone, Date date) {
         this.products = products;
         this.totalPayment = totalPayment;
         this.customerName = customerName;
@@ -19,12 +20,8 @@ public class ReceiptEntry {
         this.date = date;
     }
 
-    public List<Cart> getProducts() {
+    public List<CartItem> getProducts() {
         return products;
-    }
-
-    public void setProducts(List<Cart> products) {
-        this.products = products;
     }
 
     public double getTotalPayment() {

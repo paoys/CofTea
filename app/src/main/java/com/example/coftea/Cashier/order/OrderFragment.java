@@ -11,9 +11,7 @@ import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
-import com.example.coftea.R;
 import com.example.coftea.databinding.FragmentOrderBinding;
-import com.example.coftea.databinding.FragmentStockBinding;
 
 public class OrderFragment extends Fragment {
     private FragmentOrderBinding binding;
@@ -26,16 +24,12 @@ public class OrderFragment extends Fragment {
         binding = FragmentOrderBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        btn_order = root.findViewById(R.id.btn_order); // Initialize the button
+        btn_order = binding.btnOrder; // Initialize the button
 
-        btn_order.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent intent = new Intent(requireActivity(), ProductListActivity.class); // Use requireActivity() to get the parent activity
-                startActivity(intent);
-            }
+        btn_order.setOnClickListener(view -> {
+            Intent intent = new Intent(requireActivity(), ProductListActivity.class); // Use requireActivity() to get the parent activity
+            startActivity(intent);
         });
-
 
         return root;
     }

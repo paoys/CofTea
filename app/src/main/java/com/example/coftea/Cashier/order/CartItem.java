@@ -1,17 +1,19 @@
 package com.example.coftea.Cashier.order;
 
-public class Cart {
+import java.io.Serializable;
+
+public class CartItem implements Serializable {
     private String id;
     private String name;
     private String price;
     private int quantity;
     private String imageUrl;
 
-    public Cart() {
+    public CartItem() {
         // Default constructor required for Firebase
     }
 
-    public Cart(String id, String name, String price, int quantity) {
+    public CartItem(String id, String name, String price, int quantity) {
         this.id = id;
         this.name = name;
         this.price = price;

@@ -32,8 +32,8 @@ public class PaymongoCheckout extends AsyncTask<PaymongoPayload, Void, String> {
             String phoneNumber = payload.getMobileNumber();
             String name = payload.getUserName();
             double amount = payload.getAmount();
-            String successUrl = "https://test-deeplinking-test.vercel.app";
-            String cancelUrl = "https://test-deeplinking-test.vercel.app";
+            String successUrl = "https://coftea-web.vercel.app";
+            String cancelUrl = "https://coftea-web.vercel.app";
             String referenceNumber = payload.getMobileNumber();
             String parsedAmount = String.format("%.2f", amount).replace(".", "");
             String jsonBody = "{\"data\":{\"attributes\":{\"billing\":{\"name\":\""+name+"\",\"email\":\"coftea@email.com\",\"phone\":\""+phoneNumber+"\"},\"send_email_receipt\":false,\"show_description\":true,\"show_line_items\":true,\"line_items\":[{\"currency\":\"PHP\",\"amount\":"+parsedAmount+",\"quantity\":1,\"name\":\"Sample\",\"description\":\"Sample\"}],\"payment_method_types\":[\"gcash\"],\"success_url\":\""+successUrl+"\",\"reference_number\":\""+referenceNumber+"\",\"cancel_url\":\""+cancelUrl+"\",\"description\":\"The Testing Payment\"}}}";

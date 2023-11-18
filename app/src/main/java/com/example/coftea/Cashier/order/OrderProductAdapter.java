@@ -15,8 +15,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coftea.R;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -31,9 +29,12 @@ import java.util.List;
 
 public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapter.ProductViewHolder> {
     private List<ModelOrderProduct> productList;
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final DatabaseReference cartRef;
 
     public OrderProductAdapter(List<ModelOrderProduct> productList) {
         this.productList = productList;
+        this.cartRef = database.getReference("cashier/cart");
     }
 
     @NonNull
@@ -95,7 +96,7 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
                         String selectedPrice = priceSpinner.getSelectedItem().toString();
 
                         // Create a Cart object with the selected product's details and quantity
-                        Cart cartItem = new Cart(product.getId(), product.getName(), selectedPrice, quantity);
+                        CartItem cartItem = new CartItem(product.getId(), product.getName(), selectedPrice, quantity);
                         cartItem.setImageUrl(product.getImageUrl()); // Set the image URL
 
                         // Save the cart item to the "cart" database with a unique key
@@ -132,12 +133,7 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
     }
 
     // Function to save a Cart item to the "cart" database with a unique key
-    private void saveCartItemToCartDatabase(Cart cartItem) {
-        // Initialize Firebase Database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-        // Reference to the "cart" node in your Firebase Realtime Database
-        DatabaseReference cartRef = database.getReference("cart");
+    private void saveCartItemToCartDatabase(CartItem cartItem) {
 
         // Check if an item with the same product ID already exists in the cart
         Query query = cartRef.orderByChild("id").equalTo(cartItem.getId());
@@ -150,11 +146,11 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
                     for (DataSnapshot snapshot : dataSnapshot.getChildren()) {
                         // Get the existing item's key and details
                         String existingKey = snapshot.getKey();
-                        Cart existingCartItem = snapshot.getValue(Cart.class);
+                        CartItem existingCartItemItem = snapshot.getValue(CartItem.class);
 
                         // Update the quantity of the existing item in the cart
-                        if (existingCartItem != null) {
-                            int updatedQuantity = existingCartItem.getQuantity() + cartItem.getQuantity();
+                        if (existingCartItemItem != null) {
+                            int updatedQuantity = existingCartItemItem.getQuantity() + cartItem.getQuantity();
                             cartItem.setQuantity(updatedQuantity);
                         }
 
@@ -167,7 +163,7 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
                     }
                 } else {
                     // Item with this product ID does not exist in the cart, add it as a new item
-                    addCartItemToCartDatabase(cartRef, cartItem);
+                    addCartItemToCartDatabase(cartItem);
                 }
             }
 
@@ -180,7 +176,7 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
     }
 
     // Function to add a new Cart item to the "cart" database with a specific key (product ID)
-    private void addCartItemToCartDatabase(DatabaseReference cartRef, Cart cartItem) {
+    private void addCartItemToCartDatabase(CartItem cartItem) {
         // Use the product ID as the key in the cart database
         String productId = cartItem.getId();
 
@@ -188,49 +184,31 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
         DatabaseReference specificCartItemRef = cartRef.child(productId);
 
         specificCartItemRef.setValue(cartItem)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // New item added to the cart successfully
-                        Log.d("CartDatabase", "New item added to cart successfully");
-                    }
+                .addOnSuccessListener(aVoid -> {
+                    // New item added to the cart successfully
+                    Log.d("CartDatabase", "New item added to cart successfully");
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(Exception e) {
-                        // Handle the failure to add the item to the cart
-                        Log.e("CartDatabase", "Failed to add item to cart: " + e.getMessage());
-                    }
+                .addOnFailureListener(e -> {
+                    // Handle the failure to add the item to the cart
+                    Log.e("CartDatabase", "Failed to add item to cart: " + e.getMessage());
                 });
     }
 
-
     // Function to update an existing Cart item in the "cart" database
-    private void updateCartItemInCartDatabase(String cartItemKey, Cart updatedCartItem) {
-        // Initialize Firebase Database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-
-        // Reference to the "cart" node in your Firebase Realtime Database
-        DatabaseReference cartRef = database.getReference("cart");
+    private void updateCartItemInCartDatabase(String cartItemKey, CartItem updatedCartItemItem) {
 
         // Reference to the specific item to be updated
         DatabaseReference itemRef = cartRef.child(cartItemKey);
 
         // Update the item with the new details
-        itemRef.setValue(updatedCartItem)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // Item updated successfully
-                        Log.d("CartDatabase", "Item updated successfully");
-                    }
+        itemRef.setValue(updatedCartItemItem)
+                .addOnSuccessListener(aVoid -> {
+                    // Item updated successfully
+                    Log.d("CartDatabase", "Item updated successfully");
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(Exception e) {
-                        // Handle the failure to update the item
-                        Log.e("CartDatabase", "Failed to update item: " + e.getMessage());
-                    }
+                .addOnFailureListener(e -> {
+                    // Handle the failure to update the item
+                    Log.e("CartDatabase", "Failed to update item: " + e.getMessage());
                 });
     }
 }

@@ -16,8 +16,6 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coftea.R;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.squareup.picasso.Picasso;
@@ -25,12 +23,14 @@ import com.squareup.picasso.Picasso;
 import java.util.List;
 
 public class ManageCartAdapter extends RecyclerView.Adapter<ManageCartAdapter.ProductViewHolder> {
-    private List<Cart> productList;
+    private List<CartItem> productList;
     private Context context;
-
-    public ManageCartAdapter(Context context, List<Cart> productList) {
+    FirebaseDatabase database = FirebaseDatabase.getInstance();
+    private final DatabaseReference cartRef;
+    public ManageCartAdapter(Context context, List<CartItem> productList) {
         this.context = context;
         this.productList = productList;
+        this.cartRef = database.getReference("cashier/cart");
     }
 
     @NonNull
@@ -42,7 +42,7 @@ public class ManageCartAdapter extends RecyclerView.Adapter<ManageCartAdapter.Pr
 
     @Override
     public void onBindViewHolder(@NonNull ProductViewHolder holder, int position) {
-        Cart product = productList.get(position);
+        CartItem product = productList.get(position);
         holder.productNameTextView.setText(product.getName());
         holder.productIdTextView.setText(product.getId());
         holder.productPriceEditText.setText(product.getPrice());
@@ -81,9 +81,9 @@ public class ManageCartAdapter extends RecyclerView.Adapter<ManageCartAdapter.Pr
         TextView productQuantityTextView;
         ImageView productImageView;
         Button editBTN, deleteBTN;
-        List<Cart> productList;
+        List<CartItem> productList;
 
-        ProductViewHolder(View itemView, List<Cart> productList) {
+        ProductViewHolder(View itemView, List<CartItem> productList) {
             super(itemView);
             this.productList = productList;
 
@@ -97,7 +97,7 @@ public class ManageCartAdapter extends RecyclerView.Adapter<ManageCartAdapter.Pr
         }
     }
 
-    private void showEditDialog(Cart product) {
+    private void showEditDialog(CartItem product) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Edit Item");
         View viewInflated = LayoutInflater.from(context).inflate(R.layout.edit_cart_dialog, null);
@@ -145,7 +145,7 @@ public class ManageCartAdapter extends RecyclerView.Adapter<ManageCartAdapter.Pr
     }
 
 
-    private void showDeleteConfirmationDialog(Cart product) {
+    private void showDeleteConfirmationDialog(CartItem product) {
         AlertDialog.Builder builder = new AlertDialog.Builder(context);
         builder.setTitle("Delete Item");
         builder.setMessage("Are you sure you want to delete this item from the cart?");
@@ -168,26 +168,17 @@ public class ManageCartAdapter extends RecyclerView.Adapter<ManageCartAdapter.Pr
         builder.create().show();
     }
 
-    private void updateItemInDatabase(String itemId, Cart updatedProduct) {
-        // Initialize Firebase Database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference cartRef = database.getReference("cart");
+    private void updateItemInDatabase(String itemId, CartItem updatedProduct) {
 
         DatabaseReference itemRef = cartRef.child(itemId);
         itemRef.setValue(updatedProduct)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        // Item updated successfully
-                        Log.d("CartDatabase", "Item updated successfully");
-                    }
+                .addOnSuccessListener(aVoid -> {
+                    // Item updated successfully
+                    Log.d("CartDatabase", "Item updated successfully");
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(Exception e) {
-                        // Handle the failure to update the item
-                        Log.e("CartDatabase", "Failed to update item: " + e.getMessage());
-                    }
+                .addOnFailureListener(e -> {
+                    // Handle the failure to update the item
+                    Log.e("CartDatabase", "Failed to update item: " + e.getMessage());
                 });
     }
 
@@ -198,17 +189,7 @@ public class ManageCartAdapter extends RecyclerView.Adapter<ManageCartAdapter.Pr
 
         DatabaseReference itemRef = cartRef.child(itemId);
         itemRef.removeValue()
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d("CartDatabase", "Item deleted successfully");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(Exception e) {
-                        Log.e("CartDatabase", "Failed to delete item: " + e.getMessage());
-                    }
-                });
+                .addOnSuccessListener(aVoid -> Log.d("CartDatabase", "Item deleted successfully"))
+                .addOnFailureListener(e -> Log.e("CartDatabase", "Failed to delete item: " + e.getMessage()));
     }
 }
