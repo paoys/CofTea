@@ -9,6 +9,8 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.coftea.Cashier.order.CartItem;
+import com.example.coftea.data.Order;
+import com.example.coftea.data.OrderStatus;
 import com.example.coftea.data.Product;
 import com.example.coftea.repository.RealtimeDB;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -17,6 +19,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 
@@ -29,17 +32,32 @@ public class QueueViewModel extends ViewModel {
     private MutableLiveData<QueueOrder> _queueOrderToCancel = new MutableLiveData<>();
     public LiveData<QueueOrder> queueOrderToCancel;
     private final RealtimeDB<QueueOrder> realtimeDB;
-    public QueueViewModel() {
+    private OrderStatus orderStatus;
+    private ChildEventListener childEventListener;
+    public QueueViewModel(OrderStatus orderStatus) {
         queueOrderList = _queueOrderList;
         queueOrderToDone = _queueOrderToDone;
         queueOrderToCancel = _queueOrderToCancel;
         cartItemList = _cartItemList;
+        this.orderStatus = orderStatus;
         realtimeDB = new RealtimeDB<>("cashier/queue");
+        setChildEventListener();
         listenUpdate();
     }
 
     private void listenUpdate(){
-        realtimeDB.get().addChildEventListener(new ChildEventListener() {
+        DatabaseReference queueDBRef = realtimeDB.get().getRef();
+        Query filterQueueDB = queueDBRef.orderByChild("status").equalTo(orderStatus.toString());
+        filterQueueDB.removeEventListener(childEventListener);
+        filterQueueDB.addChildEventListener(childEventListener);
+    }
+    public void changeOrderStatusFilter(OrderStatus status){
+        _queueOrderList.setValue(new ArrayList<>());
+        this.orderStatus = status;
+        listenUpdate();
+    }
+    private void setChildEventListener(){
+        childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 if (_queueOrderList.getValue() == null) {
@@ -93,20 +111,16 @@ public class QueueViewModel extends ViewModel {
                     }
                 }
             }
-
             @Override
             public void onChildMoved(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 Log.e("MOVED", String.valueOf(snapshot.exists()));
             }
-
             @Override
             public void onCancelled(@NonNull DatabaseError error) {
 
             }
-
-        });
+        };
     }
-
     public void setQueueOrderToDone(QueueOrder queueOrder){
         getQueueOrderItemList(queueOrder.getReceiptID());
         _queueOrderToDone.postValue(queueOrder);

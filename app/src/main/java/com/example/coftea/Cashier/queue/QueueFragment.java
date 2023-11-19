@@ -4,6 +4,7 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -16,6 +17,8 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coftea.Customer.advance_order.CustomerAdvancedOrderAdapter;
 import com.example.coftea.Order.OrderDialogFragment;
+import com.example.coftea.data.Order;
+import com.example.coftea.data.OrderStatus;
 import com.example.coftea.databinding.FragmentQueueBinding;
 
 import java.util.ArrayList;
@@ -27,6 +30,7 @@ public class QueueFragment extends Fragment {
     private RecyclerView rvCashierQueueOrderList;
     private QueueOrderToDoneDialogFragment queueOrderToDoneDialogFragment;
     private QueueOrderAdapter queueOrderAdapter;
+    private Button btnQueueOrderPending, btnQueueOrderReady, btnQueueOrderDone, btnQueueOrderCancelled;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -41,7 +45,13 @@ public class QueueFragment extends Fragment {
 
     private void init(){
         rvCashierQueueOrderList = binding.rvCashierQueueOrderList;
-        queueViewModel = new ViewModelProvider(this).get(QueueViewModel.class);
+
+        btnQueueOrderCancelled = binding.btnQueueOrderCancelled;
+        btnQueueOrderPending = binding.btnQueueOrderPending;
+        btnQueueOrderReady = binding.btnQueueOrderReady;
+        btnQueueOrderDone = binding.btnQueueOrderDone;
+
+        queueViewModel = new ViewModelProvider(this, new QueueViewModelFactory(OrderStatus.PENDING)).get(QueueViewModel.class);
 
         rvCashierQueueOrderList = binding.rvCashierQueueOrderList;
 
@@ -51,6 +61,11 @@ public class QueueFragment extends Fragment {
         queueOrderToDoneDialogFragment = new QueueOrderToDoneDialogFragment(queueViewModel);
         queueOrderAdapter = new QueueOrderAdapter(queueViewModel);
         rvCashierQueueOrderList.setAdapter(queueOrderAdapter);
+
+        btnQueueOrderPending.setOnClickListener(view -> queueViewModel.changeOrderStatusFilter(OrderStatus.PENDING));
+        btnQueueOrderReady.setOnClickListener(view -> queueViewModel.changeOrderStatusFilter(OrderStatus.READY));
+        btnQueueOrderDone.setOnClickListener(view -> queueViewModel.changeOrderStatusFilter(OrderStatus.DONE));
+        btnQueueOrderCancelled.setOnClickListener(view -> queueViewModel.changeOrderStatusFilter(OrderStatus.CANCELLED));
     }
 
     private void listen(){

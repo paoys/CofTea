@@ -1,10 +1,12 @@
 package com.example.coftea.Cashier.order;
 
 import com.example.coftea.data.OrderStatus;
+import com.google.firebase.database.ServerValue;
 
 import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class ReceiptEntry implements Serializable {
     private List<CartItem> cartItems;
@@ -18,6 +20,15 @@ public class ReceiptEntry implements Serializable {
     }
 
     private Long createdAt;
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
     private OrderStatus status;
 
     public ReceiptEntry(List<CartItem> cartItems, double totalPayment, String customerName, String customerPhone, Date date, OrderStatus status) {

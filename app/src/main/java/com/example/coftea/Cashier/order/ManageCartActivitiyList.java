@@ -3,7 +3,6 @@ package com.example.coftea.Cashier.order;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
@@ -11,7 +10,6 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
@@ -24,13 +22,11 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-import com.google.firebase.database.MutableData;
-import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ServerValue;
 import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -179,8 +175,8 @@ public class ManageCartActivitiyList extends AppCompatActivity {
                 // Show an error message if fields are empty
                 showErrorMessage("Name and phone number are required.");
             } else {
-                ReceiptEntry receiptEntry = new ReceiptEntry(cartItemList, totalPayment, name, phone, date, OrderStatus.PAID);
-                QueueEntry queueEntry = new QueueEntry(totalPayment, name, phone);
+                ReceiptEntry receiptEntry = new ReceiptEntry(cartItemList, totalPayment, name, phone, date, OrderStatus.PENDING);
+                QueueEntry queueEntry = new QueueEntry(totalPayment, name, phone, date, OrderStatus.PENDING);
                 saveTransaction(receiptEntry, queueEntry);
 //                    addToQueue(name, phone, totalPayment);
 //                    saveReceipt(cartItemList, name, phone, totalPayment, date);
