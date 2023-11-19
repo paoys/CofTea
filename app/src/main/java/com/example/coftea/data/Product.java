@@ -3,13 +3,13 @@ package com.example.coftea.data;
 public class Product {
     private String id;
     private String name;
-    private String price;
+    private Double price;
     private String imageUrl;
     public Product() {
         // Default constructor required for Firebase
     }
 
-    public Product(String id, String name, String price, String imageUrl) {
+    public Product(String id, String name, Double price, String imageUrl) {
         this.id = id;
         this.name = name;
         this.price = price;
@@ -29,9 +29,9 @@ public class Product {
         this.name = name;
     }
     public Double getPrice() {
-        return Double.parseDouble(price);
+        return price;
     }
-    public void setPrice(String price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
     public String getImageUrl() {
