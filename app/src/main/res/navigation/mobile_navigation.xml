@@ -27,6 +27,13 @@
         tools:layout="@layout/fragment_stock" />
 
     <fragment
+        android:id="@+id/navigation_report"
+        android:name="com.example.coftea.Cashier.report.ReportFragment"
+        android:label="Report"
+        app:navGraph="@navigation/customer_navigation"
+        tools:layout="@layout/fragment_report"/>
+
+    <fragment
         android:id="@+id/navigation_settings"
         android:name="com.example.coftea.Cashier.settings.SettingsFragment"
         android:label="Settings"

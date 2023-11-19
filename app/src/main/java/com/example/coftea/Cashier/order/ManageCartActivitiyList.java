@@ -271,6 +271,8 @@ public class ManageCartActivitiyList extends AppCompatActivity {
 
         queueEntry.setReceiptID(receiptID);
 
+        receiptEntry.setId(receiptID);
+
         receiptsDBRef.child(receiptID).setValue(receiptEntry);
         queueDBRef.child(queueID).setValue(queueEntry);
         cartDBRef.setValue(null);
