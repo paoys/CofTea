@@ -16,6 +16,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coftea.Customer.advance_order.CustomerAdvancedOrderAdapter;
 import com.example.coftea.Order.OrderDialogFragment;
+import com.example.coftea.data.OrderStatus;
 import com.example.coftea.databinding.FragmentQueueBinding;
 
 import java.util.ArrayList;
@@ -41,7 +42,7 @@ public class QueueFragment extends Fragment {
 
     private void init(){
         rvCashierQueueOrderList = binding.rvCashierQueueOrderList;
-        queueViewModel = new ViewModelProvider(this).get(QueueViewModel.class);
+        queueViewModel = new ViewModelProvider(this, new QueueViewModelFactory(OrderStatus.PENDING)).get(QueueViewModel.class);
 
         rvCashierQueueOrderList = binding.rvCashierQueueOrderList;
 

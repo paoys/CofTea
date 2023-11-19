@@ -1,7 +1,12 @@
 package com.example.coftea.Cashier.order;
 
+import com.example.coftea.data.OrderStatus;
+import com.google.firebase.database.ServerValue;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 public class QueueEntry {
     private List<CartItem> products;
@@ -20,12 +25,36 @@ public class QueueEntry {
         // Default constructor required for Firebase
     }
 
-    public QueueEntry(double totalPayment, String customerName, String customerPhone) {
+    public Date getDate() {
+        return date;
+    }
+
+    private Date date;
+
+    public Long getCreatedAt() {
+        return createdAt;
+    }
+
+    public OrderStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(OrderStatus status) {
+        this.status = status;
+    }
+
+    private OrderStatus status;
+
+    private Long createdAt;
+    public QueueEntry(double totalPayment, String customerName, String customerPhone, Date date, OrderStatus status) {
         this.products = new ArrayList<>();
         this.totalPayment = totalPayment;
         this.customerName = customerName;
         this.customerPhone = customerPhone;
         this.id = null;
+        this.date = date;
+        this.createdAt = date.getTime();
+        this.status = status;
     }
 
     public List<CartItem> getProducts() {

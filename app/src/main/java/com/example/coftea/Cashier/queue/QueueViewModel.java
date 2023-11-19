@@ -9,6 +9,7 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.coftea.Cashier.order.CartItem;
+import com.example.coftea.data.OrderStatus;
 import com.example.coftea.data.Product;
 import com.example.coftea.repository.RealtimeDB;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -17,6 +18,7 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
 
@@ -29,17 +31,22 @@ public class QueueViewModel extends ViewModel {
     private MutableLiveData<QueueOrder> _queueOrderToCancel = new MutableLiveData<>();
     public LiveData<QueueOrder> queueOrderToCancel;
     private final RealtimeDB<QueueOrder> realtimeDB;
-    public QueueViewModel() {
+    private final OrderStatus orderStatus;
+    public QueueViewModel(OrderStatus orderStatus) {
         queueOrderList = _queueOrderList;
         queueOrderToDone = _queueOrderToDone;
         queueOrderToCancel = _queueOrderToCancel;
         cartItemList = _cartItemList;
+        this.orderStatus = orderStatus;
         realtimeDB = new RealtimeDB<>("cashier/queue");
         listenUpdate();
     }
 
     private void listenUpdate(){
-        realtimeDB.get().addChildEventListener(new ChildEventListener() {
+        DatabaseReference queueDBRef = realtimeDB.get().getRef();
+        Log.e("Status", orderStatus.toString());
+        Query filterQueueDB = queueDBRef.orderByChild("status").equalTo(orderStatus.toString());
+        filterQueueDB.addChildEventListener(new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
                 if (_queueOrderList.getValue() == null) {
