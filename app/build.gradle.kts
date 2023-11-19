@@ -26,6 +26,7 @@ android {
     }
 
     buildFeatures {
+        dataBinding = true
         viewBinding = true
     }
 
@@ -66,6 +67,11 @@ dependencies {
     implementation("androidx.navigation:navigation-fragment:2.7.4")
     implementation("androidx.navigation:navigation-ui:2.7.4")
     implementation("com.google.firebase:firebase-storage:20.3.0")
+
+    implementation("androidx.databinding:databinding-runtime:7.0.2")
+    implementation("com.google.android.gms:play-services-maps:17.0.1")
+    implementation("com.google.maps.android:android-maps-utils:0.4.+")
+    implementation("com.google.android.gms:play-services-location:18.0.0")
 
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("com.google.android.material:material:1.10.0")
