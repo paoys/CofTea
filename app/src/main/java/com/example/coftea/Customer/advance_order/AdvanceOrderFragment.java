@@ -9,7 +9,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.ImageButton;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -62,19 +64,19 @@ public class AdvanceOrderFragment extends Fragment {
     private FusedLocationProviderClient fusedLocationClient;
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
+    private LinearLayout llAdvanceOrderOutOfRange;
+    private TextView tvAdvanceOrderDistanceToCofTea;
+    private Button btnAdvanceOrderCheckDistance;
+    private boolean isCheckingLocation = false;
     private void getAndDisplayCurrentLocation() {
-        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
-            // TODO: Consider calling
-            //    ActivityCompat#requestPermissions
-            // here to request the missing permissions, and then overriding
-            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
-            //                                          int[] grantResults)
-            // to handle the case where the user grants the permission. See the documentation
-            // for ActivityCompat#requestPermissions for more details.
+        boolean hasNoAccessFineLocation = ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED;
+        boolean hasNoAccessCourseLocation = ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED;
+        if (hasNoAccessFineLocation && hasNoAccessCourseLocation) {
             return;
         }
         fusedLocationClient.getLastLocation()
                 .addOnSuccessListener(requireActivity(), location -> {
+                    btnAdvanceOrderCheckDistance.setEnabled(true);
                     if (location != null) {
                         double latitude = location.getLatitude();
                         double longitude = location.getLongitude();
@@ -89,14 +91,14 @@ public class AdvanceOrderFragment extends Fragment {
 
                         float distance = from.distanceTo(to);
 
-                        Log.e("LocationFragment111", String.valueOf(distance) + "m");
-                        // Handle the latitude and longitude as needed
-                        // For example, you can display them in the UI or use them in further processing
-
-                        // Example: Displaying latitude and longitude in Logcat
-                        // Make sure you have 'import android.util.Log;' at the top of your file
-
-                        Log.e("LocationFragment", "Latitude: " + latitude + ", Longitude: " + longitude);
+                        if(distance <= 200){
+                            startListen();
+                            llAdvanceOrderOutOfRange.setVisibility(View.GONE);
+                        }
+                        else{
+                            tvAdvanceOrderDistanceToCofTea.setText(String.format("%.2f",distance) +"m");
+                            llAdvanceOrderOutOfRange.setVisibility(View.VISIBLE);
+                        }
                     }
                 });
     }
@@ -166,6 +168,15 @@ public class AdvanceOrderFragment extends Fragment {
 
         ibCartButton = binding.ibCartButton;
         tvOrderItemCount = binding.tvOrderItemCount;
+
+        llAdvanceOrderOutOfRange = binding.llAdvanceOrderOutOfRange;
+        tvAdvanceOrderDistanceToCofTea = binding.tvAdvanceOrderDistanceToCofTea;
+        btnAdvanceOrderCheckDistance = binding.btnAdvanceOrderCheckDistance;
+
+        btnAdvanceOrderCheckDistance.setOnClickListener(view -> {
+            view.setEnabled(false);
+            getAndDisplayCurrentLocation();
+        });
 
         RecyclerView rvCustomerProductList = binding.rvAdvanceOrderList;
         rvCustomerProductList.setHasFixedSize(true);
