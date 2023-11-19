@@ -1,7 +1,7 @@
 package com.example.coftea.Cashier.order;
 
 public class ModelOrderProduct {
-    private String price;
+    private Double price;
     private String name;
     private String id;
     private String imageUrl;
@@ -10,18 +10,18 @@ public class ModelOrderProduct {
         // Default constructor required for DataSnapshot.getValue(Product.class)
     }
 
-    public ModelOrderProduct(String price, String name, String id, String imageUrl) {
+    public ModelOrderProduct(Double price, String name, String id, String imageUrl) {
         this.price = price;
         this.name = name;
         this.id = id;
         this.imageUrl = imageUrl;
     }
 
-    public String getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 

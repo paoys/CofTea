@@ -1,30 +1,37 @@
 package com.example.coftea.Cashier.order;
 
+import com.example.coftea.data.OrderStatus;
+
+import java.io.Serializable;
 import java.util.Date;
 import java.util.List;
 
-public class ReceiptEntry {
-    private List<Cart> products;
+public class ReceiptEntry implements Serializable {
+    private List<CartItem> cartItems;
     private double totalPayment;
     private String customerName;
     private String customerPhone;
     private Date date;
 
+    public Long getCreatedAt() {
+        return createdAt;
+    }
 
-    public ReceiptEntry(List<Cart> products, double totalPayment, String customerName, String customerPhone, Date date) {
-        this.products = products;
+    private Long createdAt;
+    private OrderStatus status;
+
+    public ReceiptEntry(List<CartItem> cartItems, double totalPayment, String customerName, String customerPhone, Date date, OrderStatus status) {
+        this.cartItems = cartItems;
         this.totalPayment = totalPayment;
         this.customerName = customerName;
         this.customerPhone = customerPhone;
         this.date = date;
+        this.createdAt = date.getTime();
+        this.status = status;
     }
 
-    public List<Cart> getProducts() {
-        return products;
-    }
-
-    public void setProducts(List<Cart> products) {
-        this.products = products;
+    public List<CartItem> getCartItems() {
+        return cartItems;
     }
 
     public double getTotalPayment() {

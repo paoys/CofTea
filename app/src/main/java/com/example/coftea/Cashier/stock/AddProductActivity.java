@@ -128,7 +128,7 @@ public class AddProductActivity extends AppCompatActivity {
                 // Proceed with the insertion using the new ID
                 final String autoId = String.valueOf(idCounter);
                 final String[] imageUrl = {""};
-
+                Double _price = Double.parseDouble(price);
                 // Upload the image if an image URI is available
                 if (imageUri != null) {
                     // Upload the image to Firebase Storage
@@ -140,7 +140,7 @@ public class AddProductActivity extends AppCompatActivity {
                                 if (uriTask.isSuccessful()) {
                                     imageUrl[0] = uriTask.getResult().toString();
                                 }
-                                insertProduct(name, price, autoId, imageUrl[0]);
+                                insertProduct(name, _price, autoId, imageUrl[0]);
                             });
                         } else {
                             // Handle the error during image upload
@@ -148,7 +148,7 @@ public class AddProductActivity extends AppCompatActivity {
                         }
                     });
                 } else {
-                    insertProduct(name, price, autoId, imageUrl[0]);
+                    insertProduct(name, _price, autoId, imageUrl[0]);
                 }
             }
 
@@ -161,7 +161,7 @@ public class AddProductActivity extends AppCompatActivity {
 
 
 
-    private void insertProduct(String name, String price, String id, String imageUrl) {
+    private void insertProduct(String name, Double price, String id, String imageUrl) {
         // Create a Product object with the image URL
         ModelOrderProduct product = new ModelOrderProduct(price, name, id, imageUrl);
 

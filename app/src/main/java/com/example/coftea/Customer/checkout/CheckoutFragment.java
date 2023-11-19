@@ -175,8 +175,11 @@ public class CheckoutFragment extends Fragment implements PaymongoCheckoutListen
     public void onPaymongoCheckoutSessionComplete(PaymongoCheckoutResponse result) {
         Log.e("SessionResponse", String.valueOf(result.getPaymentID()));
         if(!result.isCheckoutSessionPaid()){
-            btnPayWithGCash.setEnabled(false);
+            btnPayWithGCash.setEnabled(true);
             return;
+        }
+        else {
+            btnPayWithGCash.setEnabled(false);
         }
         tvCheckoutDescription.setText(R.string.customer_message_payment_received);
         try {

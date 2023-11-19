@@ -11,6 +11,8 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.util.Log;
+import android.widget.Toast;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -45,7 +47,7 @@ public class ManageProductAdapter extends RecyclerView.Adapter<ManageProductAdap
         ModelManageProduct product = productList.get(position);
         holder.productNameTextView.setText(product.getName());
         holder.productIdTextView.setText(product.getId());
-        holder.productPriceEditText.setText(product.getPrice());
+        holder.productPriceEditText.setText(String.valueOf(product.getPrice()));
 
         // Load and display the image using Picasso
         if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
@@ -79,27 +81,21 @@ public class ManageProductAdapter extends RecyclerView.Adapter<ManageProductAdap
             editBTN = itemView.findViewById(R.id.BTNEdit);
             deleteBTN = itemView.findViewById(R.id.BTNDelete);
 
-            editBTN.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // Handle the edit button click here
-                    int position = getAdapterPosition();
-                    if (position != RecyclerView.NO_POSITION) {
-                        // Get the selected item from the list
-                        ModelManageProduct product = productList.get(position);
+            editBTN.setOnClickListener(view -> {
+                // Handle the edit button click here
+                int position = getAdapterPosition();
+                if (position != RecyclerView.NO_POSITION) {
+                    // Get the selected item from the list
+                    ModelManageProduct product = productList.get(position);
 
-                        // Create a dialog for editing the product
-                        showEditProductDialog(itemView.getContext(), product);
-                    }
+                    // Create a dialog for editing the product
+                    showEditProductDialog(itemView.getContext(), product);
                 }
             });
 
-            deleteBTN.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    // Show a confirmation dialog
-                    showDeleteConfirmationDialog(getAdapterPosition());
-                }
+            deleteBTN.setOnClickListener(view -> {
+                // Show a confirmation dialog
+                showDeleteConfirmationDialog(getAdapterPosition());
             });
         }
 
@@ -107,20 +103,14 @@ public class ManageProductAdapter extends RecyclerView.Adapter<ManageProductAdap
         private void showDeleteConfirmationDialog(final int position) {
             AlertDialog.Builder builder = new AlertDialog.Builder(itemView.getContext());
             builder.setMessage("Are you sure you want to delete this item?");
-            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // User confirmed the deletion, call the delete method
-                    ModelManageProduct product = productList.get(position);
-                    deleteProductFromDatabase(product.getId());
-                }
+            builder.setPositiveButton("Yes", (dialog, which) -> {
+                // User confirmed the deletion, call the delete method
+                ModelManageProduct product = productList.get(position);
+                deleteProductFromDatabase(product.getId());
             });
-            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-                @Override
-                public void onClick(DialogInterface dialog, int which) {
-                    // User canceled the deletion, do nothing
-                    dialog.dismiss();
-                }
+            builder.setNegativeButton("No", (dialog, which) -> {
+                // User canceled the deletion, do nothing
+                dialog.dismiss();
             });
 
             AlertDialog dialog = builder.create();
@@ -128,7 +118,7 @@ public class ManageProductAdapter extends RecyclerView.Adapter<ManageProductAdap
         }
 
         // Edit a product in the database
-        private static void editProductInDatabase(String productId, String newName, String newPrice) {
+        private static void editProductInDatabase(String productId, String newName, Double newPrice) {
             FirebaseDatabase database = FirebaseDatabase.getInstance();
             DatabaseReference productsRef = database.getReference("products");
 
@@ -138,19 +128,13 @@ public class ManageProductAdapter extends RecyclerView.Adapter<ManageProductAdap
             // Update the product details
             productToUpdateRef.child("name").setValue(newName);
             productToUpdateRef.child("price").setValue(newPrice)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            // Product details updated successfully
-                            Log.d("Database", "Product details updated successfully");
-                        }
+                    .addOnSuccessListener(aVoid -> {
+                        // Product details updated successfully
+                        Log.d("Database", "Product details updated successfully");
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(Exception e) {
-                            // Handle the failure to update product details
-                            Log.e("Database", "Failed to update product details: " + e.getMessage());
-                        }
+                    .addOnFailureListener(e -> {
+                        // Handle the failure to update product details
+                        Log.e("Database", "Failed to update product details: " + e.getMessage());
                     });
         }
 
@@ -164,19 +148,13 @@ public class ManageProductAdapter extends RecyclerView.Adapter<ManageProductAdap
 
             // Remove the product from the database
             productToDeleteRef.removeValue()
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                            // Product deleted successfully
-                            Log.d("Database", "Product deleted successfully");
-                        }
+                    .addOnSuccessListener(aVoid -> {
+                        // Product deleted successfully
+                        Log.d("Database", "Product deleted successfully");
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(Exception e) {
-                            // Handle the failure to delete the product
-                            Log.e("Database", "Failed to delete product: " + e.getMessage());
-                        }
+                    .addOnFailureListener(e -> {
+                        // Handle the failure to delete the product
+                        Log.e("Database", "Failed to delete product: " + e.getMessage());
                     });
         }
 
@@ -185,33 +163,29 @@ public class ManageProductAdapter extends RecyclerView.Adapter<ManageProductAdap
             AlertDialog.Builder builder = new AlertDialog.Builder(context);
             View dialogView = LayoutInflater.from(context).inflate(R.layout.edit_product_dialog, null);
 
-
             // Initialize the dialog views
             final EditText productNameEditText = dialogView.findViewById(R.id.editProductNameEditText);
             final EditText productPriceEditText = dialogView.findViewById(R.id.editProductPriceEditText);
 
             // Set the existing product name and price in the dialog
             productNameEditText.setText(product.getName());
-            productPriceEditText.setText(product.getPrice());
+            productPriceEditText.setText(String.valueOf(product.getPrice()));
 
             builder.setView(dialogView)
                     .setTitle("Edit Product")
-                    .setPositiveButton("Save", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
+                    .setPositiveButton("Save", (dialog, which) -> {
+                        try {
                             String newProductName = productNameEditText.getText().toString();
-                            String newProductPrice = productPriceEditText.getText().toString();
-
-                            // Call the edit method with the obtained values
+                            String _newProductPrice = productPriceEditText.getText().toString();
+                            Double newProductPrice = Double.parseDouble(_newProductPrice);
                             editProductInDatabase(product.getId(), newProductName, newProductPrice);
                         }
-                    })
-                    .setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.dismiss();
+                        catch (Exception e){
+                            e.printStackTrace();
                         }
-                    });
+                        // Call the edit method with the obtained values
+                    })
+                    .setNegativeButton("Cancel", (dialog, which) -> dialog.dismiss());
 
             AlertDialog dialog = builder.create();
             dialog.show();

@@ -2,7 +2,7 @@ package com.example.coftea.Cashier.order;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.view.View;
+import android.view.LayoutInflater;
 import android.widget.Button;
 
 import androidx.annotation.NonNull;
@@ -11,6 +11,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coftea.R;
+import com.example.coftea.databinding.ActivityManageProductListBinding;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -20,21 +21,23 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
+
 public class ProductListActivity extends AppCompatActivity {
     private RecyclerView recyclerView;
     private OrderProductAdapter productAdapters;
     private List<ModelOrderProduct> productList;
     private DatabaseReference productsRef;
-    Button cartBTN;
+    Button btnViewCart;
 
-
+    private ActivityManageProductListBinding binding;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_manage_product_list);
+        binding = ActivityManageProductListBinding.inflate(LayoutInflater.from(this));
+        setContentView(binding.getRoot());
 
-        recyclerView = findViewById(R.id.recyclerView);
+        recyclerView = binding.rvCashierProductList;
         recyclerView.setHasFixedSize(true);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -49,13 +52,8 @@ public class ProductListActivity extends AppCompatActivity {
         // Retrieve and display products
         retrieveProducts();
 
-        cartBTN = findViewById(R.id.cartBTN);
-        cartBTN.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                startActivity(new Intent(getApplicationContext(), ManageCartActivitiyList.class));
-            }
-        });
+        btnViewCart = binding.btnViewCart;
+        btnViewCart.setOnClickListener(v -> startActivity(new Intent(getApplicationContext(), ManageCartActivitiyList.class)));
 
     }
 
