@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coftea.R;
+import com.example.coftea.data.OrderStatus;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.database.DataSnapshot;
@@ -107,7 +108,7 @@ public class ManageCartActivitiyList extends AppCompatActivity {
                 message.append("Price: ").append(product.getPrice()).append("\n");
                 message.append("Quantity: ").append(product.getQuantity()).append("\n");
 
-                double itemPrice = Double.parseDouble(product.getPrice());
+                double itemPrice = Double.parseDouble(product.getPrice().toString());
                 int itemQuantity = product.getQuantity();
                 double itemTotal = itemPrice * itemQuantity;
                 totalPrice += itemTotal; // Accumulate the total price
@@ -166,7 +167,7 @@ public class ManageCartActivitiyList extends AppCompatActivity {
             Date date = new Date();
 
             for (CartItem product : cartItemList) {
-                double itemPrice = Double.parseDouble(product.getPrice());
+                double itemPrice = Double.parseDouble(product.getPrice().toString());
                 int itemQuantity = product.getQuantity();
                 double itemTotal = itemPrice * itemQuantity;
                 totalPayment += itemTotal;
@@ -178,7 +179,7 @@ public class ManageCartActivitiyList extends AppCompatActivity {
                 // Show an error message if fields are empty
                 showErrorMessage("Name and phone number are required.");
             } else {
-                ReceiptEntry receiptEntry = new ReceiptEntry(cartItemList, totalPayment, name, phone, date);
+                ReceiptEntry receiptEntry = new ReceiptEntry(cartItemList, totalPayment, name, phone, date, OrderStatus.PAID);
                 QueueEntry queueEntry = new QueueEntry(totalPayment, name, phone);
                 saveTransaction(receiptEntry, queueEntry);
 //                    addToQueue(name, phone, totalPayment);
@@ -193,44 +194,44 @@ public class ManageCartActivitiyList extends AppCompatActivity {
 
     private int queueItemNumber = 0; // Initialize the queue item number
 
-    private void addToQueue(String name, String phone, double totalPayment) {
-        // Initialize Firebase Database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference queueRef = database.getReference("queue");
+//    private void addToQueue(String name, String phone, double totalPayment) {
+//        // Initialize Firebase Database
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference queueRef = database.getReference("queue");
+//
+//        // Increment the queue item number
+//        queueItemNumber++;
+//
+//        // Create a receipt entry
+//        QueueEntry queueEntry = new QueueEntry(totalPayment, name, phone);
+//
+//        // Set the receipt entry in the "queue" database using the same key as the queueItemNumber
+//        queueRef.child(String.valueOf(queueItemNumber)).setValue(queueEntry)
+//                .addOnSuccessListener(aVoid -> removeItemsFromCart())
+//                .addOnFailureListener(e -> {
+//                    // Handle the failure to save the receipt
+//                });
+//    }
 
-        // Increment the queue item number
-        queueItemNumber++;
 
-        // Create a receipt entry
-        QueueEntry queueEntry = new QueueEntry(totalPayment, name, phone);
-
-        // Set the receipt entry in the "queue" database using the same key as the queueItemNumber
-        queueRef.child(String.valueOf(queueItemNumber)).setValue(queueEntry)
-                .addOnSuccessListener(aVoid -> removeItemsFromCart())
-                .addOnFailureListener(e -> {
-                    // Handle the failure to save the receipt
-                });
-    }
-
-
-    private void saveReceipt(List<CartItem> products, String name, String phone, double totalPayment, Date date) {
-        // Initialize Firebase Database
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference receiptsRef = database.getReference("receipts");
-
-        // Create a receipt entry
-        ReceiptEntry receiptEntry = new ReceiptEntry(products, totalPayment, name, phone, date);
-
-        // Set the receipt entry in the "receipts" database using the unique key
-        String receiptItemId = receiptsRef.push().getKey();
-        receiptsRef.child(receiptItemId).setValue(receiptEntry)
-                .addOnSuccessListener(aVoid -> {
-                    // Receipt saved successfully
-                })
-                .addOnFailureListener(e -> {
-                    // Handle the failure to save the receipt
-                });
-    }
+//    private void saveReceipt(List<CartItem> products, String name, String phone, double totalPayment, Date date) {
+//        // Initialize Firebase Database
+//        FirebaseDatabase database = FirebaseDatabase.getInstance();
+//        DatabaseReference receiptsRef = database.getReference("receipts");
+//
+//        // Create a receipt entry
+//        ReceiptEntry receiptEntry = new ReceiptEntry(products, totalPayment, name, phone, date);
+//
+//        // Set the receipt entry in the "receipts" database using the unique key
+//        String receiptItemId = receiptsRef.push().getKey();
+//        receiptsRef.child(receiptItemId).setValue(receiptEntry)
+//                .addOnSuccessListener(aVoid -> {
+//                    // Receipt saved successfully
+//                })
+//                .addOnFailureListener(e -> {
+//                    // Handle the failure to save the receipt
+//                });
+//    }
 
     private void removeItemsFromCart() {
         // Remove items from the "cart" reference
@@ -262,15 +263,12 @@ public class ManageCartActivitiyList extends AppCompatActivity {
         builder.create().show();
     }
 
-
-
     private void saveTransaction(ReceiptEntry receiptEntry, QueueEntry queueEntry){
         DatabaseReference cashierDBRef = database.getReference("cashier");
 
         DatabaseReference receiptsDBRef = cashierDBRef.child("receipts");
         DatabaseReference queueDBRef = cashierDBRef.child("queue");
         DatabaseReference cartDBRef = cashierDBRef.child("cart");
-
 
         String receiptID = receiptsDBRef.push().getKey();
         String queueID = queueDBRef.push().getKey();
@@ -281,24 +279,5 @@ public class ManageCartActivitiyList extends AppCompatActivity {
         queueDBRef.child(queueID).setValue(queueEntry);
         cartDBRef.setValue(null);
         Toast.makeText(getApplicationContext(), "Transaction Saved!", Toast.LENGTH_SHORT).show();
-
-//        cashierDBRef.runTransaction(new Transaction.Handler() {
-//            @NonNull
-//            @Override
-//            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
-//
-//                return Transaction.success(currentData);
-//            }
-//
-//            @Override
-//            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
-//                Log.d("TransactionResult", "Committed: " + committed + ", Error: " + error);
-//                if (committed && error == null) {
-//                    Toast.makeText(getApplicationContext(), "Transaction Saved!", Toast.LENGTH_SHORT).show();
-//                } else {
-//                    Toast.makeText(getApplicationContext(), "OOPS! something went, Please try again.", Toast.LENGTH_SHORT).show();
-//                }
-//            }
-//        });
     }
 }

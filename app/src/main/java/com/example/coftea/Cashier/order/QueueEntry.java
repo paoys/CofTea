@@ -21,7 +21,7 @@ public class QueueEntry {
     }
 
     public QueueEntry(double totalPayment, String customerName, String customerPhone) {
-        this.products = new ArrayList<>(); // Initialize the products list
+        this.products = new ArrayList<>();
         this.totalPayment = totalPayment;
         this.customerName = customerName;
         this.customerPhone = customerPhone;

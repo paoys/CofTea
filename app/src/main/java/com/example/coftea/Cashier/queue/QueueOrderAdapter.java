@@ -1,11 +1,9 @@
 package com.example.coftea.Cashier.queue;
 
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -15,9 +13,8 @@ import com.example.coftea.R;
 import com.example.coftea.utilities.PHPCurrencyFormatter;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class QueueOrderAdapter extends RecyclerView.Adapter<QueueOrderAdapter.QueueOrderViewHolder> {
+public class QueueOrderAdapter extends RecyclerView.Adapter<QueueOrderAdapter.QueueOrderItemViewHolder> {
     private ArrayList<QueueOrder> queueOrderList;
     private QueueViewModel queueViewModel;
 
@@ -32,12 +29,12 @@ public class QueueOrderAdapter extends RecyclerView.Adapter<QueueOrderAdapter.Qu
     }
 
     @NonNull
-    public QueueOrderAdapter.QueueOrderViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public QueueOrderItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.queue_order_list_item, parent, false);
-        return new QueueOrderAdapter.QueueOrderViewHolder(view);
+        return new QueueOrderItemViewHolder(view);
     }
 
-    public void onBindViewHolder(@NonNull QueueOrderAdapter.QueueOrderViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull QueueOrderItemViewHolder holder, int position) {
 
         PHPCurrencyFormatter phpCurrencyFormatter = PHPCurrencyFormatter.getInstance();
         QueueOrder queueOrder = queueOrderList.get(position);
@@ -57,14 +54,11 @@ public class QueueOrderAdapter extends RecyclerView.Adapter<QueueOrderAdapter.Qu
         return queueOrderList.size();
     }
 
-    static class QueueOrderViewHolder extends RecyclerView.ViewHolder {
-        TextView tvCustomerName;
-        TextView tvCustomerPhone;
-        TextView tvQueueOrderAmount;
-        Button btnQueueOrderDone;
-        Button btnQueueOrderCancel;
+    static class QueueOrderItemViewHolder extends RecyclerView.ViewHolder {
+        TextView tvCustomerName, tvCustomerPhone, tvQueueOrderAmount;
+        Button btnQueueOrderDone, btnQueueOrderCancel;
 
-        QueueOrderViewHolder(View itemView) {
+        QueueOrderItemViewHolder(View itemView) {
             super(itemView);
             tvCustomerName = itemView.findViewById(R.id.tvQueueOrderCustomerName);
             tvCustomerPhone = itemView.findViewById(R.id.tvQueueOrderCustomerPhone);

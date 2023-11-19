@@ -8,11 +8,15 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
+import com.example.coftea.Cashier.order.CartItem;
 import com.example.coftea.data.Product;
 import com.example.coftea.repository.RealtimeDB;
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
+import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 
@@ -24,12 +28,12 @@ public class QueueViewModel extends ViewModel {
     public LiveData<QueueOrder> queueOrderToDone;
     private MutableLiveData<QueueOrder> _queueOrderToCancel = new MutableLiveData<>();
     public LiveData<QueueOrder> queueOrderToCancel;
-
-    private final RealtimeDB<Product> realtimeDB;
+    private final RealtimeDB<QueueOrder> realtimeDB;
     public QueueViewModel() {
         queueOrderList = _queueOrderList;
         queueOrderToDone = _queueOrderToDone;
         queueOrderToCancel = _queueOrderToCancel;
+        cartItemList = _cartItemList;
         realtimeDB = new RealtimeDB<>("cashier/queue");
         listenUpdate();
     }
@@ -104,16 +108,37 @@ public class QueueViewModel extends ViewModel {
     }
 
     public void setQueueOrderToDone(QueueOrder queueOrder){
-        _queueOrderToDone.setValue(queueOrder);
+        getQueueOrderItemList(queueOrder.getReceiptID());
+        _queueOrderToDone.postValue(queueOrder);
     }
-    public void clearActiveQueueOrder(){
+    public void clearQueueOrderToDone(){
+        _cartItemList.setValue(null);
         _queueOrderToDone.setValue(null);
     }
     public void setQueueOrderToCancel(QueueOrder queueOrder){
-        _queueOrderToCancel.setValue(queueOrder);
+        _queueOrderToCancel.postValue(queueOrder);
     }
     public void clearQueueOrderToCancel(){
+        _cartItemList.setValue(null);
         _queueOrderToCancel.setValue(null);
+    }
+
+    private MutableLiveData<ArrayList<CartItem>> _cartItemList = new MutableLiveData<>(new ArrayList<>());
+    public LiveData<ArrayList<CartItem>> cartItemList ;
+    public void getQueueOrderItemList(String receiptID){
+        RealtimeDB realtimeDB = new RealtimeDB<>("cashier/receipts/"+receiptID);
+
+        DatabaseReference cartItemsDBRef = realtimeDB.getDatabaseReference().child("cartItems");
+        ArrayList<CartItem> cartItems = new ArrayList<>();
+        cartItemsDBRef.get().addOnCompleteListener(task -> {
+            if(task.isComplete() && task.isComplete()){
+                for(DataSnapshot dataSnapshot : task.getResult().getChildren()){
+                    CartItem item = dataSnapshot.getValue(CartItem.class);
+                    cartItems.add(item);
+                }
+                _cartItemList.setValue(cartItems);
+            }
+        });
     }
 }
 

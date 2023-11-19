@@ -1,11 +1,16 @@
 package com.example.coftea.Cashier.order;
 
-import java.io.Serializable;
 
-public class CartItem implements Serializable {
+public class CartItem {
     private String id;
     private String name;
-    private String price;
+    private Double price;
+
+    public Double getTotalPrice() {
+        return totalPrice;
+    }
+
+    private Double totalPrice;
     private int quantity;
     private String imageUrl;
 
@@ -13,11 +18,12 @@ public class CartItem implements Serializable {
         // Default constructor required for Firebase
     }
 
-    public CartItem(String id, String name, String price, int quantity) {
+    public CartItem(String id, String name, Double price, int quantity, Double totalPrice) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
+        this.totalPrice = totalPrice;
     }
 
     public String getId() {
@@ -36,11 +42,11 @@ public class CartItem implements Serializable {
         this.name = name;
     }
 
-    public String getPrice() {
+    public Double getPrice() {
         return price;
     }
 
-    public void setPrice(String price) {
+    public void setPrice(Double price) {
         this.price = price;
     }
 
@@ -50,6 +56,10 @@ public class CartItem implements Serializable {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
     }
 
     public String getImageUrl() {

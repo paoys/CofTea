@@ -49,7 +49,7 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
         ModelOrderProduct product = productList.get(position);
         holder.productNameTextView.setText(product.getName());
         holder.productIdTextView.setText(product.getId());
-        holder.productPriceEditText.setText(product.getPrice());
+        holder.productPriceEditText.setText(String.valueOf(product.getPrice()));
 
         // Load and display the image using Picasso
         if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
@@ -92,11 +92,10 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
                         // Get the quantity entered by the user
                         int quantity = Integer.parseInt(productQuantity.getText().toString());
 
-                        // Get the selected price from the Spinner
-                        String selectedPrice = priceSpinner.getSelectedItem().toString();
+                        Double totalPrice = product.getPrice() * quantity;
 
                         // Create a Cart object with the selected product's details and quantity
-                        CartItem cartItem = new CartItem(product.getId(), product.getName(), selectedPrice, quantity);
+                        CartItem cartItem = new CartItem(product.getId(), product.getName(), product.getPrice(), quantity, totalPrice);
                         cartItem.setImageUrl(product.getImageUrl()); // Set the image URL
 
                         // Save the cart item to the "cart" database with a unique key
@@ -151,17 +150,20 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
                         // Update the quantity of the existing item in the cart
                         if (existingCartItemItem != null) {
                             int updatedQuantity = existingCartItemItem.getQuantity() + cartItem.getQuantity();
+                            Double totalPrice = updatedQuantity * existingCartItemItem.getPrice();
                             cartItem.setQuantity(updatedQuantity);
+                            cartItem.setTotalPrice(totalPrice);
                         }
 
                         // Set the image URL of the updated cart item
                         cartItem.setImageUrl(cartItem.getImageUrl());
-
+                        Log.e("UPDATE_CART_ITEM", String.valueOf(cartItem.getTotalPrice()));
                         // Update the existing cart item with the new quantity
                         updateCartItemInCartDatabase(existingKey, cartItem);
                         return;
                     }
                 } else {
+                    Log.e("ADD_CART_ITEM", String.valueOf(cartItem.getTotalPrice()));
                     // Item with this product ID does not exist in the cart, add it as a new item
                     addCartItemToCartDatabase(cartItem);
                 }

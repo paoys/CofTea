@@ -45,8 +45,8 @@ public class ManageCartAdapter extends RecyclerView.Adapter<ManageCartAdapter.Pr
         CartItem product = productList.get(position);
         holder.productNameTextView.setText(product.getName());
         holder.productIdTextView.setText(product.getId());
-        holder.productPriceEditText.setText(product.getPrice());
-        holder.productQuantityTextView.setText("" + product.getQuantity());
+        holder.productPriceEditText.setText(String.valueOf(product.getPrice()));
+        holder.productQuantityTextView.setText(String.valueOf(product.getQuantity()));
 
         // Load and display the image using Picasso
         if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
@@ -109,7 +109,7 @@ public class ManageCartAdapter extends RecyclerView.Adapter<ManageCartAdapter.Pr
         final EditText editID = viewInflated.findViewById(R.id.editIDEdittext);
 
         editQuantity.setText(String.valueOf(product.getQuantity()));
-        editPrice.setText(product.getPrice());
+        editPrice.setText(String.valueOf(product.getPrice()));
         editID.setText(product.getId());
         editName.setText(product.getName());
 
@@ -123,9 +123,12 @@ public class ManageCartAdapter extends RecyclerView.Adapter<ManageCartAdapter.Pr
                 String newID = editID.getText().toString();
 
                 // Update the product object with the updated values
+                Double _newPrice = Double.parseDouble(newPrice);
+                int quantity = Integer.parseInt(newQuantity);
                 product.setName(newName);
-                product.setPrice(newPrice);
-                product.setQuantity(Integer.parseInt(newQuantity));
+                product.setPrice(_newPrice);
+                product.setQuantity(quantity);
+                product.setTotalPrice(quantity * _newPrice);
                 product.setId(newID);
 
                 // Update the item in the database
