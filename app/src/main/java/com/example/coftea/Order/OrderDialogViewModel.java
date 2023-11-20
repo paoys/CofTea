@@ -4,52 +4,58 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.coftea.OrderItemList.OrderItemResult;
-import com.example.coftea.data.OrderItem;
+import com.example.coftea.Cashier.order.CartItem;
+import com.example.coftea.OrderItemList.CartItemResult;
 import com.example.coftea.data.Product;
 import com.example.coftea.repository.RealtimeDB;
 
-import java.util.Date;
-
 public class OrderDialogViewModel extends ViewModel {
-    private MutableLiveData<OrderItem> _orderItem = new MutableLiveData<>();
-    public LiveData<OrderItem> orderItem;
+    private MutableLiveData<CartItem> _orderItem = new MutableLiveData<>();
+    public LiveData<CartItem> orderItem;
 
-    private MutableLiveData<OrderItemResult> _orderItemResult = new MutableLiveData<>();
-    public LiveData<OrderItemResult> orderItemResult;
+    private MutableLiveData<CartItemResult> _orderItemResult = new MutableLiveData<>();
+    public LiveData<CartItemResult> orderItemResult;
 
     public OrderDialogViewModel(){
         orderItem = _orderItem;
         orderItemResult = _orderItemResult;
     }
     public void setOrderItem(Product product) {
-        String tempID = String.valueOf(new Date().getTime());
-        OrderItem orderItem = new OrderItem(tempID, product,1);
-        _orderItem.setValue(orderItem);
+        CartItem cartItem = new CartItem(product.getId(), product.getId(), product.getName(), product.getPrice(), 1, product.getPrice());
+        cartItem.setImageUrl(product.getImageUrl());
+        _orderItem.setValue(cartItem);
     }
 
     public void setOrderItem(Product product, Integer quantity) {
-        String tempID = String.valueOf(new Date().getTime());
-        OrderItem orderItem = new OrderItem(tempID, product,quantity);
-        _orderItem.setValue(orderItem);
+        CartItem cartItem = new CartItem(product.getId(), product.getId(), product.getName(), product.getPrice(), quantity, product.getPrice());
+        cartItem.setImageUrl(product.getImageUrl());
+        _orderItem.setValue(cartItem);
     }
 
-    public void setOrderItem(OrderItem orderItem) {
-        _orderItem.setValue(orderItem);
+    public void setOrderItem(CartItem cartItem) {
+        _orderItem.setValue(cartItem);
     }
 
     public void addOrderItemQuantity() {
-        OrderItem item = _orderItem.getValue();
+        CartItem item = _orderItem.getValue();
         if(item == null) return;
-        item.addQuantity();
+        if(item.getQuantity() >= 99) return;
+        int newQty = item.getQuantity()+1;
+        Double totalPrice = item.getPrice() * newQty;
+        item.setQuantity(newQty);
+        item.setTotalPrice(totalPrice);
         _orderItem.postValue(item);
     }
     public boolean minusOrderItemQuantity() {
-        OrderItem item = _orderItem.getValue();
+        CartItem item = _orderItem.getValue();
         if(item == null) return false;
-        boolean isValid = item.minusQuantity();
+        if(item.getQuantity() <= 1) return false;
+        int newQty = item.getQuantity()-1;
+        Double totalPrice = item.getPrice() * newQty;
+        item.setQuantity(newQty);
+        item.setTotalPrice(totalPrice);
         _orderItem.postValue(item);
-        return isValid;
+        return true;
     }
     public void clearOrderItem() {
         _orderItem.postValue(null);
@@ -57,9 +63,9 @@ public class OrderDialogViewModel extends ViewModel {
     }
 
     public void setOrderItemLoading(){
-        _orderItemResult.setValue(new OrderItemResult());
+        _orderItemResult.setValue(new CartItemResult());
     }
-    public void postOrderItemResult(OrderItemResult result){
+    public void postOrderItemResult(CartItemResult result){
         _orderItemResult.postValue(result);
     }
 

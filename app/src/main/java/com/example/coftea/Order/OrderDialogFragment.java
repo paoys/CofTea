@@ -15,10 +15,9 @@ import android.widget.Toast;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
 
-import com.example.coftea.OrderItemList.OrderItemResult;
+import com.example.coftea.Cashier.order.CartItem;
+import com.example.coftea.OrderItemList.CartItemResult;
 import com.example.coftea.R;
-import com.example.coftea.data.OrderItem;
-import com.example.coftea.data.Product;
 import com.example.coftea.databinding.FragmentOrderItemBinding;
 import com.example.coftea.utilities.InputFieldFilter;
 import com.example.coftea.utilities.UserProvider;
@@ -35,16 +34,11 @@ public class OrderDialogFragment extends DialogFragment {
     UserProvider userProvider = UserProvider.getInstance();
     FragmentOrderItemBinding binding;
     PHPCurrencyFormatter phpCurrencyFormatter;
-    Button btnClose;
-    Button btnAddOrder;
-    TextView tvProductName;
-    TextView tvProductPrice;
-    TextView tvProductTotalPrice;
+    Button btnClose, btnAddOrder;
+    TextView tvProductName, tvProductPrice, tvProductTotalPrice;
     ImageView ivProductImage;
     EditText etProductQuantity;
-    ImageButton btnAddQuantity;
-    ImageButton btnMinusQuantity;
-
+    ImageButton btnAddQuantity, btnMinusQuantity;
     OrderDatabase orderDatabase;
 
     public OrderDialogFragment(OrderDialogViewModel orderDialogViewModel) {
@@ -108,41 +102,40 @@ public class OrderDialogFragment extends DialogFragment {
         this.orderDialogViewModel.orderItem.observe(getViewLifecycleOwner(), this::updateOrderItem);
         this.orderDialogViewModel.orderItemResult.observe(getViewLifecycleOwner(), this::onAddOrderItemResult);
     }
-    private void updateOrderItem(OrderItem orderItem){
-        if(orderItem == null) return;
-        Product product = orderItem.getProduct();
-        String price = phpCurrencyFormatter.formatAsPHP(product.getPrice());
-        String totalPrice = phpCurrencyFormatter.formatAsPHP(orderItem.getTotalPrice());
-        tvProductName.setText(product.getName());
+    private void updateOrderItem(CartItem cartItem){
+        if(cartItem == null) return;
+        String price = phpCurrencyFormatter.formatAsPHP(cartItem.getPrice());
+        String totalPrice = phpCurrencyFormatter.formatAsPHP(cartItem.getTotalPrice());
+        tvProductName.setText(cartItem.getName());
         tvProductPrice.setText(price);
         tvProductTotalPrice.setText(totalPrice);
-        etProductQuantity.setText(String.valueOf(orderItem.getQuantity()));
-
-        if (product.getImageUrl() != null && !product.getImageUrl().isEmpty()) {
-            Picasso.get().load(product.getImageUrl()).placeholder(R.drawable.placeholder).into(ivProductImage);
+        etProductQuantity.setText(String.valueOf(cartItem.getQuantity()));
+        if ( cartItem.getImageUrl() != null && !cartItem.getImageUrl().isEmpty()) {
+            Picasso.get().load( cartItem.getImageUrl()).placeholder(R.drawable.placeholder).into(ivProductImage);
         }
     }
 
     private void onAddOrderItem(){
 
-        OrderItem orderItem = orderDialogViewModel.orderItem.getValue();
-        OrderItemResult result;
+        CartItem cartItem = orderDialogViewModel.orderItem.getValue();
+        CartItemResult result;
+
         try {
-            boolean addOrderItemResult = Tasks.await(orderDatabase.AddOrderItemToCart(orderItem));
+            boolean addOrderItemResult = Tasks.await(orderDatabase.AddOrderItemToCart(cartItem));
 
             if(addOrderItemResult)
-                result = new OrderItemResult(orderItem);
+                result = new CartItemResult(cartItem);
             else
-                result = new OrderItemResult("ADD TO CART FAILED!");
+                result = new CartItemResult("ADD TO CART FAILED!");
 
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-            result = new OrderItemResult("ADD TO CART FAILED!");
+            result = new CartItemResult("ADD TO CART FAILED!");
         }
         orderDialogViewModel.postOrderItemResult(result);
     }
 
-    private void onAddOrderItemResult(OrderItemResult result){
+    private void onAddOrderItemResult(CartItemResult result){
         if(result == null){
             setActionState(true);
             return;

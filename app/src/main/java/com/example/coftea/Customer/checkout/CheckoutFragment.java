@@ -17,9 +17,10 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 
 
+import com.example.coftea.Cashier.order.CartItem;
 import com.example.coftea.Order.OrderDatabase;
 import com.example.coftea.Order.OrderViewModel;
-import com.example.coftea.OrderItemList.OrderItemListViewModel;
+import com.example.coftea.OrderItemList.CartItemListViewModel;
 import com.example.coftea.Paymongo.PaymongoCheckout;
 import com.example.coftea.Paymongo.PaymongoCheckoutListener;
 import com.example.coftea.Paymongo.PaymongoCheckoutSession;
@@ -28,7 +29,6 @@ import com.example.coftea.Paymongo.PaymongoPayload;
 import com.example.coftea.Paymongo.PaymongoCheckoutResponse;
 import com.example.coftea.R;
 import com.example.coftea.data.Order;
-import com.example.coftea.data.OrderItem;
 import com.example.coftea.databinding.FragmentCheckoutBinding;
 import com.example.coftea.utilities.PHPCurrencyFormatter;
 import com.example.coftea.utilities.UserProvider;
@@ -43,7 +43,7 @@ public class CheckoutFragment extends Fragment implements PaymongoCheckoutListen
     private final PHPCurrencyFormatter formatter = PHPCurrencyFormatter.getInstance();
     private OrderViewModel orderViewModel;
     private PaymongoPayload paymongoPayload;
-    OrderItemListViewModel orderItemListViewModel;
+    CartItemListViewModel cartItemListViewModel;
     private FragmentCheckoutBinding binding;
     private TextView tvTotalAmountDue;
     private TextView tvCheckoutStatus;
@@ -71,7 +71,7 @@ public class CheckoutFragment extends Fragment implements PaymongoCheckoutListen
 
         orderDatabase = new OrderDatabase(userMobileNo);
 
-        orderItemListViewModel = new OrderItemListViewModel(userMobileNo);
+        cartItemListViewModel = new CartItemListViewModel(userMobileNo);
         orderViewModel = new OrderViewModel(userMobileNo);
 
         checkoutViewModel = new ViewModelProvider(this).get(CheckoutViewModel.class);
@@ -90,11 +90,11 @@ public class CheckoutFragment extends Fragment implements PaymongoCheckoutListen
         String userName = userProvider.getUser().first;
         String userMobileNo = userProvider.getUser().second;
 
-        orderItemListViewModel.orderItems.observe(getViewLifecycleOwner(), orderItems -> {
+        cartItemListViewModel.cartItems.observe(getViewLifecycleOwner(), orderItems -> {
             if(orderItems == null) return;
 
             Double total = 0.0d;
-            for (OrderItem item : orderItems){
+            for (CartItem item : orderItems){
                 total += item.getTotalPrice();
             }
 

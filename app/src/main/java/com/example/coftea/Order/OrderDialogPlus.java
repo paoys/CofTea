@@ -9,9 +9,8 @@ import android.widget.Toast;
 
 import androidx.lifecycle.LifecycleOwner;
 
-import com.example.coftea.OrderItemList.OrderItemResult;
-import com.example.coftea.data.OrderItem;
-import com.example.coftea.data.Product;
+import com.example.coftea.Cashier.order.CartItem;
+import com.example.coftea.OrderItemList.CartItemResult;
 import com.example.coftea.databinding.CustomerAddToCartBinding;
 import com.example.coftea.utilities.PHPCurrencyFormatter;
 import com.example.coftea.utilities.UserProvider;
@@ -100,50 +99,50 @@ public class OrderDialogPlus {
         orderDialogViewModel.orderItemResult.observe(lifecycleOwner, this::onAddOrderItemResult);
     }
 
-    private void updateView(OrderItem orderItem){
-        if(orderItem == null){
+    private void updateView(CartItem cartItem){
+        if(cartItem == null){
             cleanUp();
             return;
         }
         if(!dialogPlus.isShowing())
             dialogPlus.show();
-        Product product = orderItem.getProduct();
-        tvCustomerProductID.setText(orderItem.getId().toString());
-        tvCustomerProductName.setText(product.getName());
 
-        String productPrice = formatter.formatAsPHP(product.getPrice());
+        tvCustomerProductID.setText(cartItem.getId().toString());
+        tvCustomerProductName.setText(cartItem.getName());
+
+        String productPrice = formatter.formatAsPHP(cartItem.getPrice());
         tvCustomerProductPrice.setText(productPrice);
         tvCustomerProductPriceLabel.setText(productPrice);
 
-        tvCustomerOrderItemQuantity.setText(String.valueOf(orderItem.getQuantity()));
+        tvCustomerOrderItemQuantity.setText(String.valueOf(cartItem.getQuantity()));
 
-        String orderTotalPrice = formatter.formatAsPHP(orderItem.getTotalPrice());
+        String orderTotalPrice = formatter.formatAsPHP(cartItem.getTotalPrice());
         tvCustomerOrderItemTotalPrice.setText(orderTotalPrice);
 
-        tvCustomerOrderItemQuantityLabel.setText(String.valueOf(orderItem.getQuantity()));
+        tvCustomerOrderItemQuantityLabel.setText(String.valueOf(cartItem.getQuantity()));
 
     }
 
     private void onAddOrderItem(){
         setActionState(false);
-        OrderItem orderItem = orderDialogViewModel.orderItem.getValue();
-        OrderItemResult result;
+        CartItem cartItem = orderDialogViewModel.orderItem.getValue();
+        CartItemResult result;
         try {
-            boolean addOrderItemResult = Tasks.await(orderDatabase.AddOrderItemToCart(orderItem));
+            boolean addOrderItemResult = Tasks.await(orderDatabase.AddOrderItemToCart(cartItem));
 
             if(addOrderItemResult)
-                result = new OrderItemResult(orderItem);
+                result = new CartItemResult(cartItem);
             else
-                result = new OrderItemResult("ADD TO CART FAILED!");
+                result = new CartItemResult("ADD TO CART FAILED!");
         } catch (ExecutionException | InterruptedException e) {
             e.printStackTrace();
-            result = new OrderItemResult("ADD TO CART FAILED!");
+            result = new CartItemResult("ADD TO CART FAILED!");
             orderDialogViewModel.clearOrderItem();
         }
         orderDialogViewModel.postOrderItemResult(result);
     }
 
-    private void onAddOrderItemResult(OrderItemResult result){
+    private void onAddOrderItemResult(CartItemResult result){
         if(result == null){
             setActionState(true);
             return;

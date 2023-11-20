@@ -15,28 +15,27 @@ import androidx.navigation.Navigation;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.coftea.Cashier.order.CartItem;
 import com.example.coftea.Order.OrderDialogViewModel;
 import com.example.coftea.R;
-import com.example.coftea.data.OrderItem;
 import com.example.coftea.databinding.FragmentOrderItemListBinding;
 import com.example.coftea.utilities.PHPCurrencyFormatter;
 
 import java.util.ArrayList;
 
-public class OrderItemListDialogFragment extends DialogFragment {
+public class CartItemListDialogFragment extends DialogFragment {
     PHPCurrencyFormatter formatter = PHPCurrencyFormatter.getInstance();
-    private OrderItemListViewModel  orderItemListViewModel;
+    private CartItemListViewModel cartItemListViewModel;
     private OrderDialogViewModel orderDialogViewModel;
-    private OrderItemListItemAdapter orderItemListItemAdapter;
+    private CartItemListItemAdapter cartItemListItemAdapter;
     private @NonNull FragmentOrderItemListBinding binding;
-
     private Button btnOrderItemListCheckout;
     private Button btnOrderItemListClose;
     private TextView tvOrderItemListTotalPrice;
-    private ArrayList<OrderItem> _orderItemList = new ArrayList<>();
+    private ArrayList<CartItem> _cartItemList = new ArrayList<>();
 
-    public OrderItemListDialogFragment(com.example.coftea.OrderItemList.OrderItemListViewModel orderItemListViewModel, OrderDialogViewModel orderDialogViewModel) {
-        this.orderItemListViewModel = orderItemListViewModel;
+    public CartItemListDialogFragment(CartItemListViewModel cartItemListViewModel, OrderDialogViewModel orderDialogViewModel) {
+        this.cartItemListViewModel = cartItemListViewModel;
         this.orderDialogViewModel = orderDialogViewModel;
     }
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
@@ -55,25 +54,24 @@ public class OrderItemListDialogFragment extends DialogFragment {
         );
         root.setLayoutParams(params);
 
-
         RecyclerView rvCustomerOrderItemList = binding.rvCustomerOrderItemList;
 
         rvCustomerOrderItemList.setHasFixedSize(true);
         rvCustomerOrderItemList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        orderItemListItemAdapter = new OrderItemListItemAdapter(_orderItemList, orderDialogViewModel, orderItemListViewModel);
-        rvCustomerOrderItemList.setAdapter(orderItemListItemAdapter);
+        cartItemListItemAdapter = new CartItemListItemAdapter(_cartItemList, orderDialogViewModel, cartItemListViewModel);
+        rvCustomerOrderItemList.setAdapter(cartItemListItemAdapter);
 
-        orderItemListViewModel.orderItems.observe(getViewLifecycleOwner(), orderItems -> {
-            if(orderItems == null) return;
-            if(orderItems.size() == 0){
+        cartItemListViewModel.cartItems.observe(getViewLifecycleOwner(), cartItems -> {
+            if(cartItems == null) return;
+            if(cartItems.size() == 0){
                 dismiss();
                 return;
             }
-            _orderItemList = orderItems;
-            orderItemListItemAdapter.UpdateList(_orderItemList);
+            _cartItemList = cartItems;
+            cartItemListItemAdapter.UpdateList(_cartItemList);
             Double total = 0.0d;
-            for (OrderItem item : orderItems){
+            for (CartItem item : cartItems){
                 total += item.getTotalPrice();
             }
             String totalPrice = formatter.formatAsPHP(total);
@@ -89,7 +87,6 @@ public class OrderItemListDialogFragment extends DialogFragment {
         });
 
         return root;
-
     }
 
     private void navigateToFragment(int fragmentId) {
