@@ -42,6 +42,16 @@ public class QueueEntry {
     public void setOrderID(String orderID) {
         this.orderID = orderID;
     }
+
+    public Boolean getOnlineOrder() {
+        return onlineOrder;
+    }
+
+    public void setOnlineOrder(Boolean onlineOrder) {
+        this.onlineOrder = onlineOrder;
+    }
+
+    private Boolean onlineOrder;
     private String orderID;
     public QueueEntry(double totalPayment, String customerName, String customerPhone, Date date, OrderStatus status) {
         this.products = new ArrayList<>();
@@ -52,6 +62,7 @@ public class QueueEntry {
         this.date = date;
         this.createdAt = date.getTime();
         this.status = status;
+        this.onlineOrder = false;
     }
 
     public List<CartItem> getProducts() {

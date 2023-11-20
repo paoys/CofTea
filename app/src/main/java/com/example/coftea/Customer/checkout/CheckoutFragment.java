@@ -204,6 +204,7 @@ public class CheckoutFragment extends Fragment implements PaymongoCheckoutListen
         Date date = new Date();
         ReceiptEntry receiptEntry = new ReceiptEntry(cartItems, paymongoPayload.getAmount(), userName, userMobileNo, date, OrderStatus.PENDING);
         QueueEntry queueEntry = new QueueEntry(paymongoPayload.getAmount(), userName, userMobileNo, date, OrderStatus.PENDING);
+        queueEntry.setOnlineOrder(true);
 
         try {
             DatabaseReference checkoutSessionID = orderDatabase.getOrderDBRef();
@@ -263,6 +264,7 @@ public class CheckoutFragment extends Fragment implements PaymongoCheckoutListen
 
         receiptsDBRef.child(receiptID).setValue(receiptEntry);
         queueDBRef.child(queueID).setValue(queueEntry);
+        tvCheckoutDescription.setText(R.string.customer_message_payment_received);
         Toast.makeText(getContext(), "Order Placed!", Toast.LENGTH_SHORT).show();
     }
 
