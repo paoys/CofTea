@@ -48,7 +48,6 @@
         android:id="@+id/tvQueueOrderToDoneAmount"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="8dp"
         android:textSize="24sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
@@ -56,22 +55,31 @@
         app:layout_constraintTop_toBottomOf="@+id/rvQueueOrderToDoneList"
         tools:text="P 100.00" />
 
-    <Button
-        android:id="@+id/btnQueueOrderToDoneConfirm"
-        android:layout_width="wrap_content"
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:background="@color/black"
-        android:text="CONFIRM"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvQueueOrderToDoneAmount" />
-
-    <Button
-        android:id="@+id/btnQueueOrderToDoneClose"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@color/black"
-        android:text="CLOSE"
+        android:layout_marginTop="8dp"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvQueueOrderToDoneAmount" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvQueueOrderToDoneAmount">
+
+        <Button
+            android:id="@+id/btnQueueOrderToDoneConfirm"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/black"
+            android:text="CONFIRM" />
+
+        <Button
+            android:id="@+id/btnQueueOrderToDoneClose"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/black"
+            android:text="CLOSE" />
+    </LinearLayout>
+
 
 </androidx.constraintlayout.widget.ConstraintLayout>

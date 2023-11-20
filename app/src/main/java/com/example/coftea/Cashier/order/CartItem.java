@@ -5,7 +5,6 @@ public class CartItem {
     private String id;
     private String name;
     private Double price;
-
     public Double getTotalPrice() {
         return totalPrice;
     }
@@ -14,12 +13,23 @@ public class CartItem {
     private int quantity;
     private String imageUrl;
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    private String key;
+
     public CartItem() {
         // Default constructor required for Firebase
     }
 
-    public CartItem(String id, String name, Double price, int quantity, Double totalPrice) {
+    public CartItem(String id, String key,String name, Double price, int quantity, Double totalPrice) {
         this.id = id;
+        this.key = key;
         this.name = name;
         this.price = price;
         this.quantity = quantity;

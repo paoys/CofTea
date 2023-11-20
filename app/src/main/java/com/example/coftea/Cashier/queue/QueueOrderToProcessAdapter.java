@@ -3,7 +3,6 @@ package com.example.coftea.Cashier.queue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -11,17 +10,15 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.coftea.Cashier.order.CartItem;
 import com.example.coftea.R;
-import com.example.coftea.data.OrderItem;
-import com.example.coftea.data.Product;
 import com.example.coftea.utilities.PHPCurrencyFormatter;
 
 import java.util.ArrayList;
 
-public class QueueOrderToDoneAdapter extends RecyclerView.Adapter<QueueOrderToDoneAdapter.QueueOrderItemViewHolder> {
+public class QueueOrderToProcessAdapter extends RecyclerView.Adapter<QueueOrderToProcessAdapter.QueueOrderItemViewHolder> {
     private ArrayList<CartItem> queueOrderItemList;
     PHPCurrencyFormatter phpCurrencyFormatter = PHPCurrencyFormatter.getInstance();
 
-    public QueueOrderToDoneAdapter(){
+    public QueueOrderToProcessAdapter(){
         this.queueOrderItemList = new ArrayList<>();
     }
 
@@ -31,13 +28,13 @@ public class QueueOrderToDoneAdapter extends RecyclerView.Adapter<QueueOrderToDo
     }
     @NonNull
     @Override
-    public QueueOrderToDoneAdapter.QueueOrderItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public QueueOrderToProcessAdapter.QueueOrderItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dialog_fragment_queue_order_to_done_item, parent, false);
-        return new QueueOrderToDoneAdapter.QueueOrderItemViewHolder(view);
+        return new QueueOrderToProcessAdapter.QueueOrderItemViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull QueueOrderToDoneAdapter.QueueOrderItemViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull QueueOrderToProcessAdapter.QueueOrderItemViewHolder holder, int position) {
 
         CartItem queueOrderItem = queueOrderItemList.get(position);
 

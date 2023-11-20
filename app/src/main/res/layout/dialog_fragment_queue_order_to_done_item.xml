@@ -19,10 +19,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginHorizontal="10dp"
-        android:text="x"
+        android:text="X"
         android:textStyle="bold"
         app:layout_constraintStart_toEndOf="@+id/tvOrderQueueItemAsterisk"
-        app:layout_constraintTop_toTopOf="@+id/tvOrderQueueItemAsterisk" />
+        app:layout_constraintTop_toTopOf="@+id/tvOrderQueueItemAsterisk"
+        tools:text="X" />
 
     <TextView
         android:id="@+id/tvOrderQueueItemAsterisk"

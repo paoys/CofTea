@@ -8,7 +8,6 @@ import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
-import com.example.coftea.data.OrderItem;
 import com.example.coftea.data.Product;
 import com.example.coftea.repository.RealtimeDB;
 import com.google.firebase.database.ChildEventListener;
@@ -16,7 +15,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
 import java.util.ArrayList;
-import java.util.Date;
 
 public class AdvanceOrderViewModel extends ViewModel {
 

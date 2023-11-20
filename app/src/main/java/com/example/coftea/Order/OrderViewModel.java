@@ -1,24 +1,11 @@
 package com.example.coftea.Order;
 
-import android.util.Log;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.coftea.data.Order;
-import com.example.coftea.data.OrderItem;
-import com.example.coftea.data.Product;
 import com.example.coftea.repository.RealtimeDB;
-import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.ValueEventListener;
-
-import java.util.ArrayList;
 
 public class OrderViewModel extends ViewModel {
     private MutableLiveData<Order> _order = new MutableLiveData<>();

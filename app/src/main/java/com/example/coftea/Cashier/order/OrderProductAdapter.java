@@ -86,24 +86,21 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
                 productNameEditText.setText(product.getName());
 
                 dialogPlus.show();
-                btnAddCart.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        // Get the quantity entered by the user
-                        int quantity = Integer.parseInt(productQuantity.getText().toString());
+                btnAddCart.setOnClickListener(v1 -> {
+                    // Get the quantity entered by the user
+                    int quantity = Integer.parseInt(productQuantity.getText().toString());
 
-                        Double totalPrice = product.getPrice() * quantity;
+                    Double totalPrice = product.getPrice() * quantity;
 
-                        // Create a Cart object with the selected product's details and quantity
-                        CartItem cartItem = new CartItem(product.getId(), product.getName(), product.getPrice(), quantity, totalPrice);
-                        cartItem.setImageUrl(product.getImageUrl()); // Set the image URL
+                    // Create a Cart object with the selected product's details and quantity
+                    CartItem cartItem = new CartItem(product.getId(), product.getId(), product.getName(), product.getPrice(), quantity, totalPrice);
+                    cartItem.setImageUrl(product.getImageUrl()); // Set the image URL
 
-                        // Save the cart item to the "cart" database with a unique key
-                        saveCartItemToCartDatabase(cartItem);
+                    // Save the cart item to the "cart" database with a unique key
+                    saveCartItemToCartDatabase(cartItem);
 
-                        // Close the dialog after adding to the cart
-                        dialogPlus.dismiss();
-                    }
+                    // Close the dialog after adding to the cart
+                    dialogPlus.dismiss();
                 });
             }
         });
@@ -157,13 +154,12 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
 
                         // Set the image URL of the updated cart item
                         cartItem.setImageUrl(cartItem.getImageUrl());
-                        Log.e("UPDATE_CART_ITEM", String.valueOf(cartItem.getTotalPrice()));
+                        cartItem.setKey(existingKey);
                         // Update the existing cart item with the new quantity
                         updateCartItemInCartDatabase(existingKey, cartItem);
                         return;
                     }
                 } else {
-                    Log.e("ADD_CART_ITEM", String.valueOf(cartItem.getTotalPrice()));
                     // Item with this product ID does not exist in the cart, add it as a new item
                     addCartItemToCartDatabase(cartItem);
                 }
@@ -184,7 +180,8 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
 
         // Create a reference to the specific item with the product ID as the key
         DatabaseReference specificCartItemRef = cartRef.child(productId);
-
+        String cartItemKey = specificCartItemRef.push().getKey();
+        cartItem.setKey(cartItemKey);
         specificCartItemRef.setValue(cartItem)
                 .addOnSuccessListener(aVoid -> {
                     // New item added to the cart successfully

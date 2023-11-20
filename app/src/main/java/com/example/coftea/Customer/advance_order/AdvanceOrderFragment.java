@@ -5,7 +5,6 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,20 +23,14 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import com.example.coftea.LocationListener.MyLocationListener;
-import com.example.coftea.LocationListener.MyLocationListenerCallback;
 import com.example.coftea.Order.OrderDialogFragment;
 import com.example.coftea.Order.OrderDialogViewModel;
-import com.example.coftea.OrderItemList.OrderItemListDialogFragment;
-import com.example.coftea.OrderItemList.OrderItemListViewModel;
-import com.example.coftea.OrderItemList.OrderItemListViewModelFactory;
+import com.example.coftea.OrderItemList.CartItemListDialogFragment;
+import com.example.coftea.OrderItemList.CartItemListViewModel;
+import com.example.coftea.OrderItemList.CartItemListViewModelFactory;
 import com.example.coftea.data.Product;
 import com.example.coftea.databinding.FragmentAdvanceOrderBinding;
 import com.example.coftea.utilities.UserProvider;
-import com.google.android.gms.maps.model.LatLng;
-import com.google.maps.android.SphericalUtil;
-
-import androidx.fragment.app.Fragment;
 
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationServices;
@@ -57,10 +50,10 @@ public class AdvanceOrderFragment extends Fragment {
     private CustomerAdvancedOrderAdapter customerAdvancedOrderAdapter;
     private AdvanceOrderViewModel advanceOrderViewModel;
     private OrderDialogViewModel orderDialogViewModel;
-    private OrderItemListViewModel orderItemListViewModel;
+    private CartItemListViewModel cartItemListViewModel;
     private ArrayList<Product> _products = new ArrayList<>();
     private OrderDialogFragment orderToCartDialogFragment;
-    private OrderItemListDialogFragment orderItemListDialogFragment;
+    private CartItemListDialogFragment cartItemListDialogFragment;
     private FusedLocationProviderClient fusedLocationClient;
     private static final int REQUEST_LOCATION_PERMISSION = 1;
 
@@ -91,7 +84,7 @@ public class AdvanceOrderFragment extends Fragment {
 
                         float distance = from.distanceTo(to);
 
-                        if(distance <= 200){
+                        if(distance <= 600){
                             startListen();
                             llAdvanceOrderOutOfRange.setVisibility(View.GONE);
                         }
@@ -129,27 +122,6 @@ public class AdvanceOrderFragment extends Fragment {
 
         alertDialog.show();
     }
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
-
-        if (ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // Get and display the current location
-            if(!isOnline()) {
-                return;
-            }
-            if(!isLocationEnabled()) {
-                showSettingsAlert();
-                return;
-            }
-            getAndDisplayCurrentLocation();
-        } else {
-            // Request location permission if not granted
-            ActivityCompat.requestPermissions(requireActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
-        }
-    }
-
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -157,6 +129,19 @@ public class AdvanceOrderFragment extends Fragment {
         View root = binding.getRoot();
 
         init();
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+
+        if (ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if(!isLocationEnabled())
+                showSettingsAlert();
+
+            if(isOnline())
+                getAndDisplayCurrentLocation();
+        } else {
+            // Request location permission if not granted
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+        }
 
         return root;
     }
@@ -188,20 +173,20 @@ public class AdvanceOrderFragment extends Fragment {
 
         advanceOrderViewModel = new ViewModelProvider(this).get(AdvanceOrderViewModel.class);
         orderDialogViewModel = new ViewModelProvider(this).get(OrderDialogViewModel.class);
-        orderItemListViewModel = new ViewModelProvider(this, new OrderItemListViewModelFactory(userMobileNo)).get(OrderItemListViewModel.class);
+        cartItemListViewModel = new ViewModelProvider(this, new CartItemListViewModelFactory(userMobileNo)).get(CartItemListViewModel.class);
 
         customerAdvancedOrderAdapter = new CustomerAdvancedOrderAdapter(_products, advanceOrderViewModel, orderDialogViewModel);
         orderToCartDialogFragment = new OrderDialogFragment(orderDialogViewModel);
         rvCustomerProductList.setAdapter(customerAdvancedOrderAdapter);
 
-        orderItemListViewModel = new OrderItemListViewModel(userMobileNo);
-        orderItemListDialogFragment = new OrderItemListDialogFragment(orderItemListViewModel, orderDialogViewModel);
+        cartItemListViewModel = new CartItemListViewModel(userMobileNo);
+        cartItemListDialogFragment = new CartItemListDialogFragment(cartItemListViewModel, orderDialogViewModel);
 
         ibCartButton.setOnClickListener(view -> {
-            OrderItemListDialogFragment existingFragment = (OrderItemListDialogFragment) getParentFragmentManager().findFragmentByTag("OrderItemListFragment");
+            CartItemListDialogFragment existingFragment = (CartItemListDialogFragment) getParentFragmentManager().findFragmentByTag("OrderItemListFragment");
 
             if (existingFragment == null)
-                orderItemListDialogFragment.show(getParentFragmentManager(), "OrderItemListFragment");
+                cartItemListDialogFragment.show(getParentFragmentManager(), "OrderItemListFragment");
             else
                 existingFragment.getDialog().show();
         });
@@ -228,7 +213,7 @@ public class AdvanceOrderFragment extends Fragment {
 
 //        OrderItemDialogPlus orderItemDialogPlus = new OrderItemDialogPlus(getViewLifecycleOwner(), getContext(), orderItemDialogViewModel);
 
-        orderItemListViewModel.orderItems.observe(getViewLifecycleOwner(), orderItems -> {
+        cartItemListViewModel.cartItems.observe(getViewLifecycleOwner(), orderItems -> {
             ibCartButton.setEnabled(orderItems.size() != 0);
             tvOrderItemCount.setText(String.valueOf(orderItems.size()));
         });

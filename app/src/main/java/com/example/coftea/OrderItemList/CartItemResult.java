@@ -1,18 +1,18 @@
 package com.example.coftea.OrderItemList;
 
-import com.example.coftea.data.OrderItem;
+import com.example.coftea.Cashier.order.CartItem;
 
-public class OrderItemResult {
+public class CartItemResult {
     public boolean loading = true;
-    public OrderItem success;
+    public CartItem success;
     public String error;
 
-    public OrderItemResult() {}
-    public OrderItemResult(OrderItem item) {
+    public CartItemResult() {}
+    public CartItemResult(CartItem item) {
         this.loading = false;
         this.success = item;
     }
-    public OrderItemResult(String error) {
+    public CartItemResult(String error) {
         this.loading = false;
         this.error = error;
     }
