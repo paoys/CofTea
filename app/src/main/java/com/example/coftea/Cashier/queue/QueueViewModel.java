@@ -9,12 +9,10 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.coftea.Cashier.order.CartItem;
-import com.example.coftea.data.Order;
+import com.example.coftea.Cashier.order.QueueEntry;
+import com.example.coftea.data.OrderActionStatus;
 import com.example.coftea.data.OrderStatus;
-import com.example.coftea.data.Product;
 import com.example.coftea.repository.RealtimeDB;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -25,28 +23,29 @@ import java.util.ArrayList;
 
 public class QueueViewModel extends ViewModel {
 
-    private MutableLiveData<ArrayList<QueueOrder>> _queueOrderList = new MutableLiveData<>(new ArrayList<>());
-    public LiveData<ArrayList<QueueOrder>> queueOrderList;
-    private MutableLiveData<QueueOrder> _queueOrderToDone = new MutableLiveData<>();
-    public LiveData<QueueOrder> queueOrderToDone;
-    private MutableLiveData<QueueOrder> _queueOrderToCancel = new MutableLiveData<>();
-    public LiveData<QueueOrder> queueOrderToCancel;
-    private final RealtimeDB<QueueOrder> realtimeDB;
+    private MutableLiveData<ArrayList<QueueEntry>> _queueOrderList = new MutableLiveData<>(new ArrayList<>());
+    public LiveData<ArrayList<QueueEntry>> queueOrderList;
+    private MutableLiveData<QueueEntry> _queueOrderToProcess = new MutableLiveData<>();
+    public LiveData<QueueEntry> queueOrderToDone;
+    private MutableLiveData<QueueEntry> _queueOrderToCancel = new MutableLiveData<>();
+    public LiveData<QueueEntry> queueOrderToCancel;
+    private final RealtimeDB<QueueEntry> queueRealtimeDB, receiptsRealtimeDB;
     private OrderStatus orderStatus;
     private ChildEventListener childEventListener;
     public QueueViewModel(OrderStatus orderStatus) {
         queueOrderList = _queueOrderList;
-        queueOrderToDone = _queueOrderToDone;
+        queueOrderToDone = _queueOrderToProcess;
         queueOrderToCancel = _queueOrderToCancel;
         cartItemList = _cartItemList;
         this.orderStatus = orderStatus;
-        realtimeDB = new RealtimeDB<>("cashier/queue");
+        queueRealtimeDB = new RealtimeDB<>("cashier/queue");
+        receiptsRealtimeDB = new RealtimeDB<>("cashier/receipts");
         setChildEventListener();
         listenUpdate();
     }
 
     private void listenUpdate(){
-        DatabaseReference queueDBRef = realtimeDB.get().getRef();
+        DatabaseReference queueDBRef = queueRealtimeDB.get().getRef();
         Query filterQueueDB = queueDBRef.orderByChild("status").equalTo(orderStatus.toString());
         filterQueueDB.removeEventListener(childEventListener);
         filterQueueDB.addChildEventListener(childEventListener);
@@ -64,9 +63,9 @@ public class QueueViewModel extends ViewModel {
                     return;
                 }
 
-                QueueOrder item = snapshot.getValue(QueueOrder.class);
+                QueueEntry item = snapshot.getValue(QueueEntry.class);
                 item.setId(snapshot.getKey());
-                ArrayList<QueueOrder> list = new ArrayList<>(_queueOrderList.getValue());
+                ArrayList<QueueEntry> list = new ArrayList<>(_queueOrderList.getValue());
                 list.add(item);
                 _queueOrderList.setValue(list);
             }
@@ -77,13 +76,13 @@ public class QueueViewModel extends ViewModel {
                     return;
                 }
 
-                QueueOrder newItem = snapshot.getValue(QueueOrder.class);
+                QueueEntry newItem = snapshot.getValue(QueueEntry.class);
                 String itemId = snapshot.getKey();
 
-                ArrayList<QueueOrder> list = new ArrayList<>(_queueOrderList.getValue());
+                ArrayList<QueueEntry> list = new ArrayList<>(_queueOrderList.getValue());
 
                 for (int i = 0; i < list.size(); i++) {
-                    QueueOrder existingItem = list.get(i);
+                    QueueEntry existingItem = list.get(i);
                     if (existingItem != null && existingItem.getId() != null && existingItem.getId().equals(itemId)) {
                         list.set(i, newItem);
                         _queueOrderList.setValue(list);
@@ -100,10 +99,10 @@ public class QueueViewModel extends ViewModel {
 
                 String itemId = snapshot.getKey();
 
-                ArrayList<QueueOrder> list = new ArrayList<>(_queueOrderList.getValue());
+                ArrayList<QueueEntry> list = new ArrayList<>(_queueOrderList.getValue());
 
                 for (int i = 0; i < list.size(); i++) {
-                    QueueOrder existingItem = list.get(i);
+                    QueueEntry existingItem = list.get(i);
                     if (existingItem != null && existingItem.getId() != null && existingItem.getId().equals(itemId)) {
                         list.remove(i);
                         _queueOrderList.setValue(list);
@@ -121,16 +120,37 @@ public class QueueViewModel extends ViewModel {
             }
         };
     }
-    public void setQueueOrderToDone(QueueOrder queueOrder){
-        getQueueOrderItemList(queueOrder.getReceiptID());
-        _queueOrderToDone.postValue(queueOrder);
+    public void processQueueOrder(OrderActionStatus actionStatus){
+        String orderID = _queueOrderToProcess.getValue().getOrderID();
+        switch (actionStatus){
+            case TO_DONE:
+               Log.e("====1","TEST");
+               break;
+            case TO_READY:
+                Log.e("====2","TEST");
+                break;
+            case TO_CANCEL:
+                Log.e("====3","TEST");
+                break;
+            default:
+                break;
+        }
     }
-    public void clearQueueOrderToDone(){
+
+    public void updateQueueOrderStatus(String orderID, String queueID, boolean isOnline){
+//        receiptsRealtimeDB.getDatabaseReference().
+    }
+
+    public void setQueueOrderToProcess(QueueEntry queueEntry){
+        getQueueOrderItemList(queueEntry.getReceiptID());
+        _queueOrderToProcess.postValue(queueEntry);
+    }
+    public void clearQueueOrderToProcess(){
         _cartItemList.setValue(null);
-        _queueOrderToDone.setValue(null);
+        _queueOrderToProcess.setValue(null);
     }
-    public void setQueueOrderToCancel(QueueOrder queueOrder){
-        _queueOrderToCancel.postValue(queueOrder);
+    public void setQueueOrderToCancel(QueueEntry queueEntry){
+        _queueOrderToCancel.postValue(queueEntry);
     }
     public void clearQueueOrderToCancel(){
         _cartItemList.setValue(null);

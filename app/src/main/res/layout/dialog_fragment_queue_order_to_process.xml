@@ -6,7 +6,7 @@
     android:layout_height="match_parent">
 
     <TextView
-        android:id="@+id/tvQueueOrderToDoneMessage"
+        android:id="@+id/tvQueueOrderToProcessMessage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="32dp"
@@ -15,7 +15,7 @@
         android:layout_marginEnd="32dp"
         android:layout_marginRight="32dp"
         android:gravity="center"
-        android:text="Finish transaction?"
+        android:text="Process Transaction?"
         android:textSize="20sp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -27,12 +27,13 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
         android:layout_marginLeft="2dp"
+        android:layout_marginTop="8dp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvQueueOrderToDoneMessage"
+        app:layout_constraintTop_toBottomOf="@+id/tvQueueOrderToProcessMessage"
         tools:text="Customer Name" />
 
     <androidx.recyclerview.widget.RecyclerView
-        android:id="@+id/rvQueueOrderToDoneList"
+        android:id="@+id/rvQueueOrderToProcessList"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginStart="2dp"
@@ -52,7 +53,7 @@
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/rvQueueOrderToDoneList"
+        app:layout_constraintTop_toBottomOf="@+id/rvQueueOrderToProcessList"
         tools:text="P 100.00" />
 
     <LinearLayout
@@ -65,21 +66,45 @@
         app:layout_constraintTop_toBottomOf="@+id/tvQueueOrderToDoneAmount">
 
         <Button
-            android:id="@+id/btnQueueOrderToDoneConfirm"
+            android:id="@+id/btnQueueOrderToProcessReady"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@color/black"
-            android:text="CONFIRM" />
+            android:text="READY ORDER" />
 
         <Button
-            android:id="@+id/btnQueueOrderToDoneClose"
+            android:id="@+id/btnQueueOrderToProcessDone"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/black"
+            android:text="FINISH ORDER" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearLayout2"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/linearLayout">
+
+        <Button
+            android:id="@+id/btnQueueOrderToProcessCancel"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:background="@color/black"
+            android:text="CANCEL ORDER" />
+
+        <Button
+            android:id="@+id/btnQueueOrderToProcessClose"
             android:layout_width="0dp"
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@color/black"
             android:text="CLOSE" />
     </LinearLayout>
-
 
 </androidx.constraintlayout.widget.ConstraintLayout>

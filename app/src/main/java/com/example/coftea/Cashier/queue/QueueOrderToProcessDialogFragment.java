@@ -12,16 +12,16 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.coftea.databinding.DialogFragmentQueueOrderToDoneBinding;
+import com.example.coftea.databinding.DialogFragmentQueueOrderToProcessBinding;
 import com.example.coftea.utilities.PHPCurrencyFormatter;
 
 
 public class QueueOrderToProcessDialogFragment extends DialogFragment {
     PHPCurrencyFormatter formatter = PHPCurrencyFormatter.getInstance();
-    DialogFragmentQueueOrderToDoneBinding binding;
+    DialogFragmentQueueOrderToProcessBinding binding;
     QueueOrderToProcessAdapter queueOrderToProcessAdapter;
     RecyclerView rvQueueOrderList;
-    Button btnQueueOrderConfirm, btnQueueOrderClose;
+    Button btnQueueOrderReady, btnQueueOrderDone, btnQueueOrderCancel, btnQueueOrderClose;
     TextView tvQueueOrderCustomerName, tvQueueOrderAmount;
     QueueViewModel queueViewModel;
 
@@ -32,12 +32,14 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        binding = DialogFragmentQueueOrderToDoneBinding.inflate(inflater, container, false);
+        binding = DialogFragmentQueueOrderToProcessBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        rvQueueOrderList = binding.rvQueueOrderToDoneList;
-        btnQueueOrderConfirm = binding.btnQueueOrderToDoneConfirm;
-        btnQueueOrderClose = binding.btnQueueOrderToDoneClose;
+        rvQueueOrderList = binding.rvQueueOrderToProcessList;
+        btnQueueOrderDone = binding.btnQueueOrderToProcessDone;
+        btnQueueOrderReady = binding.btnQueueOrderToProcessReady;
+        btnQueueOrderCancel = binding.btnQueueOrderToProcessCancel;
+        btnQueueOrderClose = binding.btnQueueOrderToProcessClose;
 
         tvQueueOrderAmount = binding.tvQueueOrderToDoneAmount;
         tvQueueOrderCustomerName = binding.tvQueueOrderCustomerName;
@@ -67,12 +69,12 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
             queueOrderToProcessAdapter.UpdateList(cartItems);
         });
 
-        btnQueueOrderConfirm.setOnClickListener(view -> {
-            queueViewModel.clearQueueOrderToDone();
+        btnQueueOrderReady.setOnClickListener(view -> {
+//            queueViewModel.setQueueOrderToProcess();
         });
 
         btnQueueOrderClose.setOnClickListener(view -> {
-            queueViewModel.clearQueueOrderToDone();
+            queueViewModel.clearQueueOrderToProcess();
             dismiss();
         });
 
@@ -81,13 +83,13 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
 
     @Override
     public void onDestroyView() {
-        queueViewModel.clearQueueOrderToDone();
+        queueViewModel.clearQueueOrderToProcess();
         super.onDestroyView();
     }
 
     @Override
     public void onDetach() {
-        queueViewModel.clearQueueOrderToDone();
+        queueViewModel.clearQueueOrderToProcess();
         super.onDetach();
     }
 }
