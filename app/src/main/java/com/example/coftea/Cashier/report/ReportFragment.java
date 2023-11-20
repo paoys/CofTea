@@ -1,8 +1,13 @@
 package com.example.coftea.Cashier.report;
 
+import android.app.Activity;
+import android.content.Intent;
 import android.graphics.Color;
+import android.net.Uri;
 import android.os.Bundle;
 
+import androidx.activity.result.ActivityResultLauncher;
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 
@@ -11,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.example.coftea.data.OrderStatus;
 import com.example.coftea.databinding.FragmentReportBinding;
@@ -21,7 +27,11 @@ import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.itextpdf.text.Document;
+import com.itextpdf.text.pdf.PdfPTable;
+import com.itextpdf.text.pdf.PdfWriter;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Random;
@@ -93,6 +103,9 @@ public class ReportFragment extends Fragment {
             barArraylist.clear();
             reportViewModel.getYearlyReport(OrderStatus.DONE, 1681916247000L, 1702997847000L);
         });
+        btnReportExport.setOnClickListener(view -> {
+            exportToPdf();
+        });
     }
 
     private void listen(){
@@ -105,5 +118,62 @@ public class ReportFragment extends Fragment {
             barArraylist = arrayList;
         });
     }
+    private void exportToPdf() {
+        try {
+            Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
+            intent.addCategory(Intent.CATEGORY_OPENABLE);
+            intent.setType("application/pdf");
+            intent.putExtra(Intent.EXTRA_TITLE, "table_export.pdf");
 
+            createPdfLauncher.launch(intent);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(requireContext(), "Error exporting to PDF", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private final ActivityResultLauncher<Intent> createPdfLauncher = registerForActivityResult(
+            new ActivityResultContracts.StartActivityForResult(),
+            result -> {
+                if (result.getResultCode() == Activity.RESULT_OK) {
+                    Intent data = result.getData();
+                    // Handle the result here
+                    if (data != null) {
+                        Uri uri = data.getData();
+                        if (uri != null) {
+                            try (OutputStream outputStream = requireContext().getContentResolver().openOutputStream(uri)) {
+                                if (outputStream != null) {
+                                    Document document = new Document();
+                                    PdfWriter.getInstance(document, outputStream);
+                                    document.open();
+
+                                    PdfPTable pdfPTable = new PdfPTable(3);
+
+                                    // Add table headers
+                                    pdfPTable.addCell("Name");
+                                    pdfPTable.addCell("Age");
+                                    pdfPTable.addCell("Country");
+
+                                    // Add table data
+                                    for (int i = 0; i < 4; i++) {
+                                        pdfPTable.addCell("TEST1".toString());
+                                        pdfPTable.addCell("TEST2".toString());
+                                        pdfPTable.addCell("TEST3".toString());
+                                    }
+
+                                    document.add(pdfPTable);
+                                    document.close();
+
+                                    Toast.makeText(getContext(), "Table exported to PDF", Toast.LENGTH_SHORT).show();
+                                }
+                            }
+                            catch (Exception e) {
+                                e.printStackTrace();
+                                Toast.makeText(requireContext(), "Error exporting to PDF", Toast.LENGTH_SHORT).show();
+                            }
+                        }
+                    }
+                }
+            }
+    );
 }
