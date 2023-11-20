@@ -122,27 +122,6 @@ public class AdvanceOrderFragment extends Fragment {
 
         alertDialog.show();
     }
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
-
-        if (ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
-            // Get and display the current location
-            if(!isOnline()) {
-                return;
-            }
-            if(!isLocationEnabled()) {
-                showSettingsAlert();
-                return;
-            }
-            getAndDisplayCurrentLocation();
-        } else {
-            // Request location permission if not granted
-            ActivityCompat.requestPermissions(requireActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
-        }
-    }
-
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
@@ -150,6 +129,19 @@ public class AdvanceOrderFragment extends Fragment {
         View root = binding.getRoot();
 
         init();
+
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(requireActivity());
+
+        if (ActivityCompat.checkSelfPermission(requireContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_GRANTED) {
+            if(!isLocationEnabled())
+                showSettingsAlert();
+
+            if(isOnline())
+                getAndDisplayCurrentLocation();
+        } else {
+            // Request location permission if not granted
+            ActivityCompat.requestPermissions(requireActivity(), new String[]{android.Manifest.permission.ACCESS_FINE_LOCATION}, REQUEST_LOCATION_PERMISSION);
+        }
 
         return root;
     }
