@@ -77,7 +77,7 @@ public class PaymongoCheckoutSession extends AsyncTask<String, Void, String> {
         }
         catch (Exception e){
             e.printStackTrace();
-            Log.e("CheckoutSessionError",e.getMessage());
+            Log.e("Checkout_Session_Error",e.getMessage());
             PaymongoCheckoutResponse successRes = new PaymongoCheckoutResponse(e.toString());
             if (callback != null) {
                 callback.onPaymongoCheckoutSessionComplete(successRes);

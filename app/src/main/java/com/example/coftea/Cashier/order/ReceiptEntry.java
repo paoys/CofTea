@@ -41,6 +41,16 @@ public class ReceiptEntry implements Serializable {
 
     private OrderStatus status;
 
+    public String getPaymentId() {
+        return paymentId;
+    }
+
+    public void setPaymentId(String paymentId) {
+        this.paymentId = paymentId;
+    }
+
+    private String paymentId;
+
     public ReceiptEntry(List<CartItem> cartItems, double totalPayment, String customerName, String customerPhone, Date date, OrderStatus status) {
         this.cartItems = cartItems;
         this.totalPayment = totalPayment;
