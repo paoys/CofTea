@@ -5,30 +5,24 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import com.example.coftea.Customer.advance_order.CustomerAdvancedOrderAdapter;
 import com.example.coftea.Order.OrderDialogFragment;
-import com.example.coftea.data.Order;
 import com.example.coftea.data.OrderStatus;
 import com.example.coftea.databinding.FragmentQueueBinding;
-
-import java.util.ArrayList;
 
 public class QueueFragment extends Fragment {
 
     private FragmentQueueBinding binding;
     QueueViewModel queueViewModel;
     private RecyclerView rvCashierQueueOrderList;
-    private QueueOrderToDoneDialogFragment queueOrderToDoneDialogFragment;
+    private QueueOrderToProcessDialogFragment queueOrderToProcessDialogFragment;
     private QueueOrderAdapter queueOrderAdapter;
     private Button btnQueueOrderPending, btnQueueOrderReady, btnQueueOrderDone, btnQueueOrderCancelled;
     public View onCreateView(@NonNull LayoutInflater inflater,
@@ -51,6 +45,8 @@ public class QueueFragment extends Fragment {
         btnQueueOrderReady = binding.btnQueueOrderReady;
         btnQueueOrderDone = binding.btnQueueOrderDone;
 
+        btnQueueOrderPending.setEnabled(false);
+
         queueViewModel = new ViewModelProvider(this, new QueueViewModelFactory(OrderStatus.PENDING)).get(QueueViewModel.class);
 
         rvCashierQueueOrderList = binding.rvCashierQueueOrderList;
@@ -58,16 +54,36 @@ public class QueueFragment extends Fragment {
         rvCashierQueueOrderList.setHasFixedSize(true);
         rvCashierQueueOrderList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        queueOrderToDoneDialogFragment = new QueueOrderToDoneDialogFragment(queueViewModel);
+        queueOrderToProcessDialogFragment = new QueueOrderToProcessDialogFragment(queueViewModel);
         queueOrderAdapter = new QueueOrderAdapter(queueViewModel);
         rvCashierQueueOrderList.setAdapter(queueOrderAdapter);
 
-        btnQueueOrderPending.setOnClickListener(view -> queueViewModel.changeOrderStatusFilter(OrderStatus.PENDING));
-        btnQueueOrderReady.setOnClickListener(view -> queueViewModel.changeOrderStatusFilter(OrderStatus.READY));
-        btnQueueOrderDone.setOnClickListener(view -> queueViewModel.changeOrderStatusFilter(OrderStatus.DONE));
-        btnQueueOrderCancelled.setOnClickListener(view -> queueViewModel.changeOrderStatusFilter(OrderStatus.CANCELLED));
+        btnQueueOrderPending.setOnClickListener(view -> {
+            queueViewModel.changeOrderStatusFilter(OrderStatus.PENDING);
+            updateButtonState(btnQueueOrderPending);
+        });
+        btnQueueOrderReady.setOnClickListener(view -> {
+            queueViewModel.changeOrderStatusFilter(OrderStatus.READY);
+            updateButtonState(btnQueueOrderReady);
+        });
+        btnQueueOrderDone.setOnClickListener(view -> {
+            queueViewModel.changeOrderStatusFilter(OrderStatus.DONE);
+            updateButtonState(btnQueueOrderDone);
+        });
+        btnQueueOrderCancelled.setOnClickListener(view -> {
+            queueViewModel.changeOrderStatusFilter(OrderStatus.CANCELLED);
+            updateButtonState(btnQueueOrderCancelled);
+        });
     }
 
+    private void updateButtonState(Button clickedButton) {
+        btnQueueOrderPending.setEnabled(true);
+        btnQueueOrderReady.setEnabled(true);
+        btnQueueOrderDone.setEnabled(true);
+        btnQueueOrderCancelled.setEnabled(true);
+
+        clickedButton.setEnabled(false);
+    }
     private void listen(){
         queueViewModel.queueOrderList.observe(getViewLifecycleOwner(), queueOrders -> {
             if(queueOrders == null) return;
@@ -79,7 +95,7 @@ public class QueueFragment extends Fragment {
             OrderDialogFragment existingFragment = (OrderDialogFragment) getParentFragmentManager().findFragmentByTag("QueueOrderToDone");
 
             if (existingFragment == null)
-                queueOrderToDoneDialogFragment.show(getParentFragmentManager(), "QueueOrderToDone");
+                queueOrderToProcessDialogFragment.show(getParentFragmentManager(), "QueueOrderToDone");
             else
                 existingFragment.getDialog().show();
         });

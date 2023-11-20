@@ -9,27 +9,23 @@ import android.widget.TextView;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.DialogFragment;
-import androidx.lifecycle.Observer;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.coftea.Cashier.order.CartItem;
 import com.example.coftea.databinding.DialogFragmentQueueOrderToDoneBinding;
 import com.example.coftea.utilities.PHPCurrencyFormatter;
 
-import java.util.ArrayList;
 
-
-public class QueueOrderToDoneDialogFragment extends DialogFragment {
+public class QueueOrderToProcessDialogFragment extends DialogFragment {
     PHPCurrencyFormatter formatter = PHPCurrencyFormatter.getInstance();
     DialogFragmentQueueOrderToDoneBinding binding;
-    QueueOrderToDoneAdapter queueOrderToDoneAdapter;
+    QueueOrderToProcessAdapter queueOrderToProcessAdapter;
     RecyclerView rvQueueOrderList;
     Button btnQueueOrderConfirm, btnQueueOrderClose;
     TextView tvQueueOrderCustomerName, tvQueueOrderAmount;
     QueueViewModel queueViewModel;
 
-    public QueueOrderToDoneDialogFragment(QueueViewModel queueViewModel){
+    public QueueOrderToProcessDialogFragment(QueueViewModel queueViewModel){
         this.queueViewModel = queueViewModel;
     }
 
@@ -52,12 +48,12 @@ public class QueueOrderToDoneDialogFragment extends DialogFragment {
         );
         root.setLayoutParams(params);
 
-        queueOrderToDoneAdapter = new QueueOrderToDoneAdapter();
+        queueOrderToProcessAdapter = new QueueOrderToProcessAdapter();
 
         rvQueueOrderList.setHasFixedSize(true);
         rvQueueOrderList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        rvQueueOrderList.setAdapter(queueOrderToDoneAdapter);
+        rvQueueOrderList.setAdapter(queueOrderToProcessAdapter);
 
         queueViewModel.queueOrderToDone.observe(getViewLifecycleOwner(), queueOrder -> {
             if(queueOrder == null) return;
@@ -68,7 +64,7 @@ public class QueueOrderToDoneDialogFragment extends DialogFragment {
 
         queueViewModel.cartItemList.observe(getViewLifecycleOwner(), cartItems -> {
             if(cartItems == null) return;
-            queueOrderToDoneAdapter.UpdateList(cartItems);
+            queueOrderToProcessAdapter.UpdateList(cartItems);
         });
 
         btnQueueOrderConfirm.setOnClickListener(view -> {
