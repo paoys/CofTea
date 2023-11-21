@@ -12,6 +12,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.coftea.data.OrderStatus;
 import com.example.coftea.databinding.DialogFragmentQueueOrderToProcessBinding;
 import com.example.coftea.utilities.PHPCurrencyFormatter;
 
@@ -60,6 +61,8 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
 
         queueViewModel.queueOrderToProcess.observe(getViewLifecycleOwner(), queueOrder -> {
             if(queueOrder == null) return;
+            if(queueOrder.getStatus() == OrderStatus.PENDING)
+                btnQueueOrderReady.setVisibility(View.VISIBLE);
             String price = formatter.formatAsPHP(queueOrder.getTotalPayment());
             tvQueueOrderCustomerName.setText(queueOrder.getCustomerName());
             tvQueueOrderAmount.setText(price);

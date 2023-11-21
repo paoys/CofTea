@@ -1,10 +1,13 @@
 package com.example.coftea.Cashier.queue;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.EditText;
 
 import androidx.annotation.NonNull;
 import androidx.fragment.app.Fragment;
@@ -14,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 
 import com.example.coftea.Order.OrderDialogFragment;
+import com.example.coftea.R;
 import com.example.coftea.data.OrderStatus;
 import com.example.coftea.databinding.FragmentQueueBinding;
 
@@ -85,19 +89,34 @@ public class QueueFragment extends Fragment {
         clickedButton.setEnabled(false);
     }
     private void listen(){
-        queueViewModel.queueOrderList.observe(getViewLifecycleOwner(), queueOrders -> {
-            if(queueOrders == null) return;
-            queueOrderAdapter.UpdateList(queueOrders);
+        queueViewModel.queueOrderList.observe(getViewLifecycleOwner(), queueOrder -> {
+            if(queueOrder == null) return;
+            queueOrderAdapter.UpdateList(queueOrder);
         });
 
-        queueViewModel.queueOrderToProcess.observe(getViewLifecycleOwner(), orderItem -> {
-            if (orderItem == null) return;
+        queueViewModel.queueOrderToProcess.observe(getViewLifecycleOwner(), queueEntry -> {
+            if (queueEntry == null) return;
             OrderDialogFragment existingFragment = (OrderDialogFragment) getParentFragmentManager().findFragmentByTag("QueueOrderToDone");
 
             if (existingFragment == null)
                 queueOrderToProcessDialogFragment.show(getParentFragmentManager(), "QueueOrderToDone");
             else
                 existingFragment.getDialog().show();
+        });
+
+        queueViewModel.queueOrderToCancel.observe(getViewLifecycleOwner(), queueEntry -> {
+            if(queueEntry == null) return;
+            AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+            builder.setTitle("Cancel Order?");
+            builder.setMessage("Are you sure you want to cancel " + queueEntry.getCustomerName()+"'s order?");
+            builder.setPositiveButton("YES, CANCEL", (dialog, which) -> {
+                queueViewModel.cancelQueueOrder();
+                dialog.dismiss();
+            });
+
+            builder.setNegativeButton("Close", (dialog, which) -> dialog.dismiss());
+
+            builder.create().show();
         });
     }
     @Override

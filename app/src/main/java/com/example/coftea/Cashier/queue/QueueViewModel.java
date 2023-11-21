@@ -273,7 +273,6 @@ public class QueueViewModel extends ViewModel {
             processFinishQueueOrder(entry);
         }
     }
-
     private void processFinishQueueOrder(QueueEntry entry){
         String queueID = entry.getId();
         String receiptID = entry.getReceiptID();
@@ -327,6 +326,83 @@ public class QueueViewModel extends ViewModel {
                     _queueViewModelProcessResult.setValue(result);
                 } else {
                     result = new QueueViewModelProcessResult("Finish Transaction Failed: " + String.valueOf(error.getCode()));
+                    _queueViewModelProcessResult.setValue(result);
+                }
+            }
+        });
+    }
+
+
+    public void cancelQueueOrder(){
+        if(_queueOrderToCancel.getValue() == null) return;
+        QueueEntry entry = _queueOrderToCancel.getValue();
+        Boolean isOnline = entry.getOnlineOrder();
+
+        if(isOnline != null && isOnline){
+            Log.e("CANCEl_QUEUE_ORDER", "ONLINE");
+            processCancelQueueOrder(entry);
+        }
+        else{
+            Log.e("CANCEl_QUEUE_ORDER", "WALK IN");
+            processCancelOnlineQueueOrder(entry);
+        }
+    }
+
+    private void processCancelQueueOrder(QueueEntry entry){
+        String queueID = entry.getId();
+        String receiptID = entry.getReceiptID();
+        RealtimeDB realtimeDB = new RealtimeDB("cashier");
+        DatabaseReference cashierDBRef = realtimeDB.getDatabaseReference();
+        cashierDBRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                currentData.child("queue").child(queueID).child("status").setValue(OrderStatus.CANCELLED);
+                currentData.child("receipts").child(receiptID).child("status").setValue(OrderStatus.CANCELLED);
+                return Transaction.success(currentData);
+            }
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                Log.e("DATABASE ERROR",String.valueOf(error));
+                QueueViewModelProcessResult result;
+                if (committed && error == null) {
+                    result = new QueueViewModelProcessResult(entry);
+                    _queueViewModelProcessResult.setValue(result);
+                    clearQueueOrderToCancel();
+                } else {
+                    result = new QueueViewModelProcessResult("Cancel Transaction Failed: "+String.valueOf(error.getCode()));
+                    _queueViewModelProcessResult.setValue(result);
+                }
+            }
+        });
+    }
+    private void processCancelOnlineQueueOrder(QueueEntry entry){
+        String queueID = entry.getId();
+        String receiptID = entry.getReceiptID();
+
+        RealtimeDB realtimeDB = new RealtimeDB("cashier");
+        DatabaseReference cashierDBRef = realtimeDB.getDatabaseReference();
+        DatabaseReference orderDBRef = orderRealtimeDB.getDatabaseReference();
+
+        cashierDBRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                currentData.child("queue").child(queueID).child("status").setValue(OrderStatus.CANCELLED);
+                currentData.child("receipts").child(receiptID).child("status").setValue(OrderStatus.CANCELLED);
+                return Transaction.success(currentData);
+            }
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                Log.e("DATABASE ERROR OL", String.valueOf(error));
+                QueueViewModelProcessResult result;
+                if (committed && error == null) {
+                    orderDBRef.child(entry.getCustomerPhone()).setValue(null);
+                    result = new QueueViewModelProcessResult(entry);
+                    _queueViewModelProcessResult.setValue(result);
+                    clearQueueOrderToCancel();
+                } else {
+                    result = new QueueViewModelProcessResult("Cancel Transaction Failed: " + String.valueOf(error.getCode()));
                     _queueViewModelProcessResult.setValue(result);
                 }
             }
