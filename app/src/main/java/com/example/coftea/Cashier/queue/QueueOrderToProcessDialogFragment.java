@@ -17,13 +17,13 @@ import com.example.coftea.utilities.PHPCurrencyFormatter;
 
 
 public class QueueOrderToProcessDialogFragment extends DialogFragment {
-    PHPCurrencyFormatter formatter = PHPCurrencyFormatter.getInstance();
-    DialogFragmentQueueOrderToProcessBinding binding;
-    QueueOrderToProcessAdapter queueOrderToProcessAdapter;
-    RecyclerView rvQueueOrderList;
-    Button btnQueueOrderReady, btnQueueOrderDone, btnQueueOrderCancel, btnQueueOrderClose;
-    TextView tvQueueOrderCustomerName, tvQueueOrderAmount;
-    QueueViewModel queueViewModel;
+    private PHPCurrencyFormatter formatter = PHPCurrencyFormatter.getInstance();
+    private DialogFragmentQueueOrderToProcessBinding binding;
+    private QueueOrderToProcessAdapter queueOrderToProcessAdapter;
+    private RecyclerView rvQueueOrderList;
+    private Button btnQueueOrderReady, btnQueueOrderDone, btnQueueOrderClose;
+    private TextView tvQueueOrderCustomerName, tvQueueOrderAmount;
+    private QueueViewModel queueViewModel;
 
     public QueueOrderToProcessDialogFragment(QueueViewModel queueViewModel){
         this.queueViewModel = queueViewModel;
@@ -38,7 +38,6 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
         rvQueueOrderList = binding.rvQueueOrderToProcessList;
         btnQueueOrderDone = binding.btnQueueOrderToProcessDone;
         btnQueueOrderReady = binding.btnQueueOrderToProcessReady;
-        btnQueueOrderCancel = binding.btnQueueOrderToProcessCancel;
         btnQueueOrderClose = binding.btnQueueOrderToProcessClose;
 
         tvQueueOrderAmount = binding.tvQueueOrderToDoneAmount;
@@ -57,7 +56,7 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
 
         rvQueueOrderList.setAdapter(queueOrderToProcessAdapter);
 
-        queueViewModel.queueOrderToDone.observe(getViewLifecycleOwner(), queueOrder -> {
+        queueViewModel.queueOrderToProcess.observe(getViewLifecycleOwner(), queueOrder -> {
             if(queueOrder == null) return;
             String price = formatter.formatAsPHP(queueOrder.getTotalPayment());
             tvQueueOrderCustomerName.setText(queueOrder.getCustomerName());
@@ -70,6 +69,10 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
         });
 
         btnQueueOrderReady.setOnClickListener(view -> {
+//            queueViewModel.setQueueOrderToProcess();
+            queueViewModel.readyQueueOrder();
+        });
+        btnQueueOrderDone.setOnClickListener(view -> {
 //            queueViewModel.setQueueOrderToProcess();
         });
 

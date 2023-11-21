@@ -1,6 +1,7 @@
 package com.example.coftea.Cashier.queue;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -17,29 +18,35 @@ import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.Transaction;
 
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
 public class QueueViewModel extends ViewModel {
 
     private MutableLiveData<ArrayList<QueueEntry>> _queueOrderList = new MutableLiveData<>(new ArrayList<>());
     public LiveData<ArrayList<QueueEntry>> queueOrderList;
     private MutableLiveData<QueueEntry> _queueOrderToProcess = new MutableLiveData<>();
-    public LiveData<QueueEntry> queueOrderToDone;
+    public LiveData<QueueEntry> queueOrderToProcess;
     private MutableLiveData<QueueEntry> _queueOrderToCancel = new MutableLiveData<>();
     public LiveData<QueueEntry> queueOrderToCancel;
-    private final RealtimeDB<QueueEntry> queueRealtimeDB, receiptsRealtimeDB;
+    private final RealtimeDB<QueueEntry> queueRealtimeDB, receiptsRealtimeDB, orderRealtimeDB;
     private OrderStatus orderStatus;
     private ChildEventListener childEventListener;
     public QueueViewModel(OrderStatus orderStatus) {
         queueOrderList = _queueOrderList;
-        queueOrderToDone = _queueOrderToProcess;
+        queueOrderToProcess = _queueOrderToProcess;
         queueOrderToCancel = _queueOrderToCancel;
         cartItemList = _cartItemList;
+        queueViewModelProcessResult = _queueViewModelProcessResult;
         this.orderStatus = orderStatus;
         queueRealtimeDB = new RealtimeDB<>("cashier/queue");
         receiptsRealtimeDB = new RealtimeDB<>("cashier/receipts");
+        orderRealtimeDB = new RealtimeDB<>("order");
         setChildEventListener();
         listenUpdate();
     }
@@ -143,7 +150,7 @@ public class QueueViewModel extends ViewModel {
 
     public void setQueueOrderToProcess(QueueEntry queueEntry){
         getQueueOrderItemList(queueEntry.getReceiptID());
-        _queueOrderToProcess.postValue(queueEntry);
+        _queueOrderToProcess.setValue(queueEntry);
     }
     public void clearQueueOrderToProcess(){
         _cartItemList.setValue(null);
@@ -173,6 +180,85 @@ public class QueueViewModel extends ViewModel {
                 _cartItemList.setValue(cartItems);
             }
         });
+    }
+
+    private MutableLiveData<QueueViewModelProcessResult> _queueViewModelProcessResult = new MutableLiveData<>();
+    public LiveData<QueueViewModelProcessResult> queueViewModelProcessResult;
+
+    public void readyQueueOrder(){
+        if(_queueOrderToProcess.getValue() == null) return;
+        QueueEntry entry = _queueOrderToProcess.getValue();
+        Boolean isOnline = entry.getOnlineOrder();
+
+        if(isOnline != null && isOnline){
+            Log.e("READY_QUEUE_ORDER", "ONLINE");
+            processReadyOnlineQueueOrder(entry);
+        }
+        else{
+            Log.e("READY_QUEUE_ORDER", "WALK IN");
+            processReadyQueueOrder(entry);
+        }
+    }
+
+    private void processReadyQueueOrder(QueueEntry entry){
+        String queueID = entry.getId();
+        String receiptID = entry.getReceiptID();
+        RealtimeDB realtimeDB = new RealtimeDB("cashier");
+        DatabaseReference cashierDBRef = realtimeDB.getDatabaseReference();
+        cashierDBRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                currentData.child("queue").child(queueID).child("status").setValue(OrderStatus.READY);
+                currentData.child("receipts").child(receiptID).child("status").setValue(OrderStatus.READY);
+                return Transaction.success(currentData);
+            }
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                Log.e("DATABASE ERROR",String.valueOf(error));
+                QueueViewModelProcessResult result;
+                if (committed && error == null) {
+                    result = new QueueViewModelProcessResult(entry);
+                    _queueViewModelProcessResult.setValue(result);
+                } else {
+                    result = new QueueViewModelProcessResult("Process Online Payment Failed: "+String.valueOf(error.getCode()));
+                    _queueViewModelProcessResult.setValue(result);
+                }
+            }
+        });
+    }
+    private void processReadyOnlineQueueOrder(QueueEntry entry){
+        String queueID = entry.getId();
+        String receiptID = entry.getReceiptID();
+
+        RealtimeDB realtimeDB = new RealtimeDB("cashier");
+        DatabaseReference cashierDBRef = realtimeDB.getDatabaseReference();
+        DatabaseReference queueDBRef = queueRealtimeDB.getDatabaseReference();
+
+        cashierDBRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                currentData.child("queue").child(queueID).child("status").setValue(OrderStatus.READY);
+                currentData.child("receipts").child(receiptID).child("status").setValue(OrderStatus.READY);
+                return Transaction.success(currentData);
+            }
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                Log.e("DATABASE ERROR", String.valueOf(error));
+                QueueViewModelProcessResult result;
+                if (committed && error == null) {
+                    queueDBRef.child(queueID).child("status").setValue(OrderStatus.READY);
+                    result = new QueueViewModelProcessResult(entry);
+                    _queueViewModelProcessResult.setValue(result);
+                } else {
+                    result = new QueueViewModelProcessResult("Process Online Payment Failed: " + String.valueOf(error.getCode()));
+                    _queueViewModelProcessResult.setValue(result);
+                }
+            }
+
+        });
+
     }
 }
 

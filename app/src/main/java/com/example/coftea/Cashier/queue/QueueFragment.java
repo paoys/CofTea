@@ -90,7 +90,7 @@ public class QueueFragment extends Fragment {
             queueOrderAdapter.UpdateList(queueOrders);
         });
 
-        queueViewModel.queueOrderToDone.observe(getViewLifecycleOwner(), orderItem -> {
+        queueViewModel.queueOrderToProcess.observe(getViewLifecycleOwner(), orderItem -> {
             if (orderItem == null) return;
             OrderDialogFragment existingFragment = (OrderDialogFragment) getParentFragmentManager().findFragmentByTag("QueueOrderToDone");
 
