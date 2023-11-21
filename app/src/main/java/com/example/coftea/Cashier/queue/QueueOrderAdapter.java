@@ -53,6 +53,10 @@ public class QueueOrderAdapter extends RecyclerView.Adapter<QueueOrderAdapter.Qu
             holder.btnQueueOrderCancel.setVisibility(View.GONE);
             return;
         }
+        else{
+            holder.btnQueueOrderProcess.setVisibility(View.VISIBLE);
+            holder.btnQueueOrderCancel.setVisibility(View.VISIBLE);
+        }
 
         holder.btnQueueOrderProcess.setOnClickListener(view -> queueViewModel.setQueueOrderToProcess(queueEntry));
         holder.btnQueueOrderCancel.setOnClickListener(view -> queueViewModel.setQueueOrderToCancel(queueEntry));
