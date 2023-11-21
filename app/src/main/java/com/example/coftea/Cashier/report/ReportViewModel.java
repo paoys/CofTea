@@ -10,6 +10,7 @@ import androidx.lifecycle.ViewModel;
 
 import com.example.coftea.Cashier.order.ReceiptEntry;
 import com.example.coftea.data.OrderStatus;
+import com.example.coftea.data.Product;
 import com.example.coftea.repository.RealtimeDB;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
@@ -30,67 +31,93 @@ public class ReportViewModel extends ViewModel {
     private final RealtimeDB<ReceiptEntry> realtimeDB;
     private final DatabaseReference receiptBDRef;
     private ChildEventListener childEventListener;
+    private RealtimeDB<Product> productRealtimeDB;
+    private MutableLiveData<ArrayList<Product>> _productList = new MutableLiveData<>(new ArrayList<>());
+    public LiveData<ArrayList<Product>> productList;
     public ReportViewModel(){
         labels = _labels;
         barArraylist = _barArraylist;
         realtimeDB = new RealtimeDB<>("cashier/receipts");
+        productRealtimeDB = new RealtimeDB<>("products");
         receiptBDRef = realtimeDB.get().getRef();
-        receiptEntryList = new ArrayList<>();
+        receiptEntryList = _receiptEntryList;
+        productList = _productList;
         setChildEventListener();
+        getProductList();
+    }
+
+    public void getProductList(){
+        DatabaseReference productDBRef = productRealtimeDB.getDatabaseReference();
+        productDBRef.get().addOnSuccessListener(dataSnapshot -> {
+            if(!dataSnapshot.exists()) return;
+            ArrayList<Product> products = new ArrayList<>();
+            for (DataSnapshot snapshot : dataSnapshot.getChildren()){
+                Product product = snapshot.getValue(Product.class);
+                products.add(product);
+            }
+            _productList.setValue(products);
+        });
     }
 
     public void getDailyReport(OrderStatus orderStatus, Long from, Long to){
-        receiptEntryList.clone();
+        _receiptEntryList.setValue(new ArrayList<>());
         Query filterQueueDB = receiptBDRef.orderByChild("status").equalTo(orderStatus.toString());
 
         filterQueueDB.removeEventListener(childEventListener);
         filterQueueDB.addChildEventListener(childEventListener);
+
     }
     public void getWeeklyReport(OrderStatus orderStatus, Long from, Long to){
-        receiptEntryList.clone();
+        _receiptEntryList.setValue(new ArrayList<>());
         Query filterQueueDB = receiptBDRef.orderByChild("status").equalTo(orderStatus.toString());
         filterQueueDB.removeEventListener(childEventListener);
         filterQueueDB.addChildEventListener(childEventListener);
     }
 
     public void getMonthlyReport(OrderStatus orderStatus, Long from, Long to){
-        receiptEntryList.clone();
+        _receiptEntryList.setValue(new ArrayList<>());
         Query filterQueueDB = receiptBDRef.orderByChild("status").equalTo(orderStatus.toString());
         filterQueueDB.removeEventListener(childEventListener);
         filterQueueDB.addChildEventListener(childEventListener);
     }
     public void getQuarterlyReport(OrderStatus orderStatus, Long from, Long to){
-        receiptEntryList.clone();
+        _receiptEntryList.setValue(new ArrayList<>());
         Query filterQueueDB = receiptBDRef.orderByChild("status").equalTo(orderStatus.toString());
         filterQueueDB.removeEventListener(childEventListener);
         filterQueueDB.addChildEventListener(childEventListener);
     }
     public void getYearlyReport(OrderStatus orderStatus, Long from, Long to){
-        receiptEntryList.clone();
+        _receiptEntryList.setValue(new ArrayList<>());
         Query filterQueueDB = receiptBDRef.orderByChild("status").equalTo(orderStatus.toString());
         filterQueueDB.removeEventListener(childEventListener);
         filterQueueDB.addChildEventListener(childEventListener);
     }
-    private ArrayList<ReceiptEntry> receiptEntryList;
+    private MutableLiveData<ArrayList<ReceiptEntry>> _receiptEntryList = new MutableLiveData<>(new ArrayList());
+    public LiveData<ArrayList<ReceiptEntry>> receiptEntryList;
     private void setChildEventListener() {
         childEventListener = new ChildEventListener() {
             @Override
             public void onChildAdded(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+                if (_receiptEntryList.getValue() == null) {
+                    return;
+                }
                 ReceiptEntry item = snapshot.getValue(ReceiptEntry.class);
                 item.setId(snapshot.getKey());
-                ArrayList<ReceiptEntry> list = new ArrayList<>(receiptEntryList);
+                ArrayList<ReceiptEntry> list = new ArrayList<>(_receiptEntryList.getValue());
                 list.add(item);
-                receiptEntryList = list;
+                _receiptEntryList.setValue(list);
             }
 
             @Override
             public void onChildChanged(@NonNull DataSnapshot snapshot, @Nullable String previousChildName) {
-
+                if (_receiptEntryList.getValue() == null) {
+                    return;
+                }
                 ReceiptEntry newItem = snapshot.getValue(ReceiptEntry.class);
                 String itemId = snapshot.getKey();
+                newItem.setId(itemId);
 
-                ArrayList<ReceiptEntry> list = new ArrayList<>(receiptEntryList);
+                ArrayList<ReceiptEntry> list = new ArrayList<>(_receiptEntryList.getValue());
 
                 for (int i = 0; i < list.size(); i++) {
                     ReceiptEntry existingItem = list.get(i);
@@ -99,15 +126,16 @@ public class ReportViewModel extends ViewModel {
                         return;
                     }
                 }
-                receiptEntryList = list;
+                _receiptEntryList.setValue(list);
             }
 
             @Override
             public void onChildRemoved(@NonNull DataSnapshot snapshot) {
-
+                if (_receiptEntryList.getValue() == null) {
+                    return;
+                }
                 String itemId = snapshot.getKey();
-
-                ArrayList<ReceiptEntry> list = new ArrayList<>(receiptEntryList);
+                ArrayList<ReceiptEntry> list = new ArrayList<>(_receiptEntryList.getValue());
 
                 for (int i = 0; i < list.size(); i++) {
                     ReceiptEntry existingItem = list.get(i);
@@ -116,7 +144,7 @@ public class ReportViewModel extends ViewModel {
                         return;
                     }
                 }
-                receiptEntryList = list;
+                _receiptEntryList.setValue(list);
             }
 
             @Override
