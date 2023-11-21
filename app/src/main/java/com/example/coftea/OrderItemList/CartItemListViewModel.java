@@ -19,6 +19,10 @@ import java.util.ArrayList;
 public class CartItemListViewModel extends ViewModel {
     private MutableLiveData<ArrayList<CartItem>> _cartItems = new MutableLiveData<>(new ArrayList<>());
     public LiveData<ArrayList<CartItem>> cartItems;
+
+    public RealtimeDB<CartItem> getRealtimeDB() {
+        return realtimeDB;
+    }
     private final RealtimeDB<CartItem> realtimeDB;
 
     public CartItemListViewModel(String id){

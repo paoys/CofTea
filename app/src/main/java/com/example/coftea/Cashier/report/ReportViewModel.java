@@ -9,15 +9,12 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.coftea.Cashier.order.ReceiptEntry;
-import com.example.coftea.Cashier.queue.QueueOrder;
 import com.example.coftea.data.OrderStatus;
-import com.example.coftea.data.Product;
 import com.example.coftea.repository.RealtimeDB;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
 
 import java.util.ArrayList;

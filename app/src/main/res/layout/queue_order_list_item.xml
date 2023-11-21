@@ -52,13 +52,13 @@
         tools:text="P 100.00" />
 
     <Button
-        android:id="@+id/btnQueueOrderDone"
+        android:id="@+id/btnQueueOrderProcess"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginLeft="16dp"
         android:layout_marginTop="8dp"
-        android:text="FINISH ORDER"
+        android:text="PROCESS ORDER"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/tvQueueOrderAmount" />
 
@@ -72,6 +72,6 @@
         android:text="CANCEL ORDER"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnQueueOrderDone" />
+        app:layout_constraintTop_toTopOf="@+id/btnQueueOrderProcess" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

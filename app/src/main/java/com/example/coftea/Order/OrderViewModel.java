@@ -1,5 +1,7 @@
 package com.example.coftea.Order;
 
+import android.util.Log;
+
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
@@ -14,6 +16,10 @@ public class OrderViewModel extends ViewModel {
     private MutableLiveData<OrderResult> _orderResult = new MutableLiveData<>();
     public LiveData<OrderResult> orderResult;
 
+    public RealtimeDB<Order> getRealtimeDB() {
+        return realtimeDB;
+    }
+
     private final RealtimeDB<Order> realtimeDB;
 
     public OrderViewModel(String id){
@@ -27,6 +33,9 @@ public class OrderViewModel extends ViewModel {
         realtimeDB.getDatabaseReference().get()
                 .addOnSuccessListener(dataSnapshot -> {
                     Order order = dataSnapshot.getValue(Order.class);
+                    Object test = dataSnapshot.child("isOrderPlaced").getValue();
+                    Log.e("====", String.valueOf(test));
+                    Log.e("====", String.valueOf(order));
                     OrderResult orderResult = new OrderResult(order);
                     _orderResult.setValue(orderResult);
                 })

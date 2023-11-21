@@ -1,6 +1,7 @@
 package com.example.coftea.Cashier.queue;
 
 import android.util.Log;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
@@ -9,44 +10,49 @@ import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 
 import com.example.coftea.Cashier.order.CartItem;
-import com.example.coftea.data.Order;
+import com.example.coftea.Cashier.order.QueueEntry;
+import com.example.coftea.data.OrderActionStatus;
 import com.example.coftea.data.OrderStatus;
-import com.example.coftea.data.Product;
 import com.example.coftea.repository.RealtimeDB;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
 import com.google.firebase.database.Query;
+import com.google.firebase.database.Transaction;
 
 import java.util.ArrayList;
+import java.util.concurrent.CountDownLatch;
 
 public class QueueViewModel extends ViewModel {
 
-    private MutableLiveData<ArrayList<QueueOrder>> _queueOrderList = new MutableLiveData<>(new ArrayList<>());
-    public LiveData<ArrayList<QueueOrder>> queueOrderList;
-    private MutableLiveData<QueueOrder> _queueOrderToDone = new MutableLiveData<>();
-    public LiveData<QueueOrder> queueOrderToDone;
-    private MutableLiveData<QueueOrder> _queueOrderToCancel = new MutableLiveData<>();
-    public LiveData<QueueOrder> queueOrderToCancel;
-    private final RealtimeDB<QueueOrder> realtimeDB;
+    private MutableLiveData<ArrayList<QueueEntry>> _queueOrderList = new MutableLiveData<>(new ArrayList<>());
+    public LiveData<ArrayList<QueueEntry>> queueOrderList;
+    private MutableLiveData<QueueEntry> _queueOrderToProcess = new MutableLiveData<>();
+    public LiveData<QueueEntry> queueOrderToProcess;
+    private MutableLiveData<QueueEntry> _queueOrderToCancel = new MutableLiveData<>();
+    public LiveData<QueueEntry> queueOrderToCancel;
+    private final RealtimeDB<QueueEntry> queueRealtimeDB, receiptsRealtimeDB, orderRealtimeDB;
     private OrderStatus orderStatus;
     private ChildEventListener childEventListener;
     public QueueViewModel(OrderStatus orderStatus) {
         queueOrderList = _queueOrderList;
-        queueOrderToDone = _queueOrderToDone;
+        queueOrderToProcess = _queueOrderToProcess;
         queueOrderToCancel = _queueOrderToCancel;
         cartItemList = _cartItemList;
+        queueViewModelProcessResult = _queueViewModelProcessResult;
         this.orderStatus = orderStatus;
-        realtimeDB = new RealtimeDB<>("cashier/queue");
+        queueRealtimeDB = new RealtimeDB<>("cashier/queue");
+        receiptsRealtimeDB = new RealtimeDB<>("cashier/receipts");
+        orderRealtimeDB = new RealtimeDB<>("order");
         setChildEventListener();
         listenUpdate();
     }
 
     private void listenUpdate(){
-        DatabaseReference queueDBRef = realtimeDB.get().getRef();
+        DatabaseReference queueDBRef = queueRealtimeDB.get().getRef();
         Query filterQueueDB = queueDBRef.orderByChild("status").equalTo(orderStatus.toString());
         filterQueueDB.removeEventListener(childEventListener);
         filterQueueDB.addChildEventListener(childEventListener);
@@ -63,10 +69,10 @@ public class QueueViewModel extends ViewModel {
                 if (_queueOrderList.getValue() == null) {
                     return;
                 }
-
-                QueueOrder item = snapshot.getValue(QueueOrder.class);
+                QueueEntry item = snapshot.getValue(QueueEntry.class);
+                if(item.getStatus() != orderStatus) return;
                 item.setId(snapshot.getKey());
-                ArrayList<QueueOrder> list = new ArrayList<>(_queueOrderList.getValue());
+                ArrayList<QueueEntry> list = new ArrayList<>(_queueOrderList.getValue());
                 list.add(item);
                 _queueOrderList.setValue(list);
             }
@@ -77,13 +83,13 @@ public class QueueViewModel extends ViewModel {
                     return;
                 }
 
-                QueueOrder newItem = snapshot.getValue(QueueOrder.class);
+                QueueEntry newItem = snapshot.getValue(QueueEntry.class);
                 String itemId = snapshot.getKey();
 
-                ArrayList<QueueOrder> list = new ArrayList<>(_queueOrderList.getValue());
+                ArrayList<QueueEntry> list = new ArrayList<>(_queueOrderList.getValue());
 
                 for (int i = 0; i < list.size(); i++) {
-                    QueueOrder existingItem = list.get(i);
+                    QueueEntry existingItem = list.get(i);
                     if (existingItem != null && existingItem.getId() != null && existingItem.getId().equals(itemId)) {
                         list.set(i, newItem);
                         _queueOrderList.setValue(list);
@@ -100,10 +106,10 @@ public class QueueViewModel extends ViewModel {
 
                 String itemId = snapshot.getKey();
 
-                ArrayList<QueueOrder> list = new ArrayList<>(_queueOrderList.getValue());
+                ArrayList<QueueEntry> list = new ArrayList<>(_queueOrderList.getValue());
 
                 for (int i = 0; i < list.size(); i++) {
-                    QueueOrder existingItem = list.get(i);
+                    QueueEntry existingItem = list.get(i);
                     if (existingItem != null && existingItem.getId() != null && existingItem.getId().equals(itemId)) {
                         list.remove(i);
                         _queueOrderList.setValue(list);
@@ -121,16 +127,37 @@ public class QueueViewModel extends ViewModel {
             }
         };
     }
-    public void setQueueOrderToDone(QueueOrder queueOrder){
-        getQueueOrderItemList(queueOrder.getReceiptID());
-        _queueOrderToDone.postValue(queueOrder);
+    public void processQueueOrder(OrderActionStatus actionStatus){
+        String orderID = _queueOrderToProcess.getValue().getOrderID();
+        switch (actionStatus){
+            case TO_DONE:
+               Log.e("====1","TEST");
+               break;
+            case TO_READY:
+                Log.e("====2","TEST");
+                break;
+            case TO_CANCEL:
+                Log.e("====3","TEST");
+                break;
+            default:
+                break;
+        }
     }
-    public void clearQueueOrderToDone(){
+
+    public void updateQueueOrderStatus(String orderID, String queueID, boolean isOnline){
+//        receiptsRealtimeDB.getDatabaseReference().
+    }
+
+    public void setQueueOrderToProcess(QueueEntry queueEntry){
+        getQueueOrderItemList(queueEntry.getReceiptID());
+        _queueOrderToProcess.setValue(queueEntry);
+    }
+    public void clearQueueOrderToProcess(){
         _cartItemList.setValue(null);
-        _queueOrderToDone.setValue(null);
+        _queueOrderToProcess.setValue(null);
     }
-    public void setQueueOrderToCancel(QueueOrder queueOrder){
-        _queueOrderToCancel.postValue(queueOrder);
+    public void setQueueOrderToCancel(QueueEntry queueEntry){
+        _queueOrderToCancel.postValue(queueEntry);
     }
     public void clearQueueOrderToCancel(){
         _cartItemList.setValue(null);
@@ -151,6 +178,233 @@ public class QueueViewModel extends ViewModel {
                     cartItems.add(item);
                 }
                 _cartItemList.setValue(cartItems);
+            }
+        });
+    }
+
+    private MutableLiveData<QueueViewModelProcessResult> _queueViewModelProcessResult = new MutableLiveData<>();
+    public LiveData<QueueViewModelProcessResult> queueViewModelProcessResult;
+
+    public void readyQueueOrder(){
+        if(_queueOrderToProcess.getValue() == null) return;
+        QueueEntry entry = _queueOrderToProcess.getValue();
+        Boolean isOnline = entry.getOnlineOrder();
+
+        if(isOnline != null && isOnline){
+            Log.e("READY_QUEUE_ORDER", "ONLINE");
+            processReadyOnlineQueueOrder(entry);
+        }
+        else{
+            Log.e("READY_QUEUE_ORDER", "WALK IN");
+            processReadyQueueOrder(entry);
+        }
+    }
+
+    private void processReadyQueueOrder(QueueEntry entry){
+        String queueID = entry.getId();
+        String receiptID = entry.getReceiptID();
+        RealtimeDB realtimeDB = new RealtimeDB("cashier");
+        DatabaseReference cashierDBRef = realtimeDB.getDatabaseReference();
+        cashierDBRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                currentData.child("queue").child(queueID).child("status").setValue(OrderStatus.READY);
+                currentData.child("receipts").child(receiptID).child("status").setValue(OrderStatus.READY);
+                return Transaction.success(currentData);
+            }
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                Log.e("DATABASE ERROR",String.valueOf(error));
+                QueueViewModelProcessResult result;
+                if (committed && error == null) {
+                    result = new QueueViewModelProcessResult(entry);
+                    _queueViewModelProcessResult.setValue(result);
+                } else {
+                    result = new QueueViewModelProcessResult("Process Online Payment Failed: "+String.valueOf(error.getCode()));
+                    _queueViewModelProcessResult.setValue(result);
+                }
+            }
+        });
+    }
+    private void processReadyOnlineQueueOrder(QueueEntry entry){
+        String queueID = entry.getId();
+        String receiptID = entry.getReceiptID();
+
+        RealtimeDB realtimeDB = new RealtimeDB("cashier");
+        DatabaseReference cashierDBRef = realtimeDB.getDatabaseReference();
+        DatabaseReference orderDBRef = orderRealtimeDB.getDatabaseReference();
+
+        cashierDBRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                currentData.child("queue").child(queueID).child("status").setValue(OrderStatus.READY);
+                currentData.child("receipts").child(receiptID).child("status").setValue(OrderStatus.READY);
+                return Transaction.success(currentData);
+            }
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                Log.e("DATABASE ERROR", String.valueOf(error));
+                QueueViewModelProcessResult result;
+                if (committed && error == null) {
+                    orderDBRef.child(entry.getCustomerPhone()).child("status").setValue(OrderStatus.READY);
+                    result = new QueueViewModelProcessResult(entry);
+                    _queueViewModelProcessResult.setValue(result);
+                } else {
+                    result = new QueueViewModelProcessResult("Process Online Payment Failed: " + String.valueOf(error.getCode()));
+                    _queueViewModelProcessResult.setValue(result);
+                }
+            }
+        });
+    }
+
+    public void finishQueueOrder(){
+        if(_queueOrderToProcess.getValue() == null) return;
+        QueueEntry entry = _queueOrderToProcess.getValue();
+        Boolean isOnline = entry.getOnlineOrder();
+
+        if(isOnline != null && isOnline){
+            Log.e("FINISH_QUEUE_ORDER", "ONLINE");
+            processFinishOnlineQueueOrder(entry);
+        }
+        else{
+            Log.e("FINISH_QUEUE_ORDER", "WALK IN");
+            processFinishQueueOrder(entry);
+        }
+    }
+    private void processFinishQueueOrder(QueueEntry entry){
+        String queueID = entry.getId();
+        String receiptID = entry.getReceiptID();
+        RealtimeDB realtimeDB = new RealtimeDB("cashier");
+        DatabaseReference cashierDBRef = realtimeDB.getDatabaseReference();
+        cashierDBRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                currentData.child("queue").child(queueID).child("status").setValue(OrderStatus.DONE);
+                currentData.child("receipts").child(receiptID).child("status").setValue(OrderStatus.DONE);
+                return Transaction.success(currentData);
+            }
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                Log.e("DATABASE ERROR",String.valueOf(error));
+                QueueViewModelProcessResult result;
+                if (committed && error == null) {
+                    result = new QueueViewModelProcessResult(entry);
+                    _queueViewModelProcessResult.setValue(result);
+                } else {
+                    result = new QueueViewModelProcessResult("Finish Transaction Failed: "+String.valueOf(error.getCode()));
+                    _queueViewModelProcessResult.setValue(result);
+                }
+            }
+        });
+    }
+    private void processFinishOnlineQueueOrder(QueueEntry entry){
+        String queueID = entry.getId();
+        String receiptID = entry.getReceiptID();
+
+        RealtimeDB realtimeDB = new RealtimeDB("cashier");
+        DatabaseReference cashierDBRef = realtimeDB.getDatabaseReference();
+        DatabaseReference orderDBRef = orderRealtimeDB.getDatabaseReference();
+
+        cashierDBRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                currentData.child("queue").child(queueID).child("status").setValue(OrderStatus.DONE);
+                currentData.child("receipts").child(receiptID).child("status").setValue(OrderStatus.DONE);
+                return Transaction.success(currentData);
+            }
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                Log.e("DATABASE ERROR OL", String.valueOf(error));
+                QueueViewModelProcessResult result;
+                if (committed && error == null) {
+                    orderDBRef.child(entry.getCustomerPhone()).setValue(null);
+                    result = new QueueViewModelProcessResult(entry);
+                    _queueViewModelProcessResult.setValue(result);
+                } else {
+                    result = new QueueViewModelProcessResult("Finish Transaction Failed: " + String.valueOf(error.getCode()));
+                    _queueViewModelProcessResult.setValue(result);
+                }
+            }
+        });
+    }
+
+
+    public void cancelQueueOrder(){
+        if(_queueOrderToCancel.getValue() == null) return;
+        QueueEntry entry = _queueOrderToCancel.getValue();
+        Boolean isOnline = entry.getOnlineOrder();
+
+        if(isOnline != null && isOnline){
+            Log.e("CANCEl_QUEUE_ORDER", "ONLINE");
+            processCancelQueueOrder(entry);
+        }
+        else{
+            Log.e("CANCEl_QUEUE_ORDER", "WALK IN");
+            processCancelOnlineQueueOrder(entry);
+        }
+    }
+
+    private void processCancelQueueOrder(QueueEntry entry){
+        String queueID = entry.getId();
+        String receiptID = entry.getReceiptID();
+        RealtimeDB realtimeDB = new RealtimeDB("cashier");
+        DatabaseReference cashierDBRef = realtimeDB.getDatabaseReference();
+        cashierDBRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                currentData.child("queue").child(queueID).child("status").setValue(OrderStatus.CANCELLED);
+                currentData.child("receipts").child(receiptID).child("status").setValue(OrderStatus.CANCELLED);
+                return Transaction.success(currentData);
+            }
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                Log.e("DATABASE ERROR",String.valueOf(error));
+                QueueViewModelProcessResult result;
+                if (committed && error == null) {
+                    result = new QueueViewModelProcessResult(entry);
+                    _queueViewModelProcessResult.setValue(result);
+                    clearQueueOrderToCancel();
+                } else {
+                    result = new QueueViewModelProcessResult("Cancel Transaction Failed: "+String.valueOf(error.getCode()));
+                    _queueViewModelProcessResult.setValue(result);
+                }
+            }
+        });
+    }
+    private void processCancelOnlineQueueOrder(QueueEntry entry){
+        String queueID = entry.getId();
+        String receiptID = entry.getReceiptID();
+
+        RealtimeDB realtimeDB = new RealtimeDB("cashier");
+        DatabaseReference cashierDBRef = realtimeDB.getDatabaseReference();
+        DatabaseReference orderDBRef = orderRealtimeDB.getDatabaseReference();
+
+        cashierDBRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                currentData.child("queue").child(queueID).child("status").setValue(OrderStatus.CANCELLED);
+                currentData.child("receipts").child(receiptID).child("status").setValue(OrderStatus.CANCELLED);
+                return Transaction.success(currentData);
+            }
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                Log.e("DATABASE ERROR OL", String.valueOf(error));
+                QueueViewModelProcessResult result;
+                if (committed && error == null) {
+                    orderDBRef.child(entry.getCustomerPhone()).setValue(null);
+                    result = new QueueViewModelProcessResult(entry);
+                    _queueViewModelProcessResult.setValue(result);
+                    clearQueueOrderToCancel();
+                } else {
+                    result = new QueueViewModelProcessResult("Cancel Transaction Failed: " + String.valueOf(error.getCode()));
+                    _queueViewModelProcessResult.setValue(result);
+                }
             }
         });
     }

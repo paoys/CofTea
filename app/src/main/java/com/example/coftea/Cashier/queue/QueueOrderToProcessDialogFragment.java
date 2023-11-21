@@ -12,18 +12,19 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.example.coftea.databinding.DialogFragmentQueueOrderToDoneBinding;
+import com.example.coftea.data.OrderStatus;
+import com.example.coftea.databinding.DialogFragmentQueueOrderToProcessBinding;
 import com.example.coftea.utilities.PHPCurrencyFormatter;
 
 
 public class QueueOrderToProcessDialogFragment extends DialogFragment {
-    PHPCurrencyFormatter formatter = PHPCurrencyFormatter.getInstance();
-    DialogFragmentQueueOrderToDoneBinding binding;
-    QueueOrderToProcessAdapter queueOrderToProcessAdapter;
-    RecyclerView rvQueueOrderList;
-    Button btnQueueOrderConfirm, btnQueueOrderClose;
-    TextView tvQueueOrderCustomerName, tvQueueOrderAmount;
-    QueueViewModel queueViewModel;
+    private PHPCurrencyFormatter formatter = PHPCurrencyFormatter.getInstance();
+    private DialogFragmentQueueOrderToProcessBinding binding;
+    private QueueOrderToProcessAdapter queueOrderToProcessAdapter;
+    private RecyclerView rvQueueOrderList;
+    private Button btnQueueOrderReady, btnQueueOrderDone, btnQueueOrderClose;
+    private TextView tvQueueOrderCustomerName, tvQueueOrderAmount;
+    private QueueViewModel queueViewModel;
 
     public QueueOrderToProcessDialogFragment(QueueViewModel queueViewModel){
         this.queueViewModel = queueViewModel;
@@ -32,12 +33,15 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         // Inflate the layout for this fragment
 
-        binding = DialogFragmentQueueOrderToDoneBinding.inflate(inflater, container, false);
+        binding = DialogFragmentQueueOrderToProcessBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
 
-        rvQueueOrderList = binding.rvQueueOrderToDoneList;
-        btnQueueOrderConfirm = binding.btnQueueOrderToDoneConfirm;
-        btnQueueOrderClose = binding.btnQueueOrderToDoneClose;
+        rvQueueOrderList = binding.rvQueueOrderToProcessList;
+        btnQueueOrderDone = binding.btnQueueOrderToProcessDone;
+        btnQueueOrderReady = binding.btnQueueOrderToProcessReady;
+        btnQueueOrderClose = binding.btnQueueOrderToProcessClose;
+
+        btnQueueOrderReady.setVisibility(View.GONE);
 
         tvQueueOrderAmount = binding.tvQueueOrderToDoneAmount;
         tvQueueOrderCustomerName = binding.tvQueueOrderCustomerName;
@@ -55,8 +59,10 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
 
         rvQueueOrderList.setAdapter(queueOrderToProcessAdapter);
 
-        queueViewModel.queueOrderToDone.observe(getViewLifecycleOwner(), queueOrder -> {
+        queueViewModel.queueOrderToProcess.observe(getViewLifecycleOwner(), queueOrder -> {
             if(queueOrder == null) return;
+            if(queueOrder.getStatus() == OrderStatus.PENDING)
+                btnQueueOrderReady.setVisibility(View.VISIBLE);
             String price = formatter.formatAsPHP(queueOrder.getTotalPayment());
             tvQueueOrderCustomerName.setText(queueOrder.getCustomerName());
             tvQueueOrderAmount.setText(price);
@@ -67,12 +73,15 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
             queueOrderToProcessAdapter.UpdateList(cartItems);
         });
 
-        btnQueueOrderConfirm.setOnClickListener(view -> {
-            queueViewModel.clearQueueOrderToDone();
+        btnQueueOrderReady.setOnClickListener(view -> {
+            queueViewModel.readyQueueOrder();
+        });
+        btnQueueOrderDone.setOnClickListener(view -> {
+            queueViewModel.finishQueueOrder();
         });
 
         btnQueueOrderClose.setOnClickListener(view -> {
-            queueViewModel.clearQueueOrderToDone();
+            queueViewModel.clearQueueOrderToProcess();
             dismiss();
         });
 
@@ -81,13 +90,13 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
 
     @Override
     public void onDestroyView() {
-        queueViewModel.clearQueueOrderToDone();
+        queueViewModel.clearQueueOrderToProcess();
         super.onDestroyView();
     }
 
     @Override
     public void onDetach() {
-        queueViewModel.clearQueueOrderToDone();
+        queueViewModel.clearQueueOrderToProcess();
         super.onDetach();
     }
 }

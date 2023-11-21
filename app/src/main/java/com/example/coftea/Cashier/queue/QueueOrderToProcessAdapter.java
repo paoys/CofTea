@@ -29,7 +29,7 @@ public class QueueOrderToProcessAdapter extends RecyclerView.Adapter<QueueOrderT
     @NonNull
     @Override
     public QueueOrderToProcessAdapter.QueueOrderItemViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dialog_fragment_queue_order_to_done_item, parent, false);
+        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.dialog_fragment_queue_order_to_process_item, parent, false);
         return new QueueOrderToProcessAdapter.QueueOrderItemViewHolder(view);
     }
 
