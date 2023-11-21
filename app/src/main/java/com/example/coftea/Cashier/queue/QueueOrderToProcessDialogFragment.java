@@ -40,6 +40,8 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
         btnQueueOrderReady = binding.btnQueueOrderToProcessReady;
         btnQueueOrderClose = binding.btnQueueOrderToProcessClose;
 
+        btnQueueOrderReady.setVisibility(View.GONE);
+
         tvQueueOrderAmount = binding.tvQueueOrderToDoneAmount;
         tvQueueOrderCustomerName = binding.tvQueueOrderCustomerName;
 
@@ -69,11 +71,10 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
         });
 
         btnQueueOrderReady.setOnClickListener(view -> {
-//            queueViewModel.setQueueOrderToProcess();
             queueViewModel.readyQueueOrder();
         });
         btnQueueOrderDone.setOnClickListener(view -> {
-//            queueViewModel.setQueueOrderToProcess();
+            queueViewModel.finishQueueOrder();
         });
 
         btnQueueOrderClose.setOnClickListener(view -> {

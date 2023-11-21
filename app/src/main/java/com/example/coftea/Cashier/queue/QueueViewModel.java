@@ -233,7 +233,7 @@ public class QueueViewModel extends ViewModel {
 
         RealtimeDB realtimeDB = new RealtimeDB("cashier");
         DatabaseReference cashierDBRef = realtimeDB.getDatabaseReference();
-        DatabaseReference queueDBRef = queueRealtimeDB.getDatabaseReference();
+        DatabaseReference orderDBRef = orderRealtimeDB.getDatabaseReference();
 
         cashierDBRef.runTransaction(new Transaction.Handler() {
             @NonNull
@@ -248,7 +248,7 @@ public class QueueViewModel extends ViewModel {
                 Log.e("DATABASE ERROR", String.valueOf(error));
                 QueueViewModelProcessResult result;
                 if (committed && error == null) {
-                    queueDBRef.child(queueID).child("status").setValue(OrderStatus.READY);
+                    orderDBRef.child(entry.getCustomerPhone()).child("status").setValue(OrderStatus.READY);
                     result = new QueueViewModelProcessResult(entry);
                     _queueViewModelProcessResult.setValue(result);
                 } else {
@@ -256,9 +256,81 @@ public class QueueViewModel extends ViewModel {
                     _queueViewModelProcessResult.setValue(result);
                 }
             }
-
         });
+    }
 
+    public void finishQueueOrder(){
+        if(_queueOrderToProcess.getValue() == null) return;
+        QueueEntry entry = _queueOrderToProcess.getValue();
+        Boolean isOnline = entry.getOnlineOrder();
+
+        if(isOnline != null && isOnline){
+            Log.e("FINISH_QUEUE_ORDER", "ONLINE");
+            processFinishOnlineQueueOrder(entry);
+        }
+        else{
+            Log.e("FINISH_QUEUE_ORDER", "WALK IN");
+            processFinishQueueOrder(entry);
+        }
+    }
+
+    private void processFinishQueueOrder(QueueEntry entry){
+        String queueID = entry.getId();
+        String receiptID = entry.getReceiptID();
+        RealtimeDB realtimeDB = new RealtimeDB("cashier");
+        DatabaseReference cashierDBRef = realtimeDB.getDatabaseReference();
+        cashierDBRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                currentData.child("queue").child(queueID).child("status").setValue(OrderStatus.DONE);
+                currentData.child("receipts").child(receiptID).child("status").setValue(OrderStatus.DONE);
+                return Transaction.success(currentData);
+            }
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                Log.e("DATABASE ERROR",String.valueOf(error));
+                QueueViewModelProcessResult result;
+                if (committed && error == null) {
+                    result = new QueueViewModelProcessResult(entry);
+                    _queueViewModelProcessResult.setValue(result);
+                } else {
+                    result = new QueueViewModelProcessResult("Finish Transaction Failed: "+String.valueOf(error.getCode()));
+                    _queueViewModelProcessResult.setValue(result);
+                }
+            }
+        });
+    }
+    private void processFinishOnlineQueueOrder(QueueEntry entry){
+        String queueID = entry.getId();
+        String receiptID = entry.getReceiptID();
+
+        RealtimeDB realtimeDB = new RealtimeDB("cashier");
+        DatabaseReference cashierDBRef = realtimeDB.getDatabaseReference();
+        DatabaseReference orderDBRef = orderRealtimeDB.getDatabaseReference();
+
+        cashierDBRef.runTransaction(new Transaction.Handler() {
+            @NonNull
+            @Override
+            public Transaction.Result doTransaction(@NonNull MutableData currentData) {
+                currentData.child("queue").child(queueID).child("status").setValue(OrderStatus.DONE);
+                currentData.child("receipts").child(receiptID).child("status").setValue(OrderStatus.DONE);
+                return Transaction.success(currentData);
+            }
+            @Override
+            public void onComplete(@Nullable DatabaseError error, boolean committed, @Nullable DataSnapshot currentData) {
+                Log.e("DATABASE ERROR OL", String.valueOf(error));
+                QueueViewModelProcessResult result;
+                if (committed && error == null) {
+                    orderDBRef.child(entry.getCustomerPhone()).setValue(null);
+                    result = new QueueViewModelProcessResult(entry);
+                    _queueViewModelProcessResult.setValue(result);
+                } else {
+                    result = new QueueViewModelProcessResult("Finish Transaction Failed: " + String.valueOf(error.getCode()));
+                    _queueViewModelProcessResult.setValue(result);
+                }
+            }
+        });
     }
 }
 
