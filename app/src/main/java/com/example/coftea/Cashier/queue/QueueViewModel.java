@@ -69,8 +69,8 @@ public class QueueViewModel extends ViewModel {
                 if (_queueOrderList.getValue() == null) {
                     return;
                 }
-
                 QueueEntry item = snapshot.getValue(QueueEntry.class);
+                if(item.getStatus() != orderStatus) return;
                 item.setId(snapshot.getKey());
                 ArrayList<QueueEntry> list = new ArrayList<>(_queueOrderList.getValue());
                 list.add(item);

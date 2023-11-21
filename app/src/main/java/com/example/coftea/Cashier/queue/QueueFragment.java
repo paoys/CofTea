@@ -114,7 +114,10 @@ public class QueueFragment extends Fragment {
                 dialog.dismiss();
             });
 
-            builder.setNegativeButton("Close", (dialog, which) -> dialog.dismiss());
+            builder.setNegativeButton("Close", (dialog, which) -> {
+                queueViewModel.cancelQueueOrder();
+                dialog.dismiss();
+            });
 
             builder.create().show();
         });
