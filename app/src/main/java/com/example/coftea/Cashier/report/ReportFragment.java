@@ -4,10 +4,12 @@ import android.app.Activity;
 import android.content.Intent;
 import android.graphics.Color;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.annotation.RequiresApi;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 
@@ -18,7 +20,10 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.Toast;
 
+import com.example.coftea.Cashier.order.CartItem;
+import com.example.coftea.Cashier.order.ReceiptEntry;
 import com.example.coftea.data.OrderStatus;
+import com.example.coftea.data.Product;
 import com.example.coftea.databinding.FragmentReportBinding;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
@@ -26,40 +31,50 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import java.io.OutputStream;
+import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
+import java.util.Objects;
 import java.util.Random;
+import java.util.stream.Collectors;
 
 public class ReportFragment extends Fragment {
-    BarDataSet barDataSet;
-    ArrayList barArraylist;
+//    BarDataSet barDataSet;
+//    ArrayList barArraylist;
+//    BarData barData;
+//    BarChart barChart;
     LineChart lineChart;
-    BarData barData;
-    BarChart barChart;
+
     private Button btnReportDaily, btnReportWeekly, btnReportMonthly, btnReportQuarterly, btnReportYearly;
     private Button btnReportExport;
     private XAxis xAxis;
     private FragmentReportBinding binding;
     private ReportViewModel reportViewModel;
+    private ArrayList<Product> products;
+    private ArrayList<CartItem> cartItems;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentReportBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         init();
-        listen();
         return root;
     }
 
     private void init(){
-
-        barChart = binding.chartReport;
+        cartItems = new ArrayList<>();
+        lineChart = binding.lineChartReport;
         btnReportDaily = binding.btnReportDaily;
         btnReportWeekly = binding.btnReportWeekly;
         btnReportMonthly = binding.btnReportMonthly;
@@ -69,55 +84,133 @@ public class ReportFragment extends Fragment {
 
         reportViewModel = new ReportViewModel();
 
-        barArraylist = new ArrayList<>();
-        barDataSet = new BarDataSet(barArraylist,"Reports");
-        barData = new BarData(barDataSet);
-
-        barChart.setData(barData);
-        barDataSet.setColors(Color.BLACK);
-        barDataSet.setValueTextColor(Color.BLACK);
-        barDataSet.setValueTextSize(12f);
-        barChart.getDescription().setEnabled(true);
-
-        xAxis = barChart.getXAxis();
+//        barArraylist = new ArrayList<>();
+//        barDataSet = new BarDataSet(barArraylist,"Reports");
+//        barData = new BarData(barDataSet);
+//
+//        barChart.setData(barData);
+//        barDataSet.setColors(Color.BLACK);
+//        barDataSet.setValueTextColor(Color.BLACK);
+//        barDataSet.setValueTextSize(12f);
+//        barChart.getDescription().setEnabled(true);
+//
+        xAxis = lineChart.getXAxis();
         xAxis.setGranularity(1f);
         xAxis.setGranularityEnabled(true);
 
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+            initialListen();
+        }
+
         btnReportDaily.setOnClickListener(view -> {
-            barArraylist.clear();
-            reportViewModel.getDailyReport(OrderStatus.DONE, 1681916247000L, 1702997847000L);
+//            barArraylist.clear();
+            Date currentDate = new Date();
+            Date from = getStartOfDay(currentDate);
+            Date to = getEndOfDay(currentDate);
+            reportViewModel.getDailyReport(OrderStatus.DONE, from.getTime(), to.getTime());
+            updateButtonState(btnReportDaily);
         });
         btnReportWeekly.setOnClickListener(view -> {
-            barArraylist.clear();
-            reportViewModel.getWeeklyReport(OrderStatus.DONE, 1681916247000L, 1702997847000L);
+//            barArraylist.clear();
+            Date currentDate = new Date();
+            Date from = getStartOfWeek(currentDate);
+            Date to = getEndOfWeek(currentDate);
+            reportViewModel.getWeeklyReport(OrderStatus.DONE, from.getTime(), to.getTime());
+            updateButtonState(btnReportWeekly);
         });
         btnReportMonthly.setOnClickListener(view -> {
-            barArraylist.clear();
-            reportViewModel.getMonthlyReport(OrderStatus.DONE, 1681916247000L, 1702997847000L);
+//            barArraylist.clear();
+            Date currentDate = new Date();
+            Date from = getStartOfMonth(currentDate);
+            Date to = getEndOfMonth(currentDate);
+            reportViewModel.getMonthlyReport(OrderStatus.DONE, from.getTime(), to.getTime());
+            updateButtonState(btnReportMonthly);
         });
         btnReportQuarterly.setOnClickListener(view -> {
-            barArraylist.clear();
+//            barArraylist.clear();
             reportViewModel.getQuarterlyReport(OrderStatus.DONE, 1681916247000L, 1702997847000L);
+            updateButtonState(btnReportQuarterly);
         });
         btnReportYearly.setOnClickListener(view -> {
-            barArraylist.clear();
+//            barArraylist.clear();
             reportViewModel.getYearlyReport(OrderStatus.DONE, 1681916247000L, 1702997847000L);
+            updateButtonState(btnReportYearly);
         });
         btnReportExport.setOnClickListener(view -> {
             exportToPdf();
         });
     }
 
+    private void updateButtonState(Button activeButton){
+        btnReportDaily.setEnabled(true);
+        btnReportWeekly.setEnabled(true);
+        btnReportMonthly.setEnabled(true);
+        btnReportQuarterly.setEnabled(true);
+        btnReportYearly.setEnabled(true);
+
+        activeButton.setEnabled(false);
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void initialListen(){
+        reportViewModel.productList.observe(getViewLifecycleOwner(), products -> {
+            if(products == null) return;
+            if(products.size() == 0) return;
+            this.products = products;
+            Log.e("Products", String.valueOf(products));
+            listen();
+        });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void listen(){
         reportViewModel.labels.observe(getViewLifecycleOwner(), strings -> {
             if(strings == null) return;
             xAxis.setValueFormatter(new IndexAxisValueFormatter(strings));
         });
-        reportViewModel.barArraylist.observe(getViewLifecycleOwner(), arrayList -> {
-            if(arrayList == null) return;
-            barArraylist = arrayList;
+
+        reportViewModel.receiptEntryList.observe(getViewLifecycleOwner(), receiptEntries -> {
+            if(receiptEntries == null) return;
+            if(receiptEntries.size() == 0) {
+                cartItems.clear();
+                return;
+            }
+            Log.e("Receipts Count", String.valueOf(receiptEntries.size()));
+            ArrayList<CartItem> _cartItems = new ArrayList<>();
+            for ( ReceiptEntry entry : receiptEntries){
+                _cartItems.addAll(entry.getCartItems());
+            }
+            cartItems = _cartItems;
+            updateTable(_cartItems);
         });
     }
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
+    private void updateTable(ArrayList<CartItem> cartItems){
+//        ArrayList<BarEntry> barEntries = new ArrayList<>();
+        ArrayList<LineDataSet> dataSets = new ArrayList<>();
+        List<Entry> entries = new ArrayList<>();
+        for (int i = 0; i < this.products.size(); i++) {
+            Product product = this.products.get(i);
+
+            ArrayList<CartItem> list = cartItems.stream()
+                    .filter(item -> Objects.equals(item.getId(), product.getId()))
+                    .collect(Collectors.toCollection(ArrayList::new));
+
+            double total = list.stream().mapToDouble(CartItem::getTotalPrice).sum();
+
+            entries.add(new Entry(i, (float) total));
+        }
+        LineDataSet set = new LineDataSet(entries, "TEST");
+        LineData lineData = new LineData(set);
+        lineChart.setData(lineData);
+        lineChart.invalidate();
+//        barDataSet = new BarDataSet(barEntries,"Reports");
+//        barData = new BarData(barDataSet);
+//        barChart.setData(barData);
+//        barChart.invalidate();
+    }
+
     private void exportToPdf() {
         try {
             Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
@@ -176,4 +269,79 @@ public class ReportFragment extends Fragment {
                 }
             }
     );
+
+
+    private static Date getStartOfMonth(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.DAY_OF_MONTH, 1);
+        return calendar.getTime();
+    }
+    private static Date getEndOfMonth(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
+        return calendar.getTime();
+    }
+    private static Date getStartOfDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+        return calendar.getTime();
+    }
+
+    private static Date getEndOfDay(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+        return calendar.getTime();
+    }
+
+    private static Date getStartOfWeek(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        // Set the first day of the week to Sunday
+        calendar.setFirstDayOfWeek(Calendar.SUNDAY);
+        // Set the current date
+        calendar.setTime(date);
+        // Find the first day of the week
+        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+        // Set the time components to their minimum values (midnight)
+        resetTimeComponents(calendar);
+        return calendar.getTime();
+    }
+
+    private static Date getEndOfWeek(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        // Set the first day of the week to Sunday
+        calendar.setFirstDayOfWeek(Calendar.SUNDAY);
+        // Set the current date
+        calendar.setTime(date);
+        // Find the last day of the week
+        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek() + Calendar.DAY_OF_WEEK - 1);
+        // Set the time components to their maximum values (11:59:59.999 PM)
+        setTimeComponentsToMaximum(calendar);
+        return calendar.getTime();
+    }
+
+    private static void resetTimeComponents(Calendar calendar) {
+        calendar.set(Calendar.HOUR_OF_DAY, 0);
+        calendar.set(Calendar.MINUTE, 0);
+        calendar.set(Calendar.SECOND, 0);
+        calendar.set(Calendar.MILLISECOND, 0);
+    }
+
+    private static void setTimeComponentsToMaximum(Calendar calendar) {
+        calendar.set(Calendar.HOUR_OF_DAY, 23);
+        calendar.set(Calendar.MINUTE, 59);
+        calendar.set(Calendar.SECOND, 59);
+        calendar.set(Calendar.MILLISECOND, 999);
+    }
 }

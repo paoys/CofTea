@@ -42,7 +42,14 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.location.LocationManager;
 import android.provider.Settings;
+
 public class AdvanceOrderFragment extends Fragment {
+
+    private static double SHOP_LATITUDE = 14.861162049832275;
+    private static double SHOP_LONGITUDE = 120.80947378369852;
+    private static double MINIMUM_DISTANCE_TO_SHOP = 600;
+
+
     private final UserProvider userProvider = UserProvider.getInstance();
     private ImageButton ibCartButton;
     private TextView tvOrderItemCount;
@@ -79,12 +86,12 @@ public class AdvanceOrderFragment extends Fragment {
                         from.setLongitude(longitude);
 
                         Location to = new Location("TO");
-                        to.setLatitude(14.861162049832275);
-                        to.setLongitude(120.80947378369852);
+                        to.setLatitude(SHOP_LATITUDE);
+                        to.setLongitude(SHOP_LONGITUDE);
 
                         float distance = from.distanceTo(to);
 
-                        if(distance <= 600){
+                        if(distance <= MINIMUM_DISTANCE_TO_SHOP){
                             startListen();
                             llAdvanceOrderOutOfRange.setVisibility(View.GONE);
                         }

@@ -8,7 +8,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-public class ReceiptEntry implements Serializable {
+public class ReceiptEntry {
     private List<CartItem> cartItems;
 
     public String getId() {
@@ -60,7 +60,7 @@ public class ReceiptEntry implements Serializable {
         this.createdAt = date.getTime();
         this.status = status;
     }
-
+    public ReceiptEntry(){}
     public List<CartItem> getCartItems() {
         return cartItems;
     }

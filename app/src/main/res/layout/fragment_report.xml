@@ -51,11 +51,11 @@
             android:text="Yearly"/>
     </LinearLayout>
 
-    <com.github.mikephil.charting.charts.BarChart
+    <com.github.mikephil.charting.charts.LineChart
         android:layout_width="match_parent"
         android:layout_height="0dp"
         android:layout_marginVertical="5dp"
-        android:id="@+id/chartReport"
+        android:id="@+id/lineChartReport"
         android:layout_weight="1"/>
 
     <LinearLayout
