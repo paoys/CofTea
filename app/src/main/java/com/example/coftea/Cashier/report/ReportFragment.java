@@ -31,6 +31,9 @@ import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.pdf.PdfPTable;
@@ -41,16 +44,18 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
 public class ReportFragment extends Fragment {
-    BarDataSet barDataSet;
-    ArrayList barArraylist;
+//    BarDataSet barDataSet;
+//    ArrayList barArraylist;
+//    BarData barData;
+//    BarChart barChart;
     LineChart lineChart;
-    BarData barData;
-    BarChart barChart;
+
     private Button btnReportDaily, btnReportWeekly, btnReportMonthly, btnReportQuarterly, btnReportYearly;
     private Button btnReportExport;
     private XAxis xAxis;
@@ -69,7 +74,7 @@ public class ReportFragment extends Fragment {
 
     private void init(){
         cartItems = new ArrayList<>();
-        barChart = binding.chartReport;
+        lineChart = binding.lineChartReport;
         btnReportDaily = binding.btnReportDaily;
         btnReportWeekly = binding.btnReportWeekly;
         btnReportMonthly = binding.btnReportMonthly;
@@ -79,17 +84,17 @@ public class ReportFragment extends Fragment {
 
         reportViewModel = new ReportViewModel();
 
-        barArraylist = new ArrayList<>();
-        barDataSet = new BarDataSet(barArraylist,"Reports");
-        barData = new BarData(barDataSet);
-
-        barChart.setData(barData);
-        barDataSet.setColors(Color.BLACK);
-        barDataSet.setValueTextColor(Color.BLACK);
-        barDataSet.setValueTextSize(12f);
-        barChart.getDescription().setEnabled(true);
-
-        xAxis = barChart.getXAxis();
+//        barArraylist = new ArrayList<>();
+//        barDataSet = new BarDataSet(barArraylist,"Reports");
+//        barData = new BarData(barDataSet);
+//
+//        barChart.setData(barData);
+//        barDataSet.setColors(Color.BLACK);
+//        barDataSet.setValueTextColor(Color.BLACK);
+//        barDataSet.setValueTextSize(12f);
+//        barChart.getDescription().setEnabled(true);
+//
+        xAxis = lineChart.getXAxis();
         xAxis.setGranularity(1f);
         xAxis.setGranularityEnabled(true);
 
@@ -98,7 +103,7 @@ public class ReportFragment extends Fragment {
         }
 
         btnReportDaily.setOnClickListener(view -> {
-            barArraylist.clear();
+//            barArraylist.clear();
             Date currentDate = new Date();
             Date from = getStartOfDay(currentDate);
             Date to = getEndOfDay(currentDate);
@@ -106,7 +111,7 @@ public class ReportFragment extends Fragment {
             updateButtonState(btnReportDaily);
         });
         btnReportWeekly.setOnClickListener(view -> {
-            barArraylist.clear();
+//            barArraylist.clear();
             Date currentDate = new Date();
             Date from = getStartOfWeek(currentDate);
             Date to = getEndOfWeek(currentDate);
@@ -114,7 +119,7 @@ public class ReportFragment extends Fragment {
             updateButtonState(btnReportWeekly);
         });
         btnReportMonthly.setOnClickListener(view -> {
-            barArraylist.clear();
+//            barArraylist.clear();
             Date currentDate = new Date();
             Date from = getStartOfMonth(currentDate);
             Date to = getEndOfMonth(currentDate);
@@ -122,12 +127,12 @@ public class ReportFragment extends Fragment {
             updateButtonState(btnReportMonthly);
         });
         btnReportQuarterly.setOnClickListener(view -> {
-            barArraylist.clear();
+//            barArraylist.clear();
             reportViewModel.getQuarterlyReport(OrderStatus.DONE, 1681916247000L, 1702997847000L);
             updateButtonState(btnReportQuarterly);
         });
         btnReportYearly.setOnClickListener(view -> {
-            barArraylist.clear();
+//            barArraylist.clear();
             reportViewModel.getYearlyReport(OrderStatus.DONE, 1681916247000L, 1702997847000L);
             updateButtonState(btnReportYearly);
         });
@@ -182,7 +187,9 @@ public class ReportFragment extends Fragment {
 
     @RequiresApi(api = Build.VERSION_CODES.N)
     private void updateTable(ArrayList<CartItem> cartItems){
-        ArrayList<BarEntry> barEntries = new ArrayList<>();
+//        ArrayList<BarEntry> barEntries = new ArrayList<>();
+        ArrayList<LineDataSet> dataSets = new ArrayList<>();
+        List<Entry> entries = new ArrayList<>();
         for (int i = 0; i < this.products.size(); i++) {
             Product product = this.products.get(i);
 
@@ -192,13 +199,16 @@ public class ReportFragment extends Fragment {
 
             double total = list.stream().mapToDouble(CartItem::getTotalPrice).sum();
 
-            barEntries.add(new BarEntry(i, (float) total));
+            entries.add(new Entry(i, (float) total));
         }
-
-        barDataSet = new BarDataSet(barEntries,"Reports");
-        barData = new BarData(barDataSet);
-        barChart.setData(barData);
-        barChart.invalidate();
+        LineDataSet set = new LineDataSet(entries, "TEST");
+        LineData lineData = new LineData(set);
+        lineChart.setData(lineData);
+        lineChart.invalidate();
+//        barDataSet = new BarDataSet(barEntries,"Reports");
+//        barData = new BarData(barDataSet);
+//        barChart.setData(barData);
+//        barChart.invalidate();
     }
 
     private void exportToPdf() {
