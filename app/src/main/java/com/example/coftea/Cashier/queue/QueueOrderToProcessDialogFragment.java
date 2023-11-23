@@ -60,7 +60,10 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
         rvQueueOrderList.setAdapter(queueOrderToProcessAdapter);
 
         queueViewModel.queueOrderToProcess.observe(getViewLifecycleOwner(), queueOrder -> {
-            if(queueOrder == null) return;
+            if(queueOrder == null) {
+                dismiss();
+                return;
+            };
             if(queueOrder.getStatus() == OrderStatus.PENDING)
                 btnQueueOrderReady.setVisibility(View.VISIBLE);
             String price = formatter.formatAsPHP(queueOrder.getTotalPayment());
