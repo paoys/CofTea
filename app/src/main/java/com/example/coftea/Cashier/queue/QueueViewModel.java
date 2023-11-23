@@ -34,7 +34,7 @@ public class QueueViewModel extends ViewModel {
     public LiveData<QueueEntry> queueOrderToProcess;
     private MutableLiveData<QueueEntry> _queueOrderToCancel = new MutableLiveData<>();
     public LiveData<QueueEntry> queueOrderToCancel;
-    private final RealtimeDB<QueueEntry> queueRealtimeDB, receiptsRealtimeDB, orderRealtimeDB;
+    public final RealtimeDB<QueueEntry> queueRealtimeDB, receiptsRealtimeDB, orderRealtimeDB;
     private OrderStatus orderStatus;
     private ChildEventListener childEventListener;
     public QueueViewModel(OrderStatus orderStatus) {
@@ -166,6 +166,7 @@ public class QueueViewModel extends ViewModel {
 
     private MutableLiveData<ArrayList<CartItem>> _cartItemList = new MutableLiveData<>(new ArrayList<>());
     public LiveData<ArrayList<CartItem>> cartItemList ;
+
     public void getQueueOrderItemList(String receiptID){
         RealtimeDB realtimeDB = new RealtimeDB<>("cashier/receipts/"+receiptID);
 

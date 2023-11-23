@@ -436,4 +436,9 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
         return cell;
     }
 
+    @Override
+    public void onDestroyView() {
+        super.onDestroyView();
+        reportViewModel.cleanUp();
+    }
 }

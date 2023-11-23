@@ -44,7 +44,7 @@ public class QueueOrderToProcessAdapter extends RecyclerView.Adapter<QueueOrderT
         holder.tvQueueItemName.setText(queueOrderItem.getName());
         holder.tvQueueItemPrice.setText(price);
         holder.tvQueueItemTotalPrice.setText(totalPrice);
-        holder.tvQueueItemQuantity.setText(String.valueOf(queueOrderItem.getQuantity()));
+        holder.tvQueueItemQuantity.setText("* "+ queueOrderItem.getQuantity());
     }
 
     @Override
