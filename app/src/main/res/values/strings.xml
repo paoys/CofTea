@@ -9,6 +9,13 @@
         <item>39.00</item>
         <item>49.00</item>
     </string-array>
+    <string-array name="reports_type">
+        <item>Daily</item>
+        <item>Weekly</item>
+        <item>Monthly</item>
+        <item>Quarterly</item>
+        <item>Yearly</item>
+    </string-array>
     <string name="title_activity_checkout">Checkout</string>
     <!-- Strings used for fragments for navigation -->
     <string name="first_fragment_label">First Fragment</string>
@@ -18,6 +25,10 @@
 
     <string name="customer_message_payment_received" tools:ignore="ExtraTranslation">Payment receive, please pickup your order to finish this transaction.</string>
     <string name="customer_message_only_one_transaction" tools:ignore="ExtraTranslation">You can only have one active order.</string>
+
+    <string name="cashier_report_select_dates" tools:ignore="ExtraTranslation">Please select date from and date to filter.</string>
+    <string name="cashier_report_select_date_from" tools:ignore="ExtraTranslation">Please select date from filter.</string>
+    <string name="cashier_report_select_date_to" tools:ignore="ExtraTranslation">Please select date to filter.</string>
 
     <string name="lorem_ipsum">
         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Nam in scelerisque sem. Mauris

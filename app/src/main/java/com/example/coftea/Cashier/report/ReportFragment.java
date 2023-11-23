@@ -17,14 +17,19 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.Spinner;
 import android.widget.Toast;
 
 import com.example.coftea.Cashier.order.CartItem;
 import com.example.coftea.Cashier.order.ReceiptEntry;
+import com.example.coftea.R;
 import com.example.coftea.data.OrderStatus;
 import com.example.coftea.data.Product;
 import com.example.coftea.databinding.FragmentReportBinding;
+import com.example.coftea.utilities.DateHandler;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -35,6 +40,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -49,20 +55,24 @@ import java.util.Objects;
 import java.util.Random;
 import java.util.stream.Collectors;
 
-public class ReportFragment extends Fragment {
+public class ReportFragment extends Fragment implements ReportDatePickerFragment.OnDateSetListener {
 //    BarDataSet barDataSet;
 //    ArrayList barArraylist;
 //    BarData barData;
 //    BarChart barChart;
-    LineChart lineChart;
-
-    private Button btnReportDaily, btnReportWeekly, btnReportMonthly, btnReportQuarterly, btnReportYearly;
-    private Button btnReportExport;
+    private LineChart lineChart;
+    private ReportType reportType;
+    private Spinner sReportType;
+//    private Button btnReportDaily, btnReportWeekly, btnReportMonthly, btnReportQuarterly, btnReportYearly;
+    private Button btnReportDateFrom, btnReportDateTo, btnReportExport, btnReportGenerate;
+    private Date dateFrom, dateTo;
     private XAxis xAxis;
+    private ReportFilterGenerator filterGenerator;
     private FragmentReportBinding binding;
     private ReportViewModel reportViewModel;
     private ArrayList<Product> products;
     private ArrayList<CartItem> cartItems;
+    int[] lineColors = {Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.MAGENTA, Color.GRAY, Color.BLACK};
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -73,16 +83,40 @@ public class ReportFragment extends Fragment {
     }
 
     private void init(){
+        reportType = ReportType.Daily;
         cartItems = new ArrayList<>();
+        filterGenerator = new ReportFilterGenerator();
+        sReportType = binding.sReportType;
         lineChart = binding.lineChartReport;
-        btnReportDaily = binding.btnReportDaily;
-        btnReportWeekly = binding.btnReportWeekly;
-        btnReportMonthly = binding.btnReportMonthly;
-        btnReportQuarterly = binding.btnReportQuarterly;
-        btnReportYearly = binding.btnReportYearly;
+
         btnReportExport = binding.btnReportExport;
+        btnReportGenerate = binding.btnReportGenerate;
+        btnReportGenerate.setEnabled(false);
+        btnReportDateTo = binding.btnReportDateTo;
+        btnReportDateFrom = binding.btnReportDateFrom;
+
+        ArrayAdapter<CharSequence> reportsAdapter = ArrayAdapter.createFromResource(
+                binding.getRoot().getContext(),
+                R.array.reports_type,
+                android.R.layout.simple_spinner_item
+        );
+
+        reportsAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+        sReportType.setAdapter(reportsAdapter);
+        sReportType.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                reportType = ReportType.valueOf(adapterView.getItemAtPosition(i).toString());
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
         reportViewModel = new ReportViewModel();
+
 
 //        barArraylist = new ArrayList<>();
 //        barDataSet = new BarDataSet(barArraylist,"Reports");
@@ -102,53 +136,115 @@ public class ReportFragment extends Fragment {
             initialListen();
         }
 
-        btnReportDaily.setOnClickListener(view -> {
-//            barArraylist.clear();
-            Date currentDate = new Date();
-            Date from = getStartOfDay(currentDate);
-            Date to = getEndOfDay(currentDate);
-            reportViewModel.getDailyReport(OrderStatus.DONE, from.getTime(), to.getTime());
-            updateButtonState(btnReportDaily);
+        btnReportDateFrom.setOnClickListener(view -> {
+            showDatePickerDialog(null, dateTo, ReportDatePickerFragment.ReportDateType.FROM);
         });
-        btnReportWeekly.setOnClickListener(view -> {
-//            barArraylist.clear();
-            Date currentDate = new Date();
-            Date from = getStartOfWeek(currentDate);
-            Date to = getEndOfWeek(currentDate);
-            reportViewModel.getWeeklyReport(OrderStatus.DONE, from.getTime(), to.getTime());
-            updateButtonState(btnReportWeekly);
+
+        btnReportDateTo.setOnClickListener(view -> {
+            showDatePickerDialog(dateFrom, null, ReportDatePickerFragment.ReportDateType.TO);
         });
-        btnReportMonthly.setOnClickListener(view -> {
-//            barArraylist.clear();
-            Date currentDate = new Date();
-            Date from = getStartOfMonth(currentDate);
-            Date to = getEndOfMonth(currentDate);
-            reportViewModel.getMonthlyReport(OrderStatus.DONE, from.getTime(), to.getTime());
-            updateButtonState(btnReportMonthly);
-        });
-        btnReportQuarterly.setOnClickListener(view -> {
-//            barArraylist.clear();
-            reportViewModel.getQuarterlyReport(OrderStatus.DONE, 1681916247000L, 1702997847000L);
-            updateButtonState(btnReportQuarterly);
-        });
-        btnReportYearly.setOnClickListener(view -> {
-//            barArraylist.clear();
-            reportViewModel.getYearlyReport(OrderStatus.DONE, 1681916247000L, 1702997847000L);
-            updateButtonState(btnReportYearly);
-        });
+
+        btnReportGenerate.setOnClickListener(view -> generateReportButton());
+
         btnReportExport.setOnClickListener(view -> {
             exportToPdf();
         });
     }
 
-    private void updateButtonState(Button activeButton){
-        btnReportDaily.setEnabled(true);
-        btnReportWeekly.setEnabled(true);
-        btnReportMonthly.setEnabled(true);
-        btnReportQuarterly.setEnabled(true);
-        btnReportYearly.setEnabled(true);
+    private void generateReportButton(){
+        if(dateFrom == null && dateTo == null){
+            Toast.makeText(getContext(), R.string.cashier_report_select_dates, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(dateTo == null){
+            Toast.makeText(getContext(), R.string.cashier_report_select_date_to, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        if(dateFrom == null){
+            Toast.makeText(getContext(), R.string.cashier_report_select_date_from, Toast.LENGTH_SHORT).show();
+            return;
+        }
+        onGenerateReport();
+    }
 
-        activeButton.setEnabled(false);
+    private void onGenerateReport(){
+        Date from;
+        Date to;
+        filters = null;
+        switch (reportType){
+            case Daily:
+                from = DateHandler.getStartOfDay(dateFrom);
+                to =  DateHandler.getEndOfDay(dateTo);
+                filters = ReportFilterGenerator.getReportDailyFilters(from, to);
+                Log.e("Report Daily", String.valueOf(from));
+                Log.e("Report Daily", String.valueOf(to));
+                break;
+            case Weekly:
+                from = DateHandler.getStartOfWeek(dateFrom);
+                to = DateHandler.getEndOfWeek(dateTo);
+                filters = ReportFilterGenerator.getReportWeeklyFilters(from, to);
+                Log.e("Report Weekly", String.valueOf(from));
+                Log.e("Report Weekly", String.valueOf(to));
+                break;
+            case Monthly:
+                from = DateHandler.getStartOfMonth(dateFrom);
+                to = DateHandler.getEndOfMonth(dateTo);
+                filters = ReportFilterGenerator.getReportMonthlyFilters(from, to);
+                Log.e("Report Monthly", String.valueOf(from));
+                Log.e("Report Monthly", String.valueOf(to));
+                break;
+            case Quarterly:
+                from = DateHandler.getStartOfQuarter(dateFrom);
+                to =  DateHandler.getEndOfQuarter(dateTo);
+                filters = ReportFilterGenerator.getReportQuarterlyFilters(from, to);
+                Log.e("Report Quarterly", String.valueOf(from));
+                Log.e("Report Quarterly", String.valueOf(to));
+                break;
+            case Yearly:
+                from = DateHandler.getStartOfYear(dateFrom);
+                to =  DateHandler.getEndOfYear(dateTo);
+                filters = ReportFilterGenerator.getReportYearlyFilters(from, to);
+                Log.e("Report Yearly", String.valueOf(from));
+                Log.e("Report Yearly", String.valueOf(to));
+                break;
+            default:
+                from = null;
+                to = null;
+                filters = null;
+        }
+
+        if(from == null || to == null || filters == null){
+            Toast.makeText(getContext(),"Generate Report Error: Invalid Filter", Toast.LENGTH_SHORT).show();
+            return;
+        }
+        processGenerateReport();
+        reportViewModel.getFilteredReport(OrderStatus.DONE, from.getTime(), to.getTime());
+    }
+
+    private List<ReportFilter> filters = new ArrayList<>();
+    public void processGenerateReport(){
+        Log.e("Generated Report", String.valueOf(filters));
+        for(ReportFilter filter : filters){
+            Log.e("===========", String.valueOf(filter.getLabel()));
+            Log.e("Filter Start", String.valueOf(filter.getFilterStart()));
+            Log.e("Filter End", String.valueOf(filter.getFilterEnd()));
+        }
+    }
+
+    public void showDatePickerDialog(Date from ,Date to, ReportDatePickerFragment.ReportDateType type) {
+        ReportDatePickerFragment datePickerFragment = new ReportDatePickerFragment(from, to);
+        datePickerFragment.setOnDateSetListener(this, type);
+        datePickerFragment.show(getParentFragmentManager(), "datePicker");
+    }
+    @Override
+    public void onDateSet(String selectedDate, Date date, ReportDatePickerFragment.ReportDateType reportDateType) {
+        if(reportDateType == ReportDatePickerFragment.ReportDateType.FROM){
+            btnReportDateFrom.setText(selectedDate);
+            dateFrom = date;
+        } else if (reportDateType == ReportDatePickerFragment.ReportDateType.TO) {
+            btnReportDateTo.setText(selectedDate);
+            dateTo = date;
+        }
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -158,6 +254,7 @@ public class ReportFragment extends Fragment {
             if(products.size() == 0) return;
             this.products = products;
             Log.e("Products", String.valueOf(products));
+            btnReportGenerate.setEnabled(true);
             listen();
         });
     }
@@ -172,43 +269,61 @@ public class ReportFragment extends Fragment {
         reportViewModel.receiptEntryList.observe(getViewLifecycleOwner(), receiptEntries -> {
             if(receiptEntries == null) return;
             if(receiptEntries.size() == 0) {
+                List<Entry> entries = new ArrayList<>();
+                LineDataSet set = new LineDataSet(entries, "Empty");
+                LineData lineData = new LineData(set);
+                lineChart.setData(lineData);
+                lineChart.invalidate();
                 cartItems.clear();
                 return;
             }
             Log.e("Receipts Count", String.valueOf(receiptEntries.size()));
+            for(ReceiptEntry entry: receiptEntries){
+                Log.e("Receipt", String.valueOf(entry.getDate()));
+            }
             ArrayList<CartItem> _cartItems = new ArrayList<>();
             for ( ReceiptEntry entry : receiptEntries){
                 _cartItems.addAll(entry.getCartItems());
             }
             cartItems = _cartItems;
-            updateTable(_cartItems);
+            updateTable(receiptEntries);
         });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void updateTable(ArrayList<CartItem> cartItems){
-//        ArrayList<BarEntry> barEntries = new ArrayList<>();
-        ArrayList<LineDataSet> dataSets = new ArrayList<>();
-        List<Entry> entries = new ArrayList<>();
+    private void updateTable(ArrayList<ReceiptEntry> receiptEntries){
+
+        ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+
         for (int i = 0; i < this.products.size(); i++) {
             Product product = this.products.get(i);
 
-            ArrayList<CartItem> list = cartItems.stream()
-                    .filter(item -> Objects.equals(item.getId(), product.getId()))
-                    .collect(Collectors.toCollection(ArrayList::new));
+            List<Entry> entries = new ArrayList<>();
 
-            double total = list.stream().mapToDouble(CartItem::getTotalPrice).sum();
+            for(int i1=0; i1<this.filters.size(); i1++){
+                ReportFilter filter = filters.get(i1);
 
-            entries.add(new Entry(i, (float) total));
+                ArrayList<ReceiptEntry> filteredList = receiptEntries.stream()
+                        .filter(item -> filter.isWithinThisDates(item.getCreatedAt()))
+                        .collect(Collectors.toCollection(ArrayList::new));
+
+                ArrayList<CartItem> cartItems = filteredList.stream()
+                        .flatMap(item -> item.getCartItems().stream().filter(item1 -> product.getId().equals(item1.getId())))
+                        .collect(Collectors.toCollection(ArrayList::new));
+
+                double total = cartItems.stream().mapToDouble(CartItem::getTotalPrice).sum();
+                entries.add(new Entry(i1, (float) total));
+            }
+
+            LineDataSet set = new LineDataSet(entries, product.getName());
+            set.setColor(lineColors[i % lineColors.length]);
+            dataSets.add(set);
+
         }
-        LineDataSet set = new LineDataSet(entries, "TEST");
-        LineData lineData = new LineData(set);
+
+        LineData lineData = new LineData(dataSets);
         lineChart.setData(lineData);
         lineChart.invalidate();
-//        barDataSet = new BarDataSet(barEntries,"Reports");
-//        barData = new BarData(barDataSet);
-//        barChart.setData(barData);
-//        barChart.invalidate();
     }
 
     private void exportToPdf() {
@@ -271,77 +386,5 @@ public class ReportFragment extends Fragment {
     );
 
 
-    private static Date getStartOfMonth(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.set(Calendar.DAY_OF_MONTH, 1);
-        return calendar.getTime();
-    }
-    private static Date getEndOfMonth(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.set(Calendar.DAY_OF_MONTH, calendar.getActualMaximum(Calendar.DAY_OF_MONTH));
-        return calendar.getTime();
-    }
-    private static Date getStartOfDay(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-        return calendar.getTime();
-    }
 
-    private static Date getEndOfDay(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 59);
-        calendar.set(Calendar.MILLISECOND, 999);
-        return calendar.getTime();
-    }
-
-    private static Date getStartOfWeek(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        // Set the first day of the week to Sunday
-        calendar.setFirstDayOfWeek(Calendar.SUNDAY);
-        // Set the current date
-        calendar.setTime(date);
-        // Find the first day of the week
-        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
-        // Set the time components to their minimum values (midnight)
-        resetTimeComponents(calendar);
-        return calendar.getTime();
-    }
-
-    private static Date getEndOfWeek(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        // Set the first day of the week to Sunday
-        calendar.setFirstDayOfWeek(Calendar.SUNDAY);
-        // Set the current date
-        calendar.setTime(date);
-        // Find the last day of the week
-        calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek() + Calendar.DAY_OF_WEEK - 1);
-        // Set the time components to their maximum values (11:59:59.999 PM)
-        setTimeComponentsToMaximum(calendar);
-        return calendar.getTime();
-    }
-
-    private static void resetTimeComponents(Calendar calendar) {
-        calendar.set(Calendar.HOUR_OF_DAY, 0);
-        calendar.set(Calendar.MINUTE, 0);
-        calendar.set(Calendar.SECOND, 0);
-        calendar.set(Calendar.MILLISECOND, 0);
-    }
-
-    private static void setTimeComponentsToMaximum(Calendar calendar) {
-        calendar.set(Calendar.HOUR_OF_DAY, 23);
-        calendar.set(Calendar.MINUTE, 59);
-        calendar.set(Calendar.SECOND, 59);
-        calendar.set(Calendar.MILLISECOND, 999);
-    }
 }
