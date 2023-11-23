@@ -34,4 +34,11 @@ public class ReportFilter {
         this.filterStart = filterStart;
         this.filterEnd = filterEnd;
     }
+
+    public boolean isWithinThisDates(Long createdAt){
+        Date createdDate = new Date(createdAt);
+
+        return (createdDate.after(filterStart) || createdDate.equals(filterStart))
+                && (createdDate.before(filterEnd) || createdDate.equals(filterEnd));
+    }
 }

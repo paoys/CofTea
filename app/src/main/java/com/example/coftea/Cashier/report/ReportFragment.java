@@ -40,6 +40,7 @@ import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
+import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
@@ -71,6 +72,7 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
     private ReportViewModel reportViewModel;
     private ArrayList<Product> products;
     private ArrayList<CartItem> cartItems;
+    int[] lineColors = {Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.MAGENTA, Color.GRAY, Color.BLACK};
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -284,34 +286,44 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
                 _cartItems.addAll(entry.getCartItems());
             }
             cartItems = _cartItems;
-            updateTable(_cartItems);
+            updateTable(receiptEntries);
         });
     }
 
     @RequiresApi(api = Build.VERSION_CODES.N)
-    private void updateTable(ArrayList<CartItem> cartItems){
-//        ArrayList<BarEntry> barEntries = new ArrayList<>();
-        ArrayList<LineDataSet> dataSets = new ArrayList<>();
-        List<Entry> entries = new ArrayList<>();
+    private void updateTable(ArrayList<ReceiptEntry> receiptEntries){
+
+        ArrayList<ILineDataSet> dataSets = new ArrayList<>();
+
         for (int i = 0; i < this.products.size(); i++) {
             Product product = this.products.get(i);
 
-            ArrayList<CartItem> list = cartItems.stream()
-                    .filter(item -> Objects.equals(item.getId(), product.getId()))
-                    .collect(Collectors.toCollection(ArrayList::new));
+            List<Entry> entries = new ArrayList<>();
 
-            double total = list.stream().mapToDouble(CartItem::getTotalPrice).sum();
+            for(int i1=0; i1<this.filters.size(); i1++){
+                ReportFilter filter = filters.get(i1);
 
-            entries.add(new Entry(i, (float) total));
+                ArrayList<ReceiptEntry> filteredList = receiptEntries.stream()
+                        .filter(item -> filter.isWithinThisDates(item.getCreatedAt()))
+                        .collect(Collectors.toCollection(ArrayList::new));
+
+                ArrayList<CartItem> cartItems = filteredList.stream()
+                        .flatMap(item -> item.getCartItems().stream().filter(item1 -> product.getId().equals(item1.getId())))
+                        .collect(Collectors.toCollection(ArrayList::new));
+
+                double total = cartItems.stream().mapToDouble(CartItem::getTotalPrice).sum();
+                entries.add(new Entry(i1, (float) total));
+            }
+
+            LineDataSet set = new LineDataSet(entries, product.getName());
+            set.setColor(lineColors[i % lineColors.length]);
+            dataSets.add(set);
+
         }
-        LineDataSet set = new LineDataSet(entries, "TEST");
-        LineData lineData = new LineData(set);
+
+        LineData lineData = new LineData(dataSets);
         lineChart.setData(lineData);
         lineChart.invalidate();
-//        barDataSet = new BarDataSet(barEntries,"Reports");
-//        barData = new BarData(barDataSet);
-//        barChart.setData(barData);
-//        barChart.invalidate();
     }
 
     private void exportToPdf() {
