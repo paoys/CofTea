@@ -1,7 +1,10 @@
 package com.example.coftea.Cashier.queue;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.pm.PackageManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -10,6 +13,9 @@ import android.widget.Button;
 import android.widget.EditText;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.recyclerview.widget.LinearLayoutManager;
@@ -20,6 +26,7 @@ import com.example.coftea.Order.OrderDialogFragment;
 import com.example.coftea.R;
 import com.example.coftea.data.OrderStatus;
 import com.example.coftea.databinding.FragmentQueueBinding;
+import com.example.coftea.utilities.SMSSender;
 
 public class QueueFragment extends Fragment {
 
@@ -29,11 +36,17 @@ public class QueueFragment extends Fragment {
     private QueueOrderToProcessDialogFragment queueOrderToProcessDialogFragment;
     private QueueOrderAdapter queueOrderAdapter;
     private Button btnQueueOrderPending, btnQueueOrderReady, btnQueueOrderDone, btnQueueOrderCancelled;
+
+    private static final int SMS_PERMISSION_REQUEST_CODE = 123;
     public View onCreateView(@NonNull LayoutInflater inflater,
                              ViewGroup container, Bundle savedInstanceState) {
 
         binding = FragmentQueueBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            checkAndRequestPermission();
+        }
 
         init();
         listen();
@@ -51,7 +64,7 @@ public class QueueFragment extends Fragment {
 
         btnQueueOrderPending.setEnabled(false);
 
-        queueViewModel = new ViewModelProvider(this, new QueueViewModelFactory(OrderStatus.PENDING)).get(QueueViewModel.class);
+        queueViewModel = new ViewModelProvider(this, new QueueViewModelFactory(OrderStatus.PENDING, getContext())).get(QueueViewModel.class);
 
         rvCashierQueueOrderList = binding.rvCashierQueueOrderList;
 
@@ -78,6 +91,32 @@ public class QueueFragment extends Fragment {
             queueViewModel.changeOrderStatusFilter(OrderStatus.CANCELLED);
             updateButtonState(btnQueueOrderCancelled);
         });
+    }
+
+    @RequiresApi(api = Build.VERSION_CODES.M)
+    private void checkAndRequestPermission() {
+        if (ContextCompat.checkSelfPermission(getContext(), Manifest.permission.SEND_SMS)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Permission is not granted, request it
+            ActivityCompat.requestPermissions(getActivity(),
+                    new String[]{Manifest.permission.SEND_SMS},
+                    SMS_PERMISSION_REQUEST_CODE);
+        }
+    }
+
+    // Handle the result of the permission request
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+
+        if (requestCode == SMS_PERMISSION_REQUEST_CODE) {
+            if (grantResults.length > 0 && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                // Permission granted, you can now send SMS
+            } else {
+                // Permission denied, handle accordingly
+            }
+        }
     }
 
     private void updateButtonState(Button clickedButton) {

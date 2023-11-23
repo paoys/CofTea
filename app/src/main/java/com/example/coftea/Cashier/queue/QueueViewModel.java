@@ -1,5 +1,6 @@
 package com.example.coftea.Cashier.queue;
 
+import android.content.Context;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -14,6 +15,7 @@ import com.example.coftea.Cashier.order.QueueEntry;
 import com.example.coftea.data.OrderActionStatus;
 import com.example.coftea.data.OrderStatus;
 import com.example.coftea.repository.RealtimeDB;
+import com.example.coftea.utilities.SMSSender;
 import com.google.firebase.database.ChildEventListener;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -37,7 +39,8 @@ public class QueueViewModel extends ViewModel {
     public final RealtimeDB<QueueEntry> queueRealtimeDB, receiptsRealtimeDB, orderRealtimeDB;
     private OrderStatus orderStatus;
     private ChildEventListener childEventListener;
-    public QueueViewModel(OrderStatus orderStatus) {
+    private Context context;
+    public QueueViewModel(OrderStatus orderStatus, Context context) {
         queueOrderList = _queueOrderList;
         queueOrderToProcess = _queueOrderToProcess;
         queueOrderToCancel = _queueOrderToCancel;
@@ -47,6 +50,7 @@ public class QueueViewModel extends ViewModel {
         queueRealtimeDB = new RealtimeDB<>("cashier/queue");
         receiptsRealtimeDB = new RealtimeDB<>("cashier/receipts");
         orderRealtimeDB = new RealtimeDB<>("order");
+        this.context = context;
         setChildEventListener();
         listenUpdate();
     }
@@ -127,26 +131,7 @@ public class QueueViewModel extends ViewModel {
             }
         };
     }
-    public void processQueueOrder(OrderActionStatus actionStatus){
-        String orderID = _queueOrderToProcess.getValue().getOrderID();
-        switch (actionStatus){
-            case TO_DONE:
-               Log.e("====1","TEST");
-               break;
-            case TO_READY:
-                Log.e("====2","TEST");
-                break;
-            case TO_CANCEL:
-                Log.e("====3","TEST");
-                break;
-            default:
-                break;
-        }
-    }
 
-    public void updateQueueOrderStatus(String orderID, String queueID, boolean isOnline){
-//        receiptsRealtimeDB.getDatabaseReference().
-    }
 
     public void setQueueOrderToProcess(QueueEntry queueEntry){
         getQueueOrderItemList(queueEntry.getReceiptID());
@@ -219,12 +204,14 @@ public class QueueViewModel extends ViewModel {
                 Log.e("DATABASE ERROR",String.valueOf(error));
                 QueueViewModelProcessResult result;
                 if (committed && error == null) {
+                    SMSSender.sendSMS(context, entry.getCustomerPhone(), generateSMSOrderReady(entry.getCustomerName()));
                     result = new QueueViewModelProcessResult(entry);
                     _queueViewModelProcessResult.setValue(result);
                 } else {
                     result = new QueueViewModelProcessResult("Process Online Payment Failed: "+String.valueOf(error.getCode()));
                     _queueViewModelProcessResult.setValue(result);
                 }
+//                clearQueueOrderToProcess();
             }
         });
     }
@@ -250,15 +237,19 @@ public class QueueViewModel extends ViewModel {
                 QueueViewModelProcessResult result;
                 if (committed && error == null) {
                     orderDBRef.child(entry.getCustomerPhone()).child("status").setValue(OrderStatus.READY);
+                    SMSSender.sendSMS(context, entry.getCustomerPhone(), generateSMSOrderOnlineReady(entry.getCustomerName()));
                     result = new QueueViewModelProcessResult(entry);
                     _queueViewModelProcessResult.setValue(result);
                 } else {
                     result = new QueueViewModelProcessResult("Process Online Payment Failed: " + String.valueOf(error.getCode()));
                     _queueViewModelProcessResult.setValue(result);
                 }
+//                clearQueueOrderToProcess();
             }
         });
     }
+
+
 
     public void finishQueueOrder(){
         if(_queueOrderToProcess.getValue() == null) return;
@@ -292,12 +283,14 @@ public class QueueViewModel extends ViewModel {
                 Log.e("DATABASE ERROR",String.valueOf(error));
                 QueueViewModelProcessResult result;
                 if (committed && error == null) {
+                    SMSSender.sendSMS(context, entry.getCustomerPhone(), generateThankYouMessage(entry.getCustomerName()));
                     result = new QueueViewModelProcessResult(entry);
                     _queueViewModelProcessResult.setValue(result);
                 } else {
                     result = new QueueViewModelProcessResult("Finish Transaction Failed: "+String.valueOf(error.getCode()));
                     _queueViewModelProcessResult.setValue(result);
                 }
+//                clearQueueOrderToProcess();
             }
         });
     }
@@ -323,12 +316,14 @@ public class QueueViewModel extends ViewModel {
                 QueueViewModelProcessResult result;
                 if (committed && error == null) {
                     orderDBRef.child(entry.getCustomerPhone()).setValue(null);
+                    SMSSender.sendSMS(context, entry.getCustomerPhone(), generateThankYouMessage(entry.getCustomerName()));
                     result = new QueueViewModelProcessResult(entry);
                     _queueViewModelProcessResult.setValue(result);
                 } else {
                     result = new QueueViewModelProcessResult("Finish Transaction Failed: " + String.valueOf(error.getCode()));
                     _queueViewModelProcessResult.setValue(result);
                 }
+//                clearQueueOrderToProcess();
             }
         });
     }
@@ -368,6 +363,7 @@ public class QueueViewModel extends ViewModel {
                 QueueViewModelProcessResult result;
                 if (committed && error == null) {
                     result = new QueueViewModelProcessResult(entry);
+                    SMSSender.sendSMS(context, entry.getCustomerPhone(), generateSMSOrderCancelled(entry.getCustomerName()));
                     _queueViewModelProcessResult.setValue(result);
                     clearQueueOrderToCancel();
                 } else {
@@ -399,6 +395,7 @@ public class QueueViewModel extends ViewModel {
                 QueueViewModelProcessResult result;
                 if (committed && error == null) {
                     orderDBRef.child(entry.getCustomerPhone()).setValue(null);
+                    SMSSender.sendSMS(context, entry.getCustomerPhone(), generateSMSOrderCancelled(entry.getCustomerName()));
                     result = new QueueViewModelProcessResult(entry);
                     _queueViewModelProcessResult.setValue(result);
                     clearQueueOrderToCancel();
@@ -408,6 +405,29 @@ public class QueueViewModel extends ViewModel {
                 }
             }
         });
+    }
+
+
+    public String generateThankYouMessage(String customerName) {
+        return "This is Coftea:\n" +
+                "Thank you, " + customerName + ", for choosing Coftea! " +
+                "We appreciate your order and look forward to serving you again soon.";
+    }
+
+    public String generateSMSOrderCancelled(String customerName){
+        return "This is Coftea:\n" +
+                "We regret to inform you that your order has been cancelled, " + customerName + ". " +
+                "Please contact us for further assistance.";
+    }
+
+    public String generateSMSOrderReady(String customerName){
+        return "This is Coftea:\n" +
+                "Good news, " + customerName + "! Your order is now ready.";
+    }
+    public String generateSMSOrderOnlineReady(String customerName){
+        return "This is Coftea:\n" +
+                "Good news, " + customerName + "! Your order is now ready for pickup. " +
+                "Please visit us at your earliest convenience to enjoy your order.";
     }
 }
 
