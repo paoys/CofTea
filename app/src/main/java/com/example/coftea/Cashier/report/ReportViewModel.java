@@ -47,6 +47,15 @@ public class ReportViewModel extends ViewModel {
         getProductList();
     }
 
+    public void cleanUp(){
+        try {
+            filterQueueDB.removeEventListener(childEventListener);
+        }
+        catch (Exception e){
+
+        }
+    }
+
     public void getProductList(){
         DatabaseReference productDBRef = productRealtimeDB.getDatabaseReference();
         productDBRef.get().addOnSuccessListener(dataSnapshot -> {
@@ -60,9 +69,10 @@ public class ReportViewModel extends ViewModel {
         });
     }
     private Long dateFrom, dateTo;
+    private Query filterQueueDB;
     public void getFilteredReport(OrderStatus orderStatus, Long from, Long to){
         _receiptEntryList.setValue(new ArrayList<>());
-        Query filterQueueDB = receiptBDRef.orderByChild("status").equalTo(orderStatus.toString());
+        filterQueueDB = receiptBDRef.orderByChild("status").equalTo(orderStatus.toString());
         filterQueueDB.removeEventListener(childEventListener);
         this.dateFrom = from;
         this.dateTo = to;
