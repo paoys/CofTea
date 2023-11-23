@@ -19,6 +19,7 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.Query;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ReportViewModel extends ViewModel {
     private String[] months = new String[]{"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
@@ -57,6 +58,16 @@ public class ReportViewModel extends ViewModel {
             }
             _productList.setValue(products);
         });
+    }
+    private Long dateFrom, dateTo;
+    public void getFilteredReport(OrderStatus orderStatus, Long from, Long to){
+        _receiptEntryList.setValue(new ArrayList<>());
+        this.dateFrom = from;
+        this.dateTo = to;
+        Query filterQueueDB = receiptBDRef.orderByChild("status").equalTo(orderStatus.toString());
+
+        filterQueueDB.removeEventListener(childEventListener);
+        filterQueueDB.addChildEventListener(childEventListener);
     }
 
     public void getDailyReport(OrderStatus orderStatus, Long from, Long to){
@@ -102,10 +113,17 @@ public class ReportViewModel extends ViewModel {
                     return;
                 }
                 ReceiptEntry item = snapshot.getValue(ReceiptEntry.class);
-                item.setId(snapshot.getKey());
-                ArrayList<ReceiptEntry> list = new ArrayList<>(_receiptEntryList.getValue());
-                list.add(item);
-                _receiptEntryList.setValue(list);
+                if (item.getCreatedAt() >= dateFrom && item.getCreatedAt() <= dateTo) {
+                    item.setId(snapshot.getKey());
+                    ArrayList<ReceiptEntry> list = new ArrayList<>(_receiptEntryList.getValue());
+                    list.add(item);
+                    _receiptEntryList.setValue(list);
+                }
+
+//                item.setId(snapshot.getKey());
+//                ArrayList<ReceiptEntry> list = new ArrayList<>(_receiptEntryList.getValue());
+//                list.add(item);
+//                _receiptEntryList.setValue(list);
             }
 
             @Override
@@ -113,20 +131,34 @@ public class ReportViewModel extends ViewModel {
                 if (_receiptEntryList.getValue() == null) {
                     return;
                 }
+
                 ReceiptEntry newItem = snapshot.getValue(ReceiptEntry.class);
                 String itemId = snapshot.getKey();
                 newItem.setId(itemId);
 
                 ArrayList<ReceiptEntry> list = new ArrayList<>(_receiptEntryList.getValue());
 
-                for (int i = 0; i < list.size(); i++) {
-                    ReceiptEntry existingItem = list.get(i);
-                    if (existingItem != null && existingItem.getId() != null && existingItem.getId().equals(itemId)) {
-                        list.set(i, newItem);
-                        return;
+                if (newItem.getCreatedAt() >= dateFrom && newItem.getCreatedAt() <= dateTo) {
+                    for (int i = 0; i < list.size(); i++) {
+                        ReceiptEntry existingItem = list.get(i);
+                        if (existingItem != null && existingItem.getId() != null && existingItem.getId().equals(itemId)) {
+                            list.set(i, newItem);
+                            return;
+                        }
                     }
                 }
+
                 _receiptEntryList.setValue(list);
+//                ArrayList<ReceiptEntry> list = new ArrayList<>(_receiptEntryList.getValue());
+
+//                for (int i = 0; i < list.size(); i++) {
+//                    ReceiptEntry existingItem = list.get(i);
+//                    if (existingItem != null && existingItem.getId() != null && existingItem.getId().equals(itemId)) {
+//                        list.set(i, newItem);
+//                        return;
+//                    }
+//                }
+//                _receiptEntryList.setValue(list);
             }
 
             @Override
