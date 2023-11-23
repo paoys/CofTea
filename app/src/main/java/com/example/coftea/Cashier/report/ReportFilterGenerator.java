@@ -56,18 +56,18 @@ public class ReportFilterGenerator {
         Date currentEndDate = calendar.getTime();
 
         // Generate ReportFilters for each whole week between start and end
-        while (!currentEndDate.after(endDate)) {
+        while (currentStartDate.before(endDate) || currentStartDate.equals(endDate)) {
             String label = formatDateRange(currentStartDate, currentEndDate);
             ReportFilter reportFilter = new ReportFilter(label, currentStartDate, currentEndDate);
             reportFilters.add(reportFilter);
 
             // Move to the next week
-            calendar.setTime(currentEndDate);
-            calendar.add(Calendar.DAY_OF_MONTH, 1); // Move to the next day
-            calendar.set(Calendar.DAY_OF_WEEK, calendar.getFirstDayOfWeek());
+            calendar.setTime(currentStartDate);
+            calendar.add(Calendar.DAY_OF_MONTH, 7); // Move to the next week
             currentStartDate = calendar.getTime();
 
-            calendar.add(Calendar.DAY_OF_MONTH, 6); // Move to the end of the week
+            // Move to the end of the next week
+            calendar.add(Calendar.DAY_OF_MONTH, 6);
             currentEndDate = calendar.getTime();
         }
 

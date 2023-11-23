@@ -187,36 +187,41 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
                 from = DateHandler.getStartOfDay(dateFrom);
                 to =  DateHandler.getEndOfDay(dateTo);
                 filters = ReportFilterGenerator.getReportDailyFilters(from, to);
-                Log.e("Report Daily", String.valueOf(from));
-                Log.e("Report Daily", String.valueOf(to));
+                Log.e("==Report Daily==", String.valueOf(from));
+                Log.e("==Report Daily==", String.valueOf(to));
+                Log.e("==Report Daily==", String.valueOf(filters));
                 break;
             case Weekly:
                 from = DateHandler.getStartOfWeek(dateFrom);
                 to = DateHandler.getEndOfWeek(dateTo);
                 filters = ReportFilterGenerator.getReportWeeklyFilters(from, to);
-                Log.e("Report Weekly", String.valueOf(from));
-                Log.e("Report Weekly", String.valueOf(to));
+                Log.e("==Report Weekly==", String.valueOf(from));
+                Log.e("==Report Weekly==", String.valueOf(to));
+                Log.e("==Report Weekly==", String.valueOf(filters));
                 break;
             case Monthly:
                 from = DateHandler.getStartOfMonth(dateFrom);
                 to = DateHandler.getEndOfMonth(dateTo);
                 filters = ReportFilterGenerator.getReportMonthlyFilters(from, to);
-                Log.e("Report Monthly", String.valueOf(from));
-                Log.e("Report Monthly", String.valueOf(to));
+                Log.e("==Report Monthly==", String.valueOf(from));
+                Log.e("==Report Monthly==", String.valueOf(to));
+                Log.e("==Report Monthly==", String.valueOf(filters));
                 break;
             case Quarterly:
                 from = DateHandler.getStartOfQuarter(dateFrom);
                 to =  DateHandler.getEndOfQuarter(dateTo);
                 filters = ReportFilterGenerator.getReportQuarterlyFilters(from, to);
-                Log.e("Report Quarterly", String.valueOf(from));
-                Log.e("Report Quarterly", String.valueOf(to));
+                Log.e("==Report Quarterly==", String.valueOf(from));
+                Log.e("==Report Quarterly==", String.valueOf(to));
+                Log.e("==Report Quarterly==", String.valueOf(filters));
                 break;
             case Yearly:
                 from = DateHandler.getStartOfYear(dateFrom);
                 to =  DateHandler.getEndOfYear(dateTo);
                 filters = ReportFilterGenerator.getReportYearlyFilters(from, to);
-                Log.e("Report Yearly", String.valueOf(from));
-                Log.e("Report Yearly", String.valueOf(to));
+                Log.e("==Report Yearly==", String.valueOf(from));
+                Log.e("==Report Yearly==", String.valueOf(to));
+                Log.e("==Report Yearly==", String.valueOf(filters));
                 break;
             default:
                 from = null;
@@ -290,9 +295,6 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
                 return;
             }
             Log.e("Receipts Count", String.valueOf(receiptEntries.size()));
-            for(ReceiptEntry entry: receiptEntries){
-                Log.e("Receipt", String.valueOf(entry.getDate()));
-            }
             ArrayList<CartItem> _cartItems = new ArrayList<>();
             for ( ReceiptEntry entry : receiptEntries){
                 _cartItems.addAll(entry.getCartItems());
