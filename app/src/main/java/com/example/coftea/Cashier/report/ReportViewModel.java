@@ -62,47 +62,13 @@ public class ReportViewModel extends ViewModel {
     private Long dateFrom, dateTo;
     public void getFilteredReport(OrderStatus orderStatus, Long from, Long to){
         _receiptEntryList.setValue(new ArrayList<>());
+        Query filterQueueDB = receiptBDRef.orderByChild("status").equalTo(orderStatus.toString());
+        filterQueueDB.removeEventListener(childEventListener);
         this.dateFrom = from;
         this.dateTo = to;
-        Query filterQueueDB = receiptBDRef.orderByChild("status").equalTo(orderStatus.toString());
-
-        filterQueueDB.removeEventListener(childEventListener);
         filterQueueDB.addChildEventListener(childEventListener);
     }
 
-    public void getDailyReport(OrderStatus orderStatus, Long from, Long to){
-        _receiptEntryList.setValue(new ArrayList<>());
-        Query filterQueueDB = receiptBDRef.orderByChild("status").equalTo(orderStatus.toString());
-
-        filterQueueDB.removeEventListener(childEventListener);
-        filterQueueDB.addChildEventListener(childEventListener);
-
-    }
-    public void getWeeklyReport(OrderStatus orderStatus, Long from, Long to){
-        _receiptEntryList.setValue(new ArrayList<>());
-        Query filterQueueDB = receiptBDRef.orderByChild("status").equalTo(orderStatus.toString());
-        filterQueueDB.removeEventListener(childEventListener);
-        filterQueueDB.addChildEventListener(childEventListener);
-    }
-
-    public void getMonthlyReport(OrderStatus orderStatus, Long from, Long to){
-        _receiptEntryList.setValue(new ArrayList<>());
-        Query filterQueueDB = receiptBDRef.orderByChild("status").equalTo(orderStatus.toString());
-        filterQueueDB.removeEventListener(childEventListener);
-        filterQueueDB.addChildEventListener(childEventListener);
-    }
-    public void getQuarterlyReport(OrderStatus orderStatus, Long from, Long to){
-        _receiptEntryList.setValue(new ArrayList<>());
-        Query filterQueueDB = receiptBDRef.orderByChild("status").equalTo(orderStatus.toString());
-        filterQueueDB.removeEventListener(childEventListener);
-        filterQueueDB.addChildEventListener(childEventListener);
-    }
-    public void getYearlyReport(OrderStatus orderStatus, Long from, Long to){
-        _receiptEntryList.setValue(new ArrayList<>());
-        Query filterQueueDB = receiptBDRef.orderByChild("status").equalTo(orderStatus.toString());
-        filterQueueDB.removeEventListener(childEventListener);
-        filterQueueDB.addChildEventListener(childEventListener);
-    }
     private MutableLiveData<ArrayList<ReceiptEntry>> _receiptEntryList = new MutableLiveData<>(new ArrayList());
     public LiveData<ArrayList<ReceiptEntry>> receiptEntryList;
     private void setChildEventListener() {
@@ -113,6 +79,7 @@ public class ReportViewModel extends ViewModel {
                     return;
                 }
                 ReceiptEntry item = snapshot.getValue(ReceiptEntry.class);
+                if (item.getCreatedAt() == null) return;
                 if (item.getCreatedAt() >= dateFrom && item.getCreatedAt() <= dateTo) {
                     item.setId(snapshot.getKey());
                     ArrayList<ReceiptEntry> list = new ArrayList<>(_receiptEntryList.getValue());
@@ -120,10 +87,6 @@ public class ReportViewModel extends ViewModel {
                     _receiptEntryList.setValue(list);
                 }
 
-//                item.setId(snapshot.getKey());
-//                ArrayList<ReceiptEntry> list = new ArrayList<>(_receiptEntryList.getValue());
-//                list.add(item);
-//                _receiptEntryList.setValue(list);
             }
 
             @Override
@@ -149,16 +112,6 @@ public class ReportViewModel extends ViewModel {
                 }
 
                 _receiptEntryList.setValue(list);
-//                ArrayList<ReceiptEntry> list = new ArrayList<>(_receiptEntryList.getValue());
-
-//                for (int i = 0; i < list.size(); i++) {
-//                    ReceiptEntry existingItem = list.get(i);
-//                    if (existingItem != null && existingItem.getId() != null && existingItem.getId().equals(itemId)) {
-//                        list.set(i, newItem);
-//                        return;
-//                    }
-//                }
-//                _receiptEntryList.setValue(list);
             }
 
             @Override

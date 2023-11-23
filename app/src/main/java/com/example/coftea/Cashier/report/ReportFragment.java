@@ -30,6 +30,7 @@ import com.example.coftea.data.OrderStatus;
 import com.example.coftea.data.Product;
 import com.example.coftea.databinding.FragmentReportBinding;
 import com.example.coftea.utilities.DateHandler;
+import com.example.coftea.utilities.PHPCurrencyFormatter;
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.LineChart;
 import com.github.mikephil.charting.components.XAxis;
@@ -41,7 +42,13 @@ import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.IndexAxisValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.ILineDataSet;
+import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
+import com.itextpdf.text.Element;
+import com.itextpdf.text.Font;
+import com.itextpdf.text.Paragraph;
+import com.itextpdf.text.Phrase;
+import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
@@ -74,6 +81,7 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
     private ArrayList<CartItem> cartItems;
     int[] lineColors = {Color.RED, Color.BLUE, Color.GREEN, Color.YELLOW, Color.MAGENTA, Color.GRAY, Color.BLACK};
     @Override
+
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         binding = FragmentReportBinding.inflate(inflater, container, false);
@@ -90,6 +98,7 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
         lineChart = binding.lineChartReport;
 
         btnReportExport = binding.btnReportExport;
+        btnReportExport.setEnabled(false);
         btnReportGenerate = binding.btnReportGenerate;
         btnReportGenerate.setEnabled(false);
         btnReportDateTo = binding.btnReportDateTo;
@@ -147,7 +156,9 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
         btnReportGenerate.setOnClickListener(view -> generateReportButton());
 
         btnReportExport.setOnClickListener(view -> {
-            exportToPdf();
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+                exportToPdf();
+            }
         });
     }
 
@@ -217,6 +228,7 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
             Toast.makeText(getContext(),"Generate Report Error: Invalid Filter", Toast.LENGTH_SHORT).show();
             return;
         }
+        btnReportExport.setEnabled(false);
         processGenerateReport();
         reportViewModel.getFilteredReport(OrderStatus.DONE, from.getTime(), to.getTime());
     }
@@ -294,7 +306,8 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
     private void updateTable(ArrayList<ReceiptEntry> receiptEntries){
 
         ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-
+        Log.e("Chart Display Filter", String.valueOf(filters));
+        Log.e("Chart Display Filter", String.valueOf(filters.size()));
         for (int i = 0; i < this.products.size(); i++) {
             Product product = this.products.get(i);
 
@@ -312,6 +325,11 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
                         .collect(Collectors.toCollection(ArrayList::new));
 
                 double total = cartItems.stream().mapToDouble(CartItem::getTotalPrice).sum();
+                Log.e("Chart Display", String.valueOf(cartItems));
+                Log.e("Chart Display", String.valueOf(total));
+                Log.e("===========", String.valueOf(filter.getLabel()));
+                filters.get(i1).addCartItems(cartItems);
+                filters.get(i1).addTotalPrice(total);
                 entries.add(new Entry(i1, (float) total));
             }
 
@@ -324,8 +342,10 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
         LineData lineData = new LineData(dataSets);
         lineChart.setData(lineData);
         lineChart.invalidate();
+        btnReportExport.setEnabled(true);
     }
 
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private void exportToPdf() {
         try {
             Intent intent = new Intent(Intent.ACTION_CREATE_DOCUMENT);
@@ -336,10 +356,15 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
             createPdfLauncher.launch(intent);
         } catch (Exception e) {
             e.printStackTrace();
+            Log.e("Export Report Error", String.valueOf(e));
+            Log.e("Export Report Error", String.valueOf(e.getMessage()));
             Toast.makeText(requireContext(), "Error exporting to PDF", Toast.LENGTH_SHORT).show();
         }
     }
 
+    private PHPCurrencyFormatter formatter = PHPCurrencyFormatter.getInstance();
+
+    @RequiresApi(api = Build.VERSION_CODES.N)
     private final ActivityResultLauncher<Intent> createPdfLauncher = registerForActivityResult(
             new ActivityResultContracts.StartActivityForResult(),
             result -> {
@@ -355,18 +380,38 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
                                     PdfWriter.getInstance(document, outputStream);
                                     document.open();
 
-                                    PdfPTable pdfPTable = new PdfPTable(3);
+                                    Paragraph title = new Paragraph(reportType.toString().toUpperCase()+" REPORTS", new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD));
+                                    title.setAlignment(Element.ALIGN_CENTER);
+                                    document.add(title);
 
-                                    // Add table headers
-                                    pdfPTable.addCell("Name");
-                                    pdfPTable.addCell("Age");
-                                    pdfPTable.addCell("Country");
+                                    // Add a line break after the title
+                                    document.add(Chunk.NEWLINE);
 
-                                    // Add table data
-                                    for (int i = 0; i < 4; i++) {
-                                        pdfPTable.addCell("TEST1".toString());
-                                        pdfPTable.addCell("TEST2".toString());
-                                        pdfPTable.addCell("TEST3".toString());
+//                                    Add 1 for filter label
+//                                    Add 1 for filter total
+                                    int tableColumn = products.size() + 2;
+
+                                    PdfPTable pdfPTable = new PdfPTable(tableColumn);
+
+                                    pdfPTable.addCell("Date");
+                                    for(Product product : products){
+                                        pdfPTable.addCell(product.getName());
+                                    }
+                                    pdfPTable.addCell("Total");
+
+                                    for(ReportFilter filter : filters){
+                                        pdfPTable.addCell(filter.getLabel());
+                                        Log.e(filter.getLabel(), String.valueOf(filter.getCartItems()));
+                                        for(Product product : products){
+
+                                            ArrayList<CartItem> items = filter.getCartItems().stream().filter(cartItem -> cartItem.getId().equals(product.getId())).collect(Collectors.toCollection(ArrayList::new));
+
+                                            double total = items.stream().mapToDouble(CartItem::getTotalPrice).sum();
+                                            String totalValue = formatter.formatAsPHP(total);
+                                            pdfPTable.addCell(createCell(totalValue, Element.ALIGN_RIGHT));
+                                        }
+                                        String filterTotal = formatter.formatAsPHP(filter.getTotalPrice());
+                                        pdfPTable.addCell(createCell(filterTotal, Element.ALIGN_RIGHT));
                                     }
 
                                     document.add(pdfPTable);
@@ -385,6 +430,10 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
             }
     );
 
-
+    private PdfPCell createCell(String content, int horizontalAlignment) {
+        PdfPCell cell = new PdfPCell(new Phrase(content));
+        cell.setHorizontalAlignment(horizontalAlignment);
+        return cell;
+    }
 
 }

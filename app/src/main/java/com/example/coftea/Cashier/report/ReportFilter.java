@@ -1,5 +1,8 @@
 package com.example.coftea.Cashier.report;
 
+import com.example.coftea.Cashier.order.CartItem;
+
+import java.util.ArrayList;
 import java.util.Date;
 
 public class ReportFilter {
@@ -41,4 +44,35 @@ public class ReportFilter {
         return (createdDate.after(filterStart) || createdDate.equals(filterStart))
                 && (createdDate.before(filterEnd) || createdDate.equals(filterEnd));
     }
+
+    public ArrayList<CartItem> getCartItems() {
+        return cartItems;
+    }
+
+    public void setCartItems(ArrayList<CartItem> cartItems) {
+        this.cartItems = cartItems;
+    }
+    public void addCartItems(ArrayList<CartItem> cartItems) {
+        if(this.cartItems == null)
+            this.cartItems = cartItems;
+        else
+            this.cartItems.addAll(cartItems);
+    }
+    public void addTotalPrice(Double totalPrice) {
+        if(this.totalPrice == null)
+            this.totalPrice = totalPrice;
+        else
+            this.totalPrice += totalPrice;
+    }
+    private ArrayList<CartItem> cartItems;
+
+    public Double getTotalPrice() {
+        return totalPrice;
+    }
+
+    public void setTotalPrice(Double totalPrice) {
+        this.totalPrice = totalPrice;
+    }
+
+    private Double totalPrice;
 }
