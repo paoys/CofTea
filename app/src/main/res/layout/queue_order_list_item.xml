@@ -51,6 +51,17 @@
         app:layout_constraintTop_toBottomOf="@+id/tvQueueOrderCustomerPhone"
         tools:text="P 100.00" />
 
+    <LinearLayout
+        android:id="@+id/llCartItemContainer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@+id/tvQueueOrderAmount"
+        android:orientation="vertical">
+
+    </LinearLayout>
+
     <Button
         android:id="@+id/btnQueueOrderProcess"
         android:layout_width="wrap_content"
@@ -60,7 +71,7 @@
         android:layout_marginTop="8dp"
         android:text="PROCESS ORDER"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/tvQueueOrderAmount" />
+        app:layout_constraintTop_toBottomOf="@+id/llCartItemContainer" />
 
     <Button
         android:id="@+id/btnQueueOrderCancel"
