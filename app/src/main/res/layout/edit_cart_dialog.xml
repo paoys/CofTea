@@ -20,6 +20,10 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:background="@drawable/rounded"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:cursorVisible="false"
         android:gravity="center"
         android:inputType="none"/>
 
@@ -30,6 +34,7 @@
         android:textSize="20sp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
+        android:visibility="gone"
         android:text="Name"/>
     <EditText
         android:id="@+id/editIDEdittext"
@@ -39,7 +44,8 @@
         android:layout_marginRight="10dp"
         android:background="@drawable/rounded"
         android:gravity="center"
-        android:inputType="none"/>
+        android:inputType="none"
+        android:visibility="gone"/>
 
     <TextView
         android:layout_width="match_parent"

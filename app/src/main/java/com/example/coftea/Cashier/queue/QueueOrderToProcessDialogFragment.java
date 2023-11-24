@@ -70,13 +70,24 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
                 dismiss();
                 return;
             };
-            if(queueOrder.getStatus() == OrderStatus.PENDING)
+            /*if(queueOrder.getStatus() == OrderStatus.PENDING)
                 btnQueueOrderReady.setVisibility(View.VISIBLE);
             if(queueOrder.getStatus() == OrderStatus.READY)
                 btnQueueOrderDone.setVisibility(View.VISIBLE);
             String price = formatter.formatAsPHP(queueOrder.getTotalPayment());
             tvQueueOrderCustomerName.setText(queueOrder.getCustomerName());
             tvQueueOrderAmount.setText(price);
+        });*/
+            // Check the order status and manage button visibility accordingly
+            if (queueOrder.getStatus() == OrderStatus.PENDING) {
+                // Show the "Ready" button and hide the "Done" button
+                btnQueueOrderReady.setVisibility(View.VISIBLE);
+                btnQueueOrderDone.setVisibility(View.GONE);
+            } else {
+                // Hide the "Ready" button and show the "Done" button
+                btnQueueOrderReady.setVisibility(View.GONE);
+                btnQueueOrderDone.setVisibility(View.VISIBLE);
+            }
         });
 
         queueViewModel.cartItemList.observe(getViewLifecycleOwner(), cartItems -> {

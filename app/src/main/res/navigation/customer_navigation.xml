@@ -26,6 +26,14 @@
         tools:layout="@layout/fragment_advance_order" />
 
     <fragment
+        android:id="@+id/navigation_promo_customer"
+        android:name="com.example.coftea.Customer.promo.PromoFragment"
+        android:label="Promo"
+        app:navGraph="@navigation/customer_navigation"
+        tools:layout="@layout/fragment_promo" />
+
+
+    <fragment
         android:id="@+id/navigation_settings_customer"
         android:name="com.example.coftea.Customer.settings.SettingsFragment"
         android:label="Settings"

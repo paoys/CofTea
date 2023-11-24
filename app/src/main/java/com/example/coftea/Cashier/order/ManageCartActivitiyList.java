@@ -276,6 +276,6 @@ public class ManageCartActivitiyList extends AppCompatActivity {
         receiptsDBRef.child(receiptID).setValue(receiptEntry);
         queueDBRef.child(queueID).setValue(queueEntry);
         cartDBRef.setValue(null);
-        Toast.makeText(getApplicationContext(), "Transaction Saved!", Toast.LENGTH_SHORT).show();
+        Toast.makeText(getApplicationContext(), "Order has been placed!", Toast.LENGTH_SHORT).show();
     }
 }

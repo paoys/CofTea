@@ -6,14 +6,6 @@
     android:orientation="vertical"
 
     >
-    <TextView
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:text="Add To Cart"
-        android:background="#D3D3D3"
-        android:textSize="25dp"
-        android:gravity="center"
-        android:textColor="@color/black"/>
 
 
     <TextView
@@ -32,6 +24,10 @@
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:gravity="center"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:cursorVisible="false"
         android:inputType="none"/>
     <TextView
         android:layout_width="match_parent"
@@ -49,6 +45,10 @@
         android:layout_marginRight="10dp"
         android:layout_gravity="center"
         android:gravity="center"
+        android:clickable="false"
+        android:focusable="false"
+        android:focusableInTouchMode="false"
+        android:cursorVisible="false"
         android:inputType="none"/>
 
     <TextView
@@ -58,6 +58,7 @@
         android:textSize="20sp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
+        android:visibility="gone"
         android:text="Price"/>
     <Spinner
         android:id="@+id/priceSpinner"
@@ -68,6 +69,7 @@
         android:layout_gravity="center"
         android:background="@drawable/spinner_border"
         android:gravity="center"
+        android:visibility="gone"
         android:inputType="none"/>
 
     <TextView

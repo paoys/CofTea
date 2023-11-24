@@ -553,7 +553,7 @@ public class QueueViewModel extends ViewModel {
 
     public String generateThankYouMessage(String customerName) {
         return "This is Coftea:\n" +
-                "Thank you, " + customerName + ", for choosing Coftea! " +
+                "Thank you " + customerName + " for choosing Coftea! " +
                 "We appreciate your order and look forward to serving you again soon.";
     }
 
@@ -565,7 +565,8 @@ public class QueueViewModel extends ViewModel {
 
     public String generateSMSOrderReady(String customerName){
         return "This is Coftea:\n" +
-                "Good news, " + customerName + "! Your order is now ready.";
+                "Good news, " + customerName + "! Your order is now ready. " +
+                "Please proceed to the cashier to collect your order. Thank you!";
     }
     public String generateSMSOrderOnlineReady(String customerName){
         return "This is Coftea:\n" +

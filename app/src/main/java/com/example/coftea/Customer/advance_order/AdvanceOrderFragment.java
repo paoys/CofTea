@@ -45,9 +45,9 @@ import android.provider.Settings;
 
 public class AdvanceOrderFragment extends Fragment {
 
-    private static final double SHOP_LATITUDE = 14.861162049832275;
-    private static final double SHOP_LONGITUDE = 120.80947378369852;
-    private static final double MINIMUM_DISTANCE_TO_SHOP = 600;
+    private static final double SHOP_LATITUDE = 14.8615264;
+    private static final double SHOP_LONGITUDE = 120.9123781;
+    private static final double MINIMUM_DISTANCE_TO_SHOP = 1;
 
 
     private final UserProvider userProvider = UserProvider.getInstance();
@@ -92,12 +92,16 @@ public class AdvanceOrderFragment extends Fragment {
                         float distance = from.distanceTo(to);
 
                         if(distance <= MINIMUM_DISTANCE_TO_SHOP){
-                            startListen();
-                            llAdvanceOrderOutOfRange.setVisibility(View.GONE);
-                        }
-                        else{
+                            //startListen();
+                            //llAdvanceOrderOutOfRange.setVisibility(View.GONE);
                             tvAdvanceOrderDistanceToCofTea.setText(String.format("%.2f",distance) +"m");
                             llAdvanceOrderOutOfRange.setVisibility(View.VISIBLE);
+                        }
+                        else{
+                            //tvAdvanceOrderDistanceToCofTea.setText(String.format("%.2f",distance) +"m");
+                            //llAdvanceOrderOutOfRange.setVisibility(View.VISIBLE);
+                            startListen();
+                            llAdvanceOrderOutOfRange.setVisibility(View.GONE);
                         }
                     }
                 });

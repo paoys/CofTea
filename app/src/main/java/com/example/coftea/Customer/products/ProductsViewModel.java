@@ -15,8 +15,6 @@ import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 
 import java.util.ArrayList;
-import java.util.Objects;
-
 public class ProductsViewModel extends ViewModel {
     private final MutableLiveData<ArrayList<Product>> _productList;
     public final LiveData<ArrayList<Product>> productList;

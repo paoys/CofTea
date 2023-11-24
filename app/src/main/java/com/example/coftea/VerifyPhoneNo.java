@@ -2,7 +2,6 @@ package com.example.coftea;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
-
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -10,7 +9,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 import android.widget.Toast;
-
 import com.chaos.view.PinView;
 import com.example.coftea.Database.UserHelperClass;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -24,7 +22,6 @@ import com.google.firebase.auth.PhoneAuthOptions;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
 
@@ -155,8 +152,8 @@ public class VerifyPhoneNo extends AppCompatActivity {
         // Store user data in Firebase Realtime Database
         reference.child(mobileNo).setValue(user);
 
-        // Navigate to the Dashboard
-        Intent intent = new Intent(getApplicationContext(), Dashboard.class);
+        // Navigate to the Login
+        Intent intent = new Intent(getApplicationContext(), LogIn.class);
         intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
         startActivity(intent);
     }

@@ -10,6 +10,7 @@ import android.os.Bundle;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.RequiresApi;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 
@@ -87,6 +88,11 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
         binding = FragmentReportBinding.inflate(inflater, container, false);
         View root = binding.getRoot();
         init();
+
+        // Add the line below to remove the back button from the ActionBar
+        if (getActivity() != null) {
+            ((AppCompatActivity) getActivity()).getSupportActionBar().setDisplayHomeAsUpEnabled(false);
+        }
         return root;
     }
 

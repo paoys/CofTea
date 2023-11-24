@@ -10,8 +10,6 @@ import android.text.Spanned;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
-
-
 import com.example.coftea.Cashier.CashierMain;
 import com.example.coftea.Customer.CustomerDashboard;
 import com.example.coftea.utilities.UserProvider;
@@ -24,7 +22,6 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
-
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
 public class LogIn extends AppCompatActivity {

@@ -17,6 +17,11 @@
         android:title="Checkout"/>
 
     <item
+        android:id="@+id/navigation_promo_customer"
+        android:icon="@drawable/baseline_announcement_24"
+        android:title="Promo" />
+
+    <item
         android:id="@+id/navigation_settings_customer"
         android:icon="@drawable/baseline_settings_24"
         android:title="Settings"/>

@@ -83,6 +83,7 @@
         android:text="CANCEL ORDER"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@+id/btnQueueOrderProcess" />
+        app:layout_constraintTop_toTopOf="@+id/btnQueueOrderProcess"
+        android:visibility="gone"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

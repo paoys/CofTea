@@ -48,7 +48,7 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:background="@color/black"
-            android:text="CANCEl" />
+            android:text="CANCEL" />
         <Button
             android:id="@+id/btnIngredientToAddConfirm"
             android:layout_width="0dp"

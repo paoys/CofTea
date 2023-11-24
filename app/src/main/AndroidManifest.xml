@@ -15,7 +15,8 @@
     <uses-permission android:name="android.permission.SEND_SMS" />
     <uses-permission android:name="android.permission.READ_PHONE_STATE" />
     <uses-permission android:name="android.permission.ACCESS_VENDOR_PROPERTIES" />
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"
+    <uses-permission
+        android:name="android.permission.WRITE_EXTERNAL_STORAGE"
         android:maxSdkVersion="32" />
 
     <application
@@ -27,7 +28,13 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.CofTea"
-        tools:targetApi="31"  >
+        tools:targetApi="31">
+        <activity
+            android:name=".Cashier.settings.promos.AddPromoActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Cashier.settings.promos.PromosActivity"
+            android:exported="false" />
         <activity
             android:name=".Customer.CustomerDashboard"
             android:exported="true">
@@ -75,7 +82,7 @@
             android:exported="false" />
         <activity
             android:name=".LogIn"
-            android:exported="true" >
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

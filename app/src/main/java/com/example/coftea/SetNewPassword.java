@@ -13,7 +13,6 @@ import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
-
 import at.favre.lib.crypto.bcrypt.BCrypt;
 
 public class SetNewPassword extends AppCompatActivity {

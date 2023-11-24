@@ -24,7 +24,8 @@
             android:layout_height="wrap_content"
             android:layout_marginBottom="5dp"
             android:src="@drawable/baseline_arrow_back_24"
-            app:tint="@color/black" />
+            app:tint="@color/black"
+            android:visibility="gone"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -39,7 +40,8 @@
                 android:layout_width="0dp"
                 android:layout_height="50dp"
                 android:layout_weight="1"
-                android:background="@drawable/outline_bg" />
+                android:background="@drawable/outline_bg"
+                android:visibility="gone"/>
 
             <!-- Search Icon ImageView with outline -->
             <ImageView
@@ -50,7 +52,8 @@
                 android:clickable="true"
                 android:onClick="toggleSearch"
                 android:padding="10dp"
-                android:background="@drawable/outline_bg" />
+                android:background="@drawable/outline_bg"
+                android:visibility="gone"/>
 
             <!-- Search EditText -->
             <EditText

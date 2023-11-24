@@ -1,0 +1,40 @@
+<!-- item_promo.xml -->
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="8dp"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/textViewAnnouncement"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="16sp"
+        android:textStyle="bold"
+        android:textColor="@android:color/black"
+        android:padding="4dp"
+        android:gravity="center_horizontal"/>
+
+    <ImageView
+        android:id="@+id/imageViewPromo"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        android:scaleType="fitCenter"
+        android:src="@android:drawable/ic_menu_gallery"
+        android:layout_marginTop="16dp" />
+
+    <Button
+        android:id="@+id/deleteButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete"
+        android:backgroundTint="#DD0D0D"
+        android:layout_gravity="end"
+        android:textColor="@android:color/white"
+        android:layout_marginTop="16dp" />
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="16dp" />
+</LinearLayout>
