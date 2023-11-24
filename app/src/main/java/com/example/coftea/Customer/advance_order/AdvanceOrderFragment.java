@@ -45,8 +45,8 @@ import android.provider.Settings;
 
 public class AdvanceOrderFragment extends Fragment {
 
-    private static final double SHOP_LATITUDE = 14.8615264;
-    private static final double SHOP_LONGITUDE = 120.9123781;
+    private static final double SHOP_LATITUDE = 14.823203862432846;
+    private static final double SHOP_LONGITUDE = 120.90092092528322;
     private static final double MINIMUM_DISTANCE_TO_SHOP = 1;
 
 
