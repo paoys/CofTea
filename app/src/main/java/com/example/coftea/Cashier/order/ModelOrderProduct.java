@@ -10,11 +10,21 @@ public class ModelOrderProduct {
         // Default constructor required for DataSnapshot.getValue(Product.class)
     }
 
-    public ModelOrderProduct(Double price, String name, String id, String imageUrl) {
+    public String getIngredientsPath() {
+        return ingredientsPath;
+    }
+
+    public void setIngredientsPath(String ingredientsPath) {
+        this.ingredientsPath = ingredientsPath;
+    }
+
+    private String ingredientsPath;
+    public ModelOrderProduct(Double price, String name, String id, String imageUrl, String ingredientsPath) {
         this.price = price;
         this.name = name;
         this.id = id;
         this.imageUrl = imageUrl;
+        this.ingredientsPath = ingredientsPath;
     }
 
     public Double getPrice() {
