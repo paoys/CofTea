@@ -36,6 +36,16 @@ public class ProductIngredient {
     private String id;
     private String key;
 
+    public String getProductID() {
+        return productID;
+    }
+
+    public void setProductID(String productID) {
+        this.productID = productID;
+    }
+
+    private String productID;
+
     public String getName() {
         return name;
     }
@@ -55,6 +65,16 @@ public class ProductIngredient {
     public ProductIngredient() {}
 
     private String ingredientID;
+
+    public String getIngredientKey() {
+        return ingredientKey;
+    }
+
+    public void setIngredientKey(String ingredientKey) {
+        this.ingredientKey = ingredientKey;
+    }
+
+    private String ingredientKey;
 
     private Double amount;
 

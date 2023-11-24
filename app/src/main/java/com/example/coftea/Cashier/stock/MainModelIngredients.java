@@ -8,6 +8,16 @@ public class MainModelIngredients {
     private String qty;
     private String turl; // Image URL
 
+    public String getKey() {
+        return key;
+    }
+
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    private String key;
+
     public MainModelIngredients() {
         // Default constructor required for Firebase
     }

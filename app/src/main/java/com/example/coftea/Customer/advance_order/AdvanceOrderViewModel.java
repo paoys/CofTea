@@ -37,6 +37,8 @@ public class AdvanceOrderViewModel extends ViewModel {
                 }
 
                 Product item = snapshot.getValue(Product.class);
+                Log.e("Product", String.valueOf(item.getName()));
+                Log.e("Product", String.valueOf(item.getIngredientPath()));
                 ArrayList<Product> list = new ArrayList<>(_productList.getValue());
                 list.add(item);
                 _productList.setValue(list);

@@ -93,7 +93,7 @@ public class OrderProductAdapter extends RecyclerView.Adapter<OrderProductAdapte
                     Double totalPrice = product.getPrice() * quantity;
 
                     // Create a Cart object with the selected product's details and quantity
-                    CartItem cartItem = new CartItem(product.getId(), product.getId(), product.getName(), product.getPrice(), quantity, totalPrice);
+                    CartItem cartItem = new CartItem(product.getId(), product.getId(), product.getName(), product.getPrice(), quantity, totalPrice, product.getIngredientsPath());
                     cartItem.setImageUrl(product.getImageUrl()); // Set the image URL
 
                     // Save the cart item to the "cart" database with a unique key

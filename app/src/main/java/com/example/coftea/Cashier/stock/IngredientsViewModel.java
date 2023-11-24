@@ -58,11 +58,12 @@ public class IngredientsViewModel extends ViewModel {
                 if (_ingredients.getValue() == null) {
                     return;
                 }
-                MainModelIngredients ingredients = snapshot.getValue(MainModelIngredients.class);
-                Log.e("TESTTEST", String.valueOf(ingredients.getId()));
+                MainModelIngredients ingredient = snapshot.getValue(MainModelIngredients.class);
+                Log.e("TESTTEST", String.valueOf(ingredient.getId()));
                 ArrayList<MainModelIngredients> ingredientsList = _ingredients.getValue();
+                ingredient.setKey(snapshot.getKey());
                 if (ingredientsList != null) {
-                    ingredientsList.add(ingredients);
+                    ingredientsList.add(ingredient);
                     _ingredients.setValue(ingredientsList);
                 }
             }

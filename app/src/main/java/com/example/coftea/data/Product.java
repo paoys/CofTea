@@ -5,15 +5,26 @@ public class Product {
     private String name;
     private Double price;
     private String imageUrl;
+
+    public String getIngredientPath() {
+        return ingredientPath;
+    }
+
+    public void setIngredientPath(String ingredientPath) {
+        this.ingredientPath = ingredientPath;
+    }
+
+    private String ingredientPath;
     public Product() {
         // Default constructor required for Firebase
     }
 
-    public Product(String id, String name, Double price, String imageUrl) {
+    public Product(String id, String name, Double price, String imageUrl, String ingredientPath) {
         this.id = id;
         this.name = name;
         this.price = price;
         this.imageUrl = imageUrl;
+        this.ingredientPath = ingredientPath;
     }
 
     public String getId() {

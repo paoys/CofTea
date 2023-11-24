@@ -2,6 +2,7 @@ package com.example.coftea.Cashier.stock;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -100,6 +101,8 @@ public class AddProductIngredientDialogFragment extends DialogFragment {
         try{
             int amount = Integer.parseInt(etIngredientAmount.getText().toString());
             ProductIngredient newProductIngredient = new ProductIngredient(UUID.randomUUID().toString(), selectedIngredient.getId(), selectedIngredient.getName(), Double.parseDouble(String.valueOf(amount)));
+            newProductIngredient.setIngredientKey(selectedIngredient.getKey());
+            Log.e("Added Ingredient", String.valueOf(newProductIngredient.getIngredientKey()));
             if(callback != null){
                 callback.onProductIngredientAdded(newProductIngredient);
                 dismiss();

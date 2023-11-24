@@ -12,9 +12,12 @@ import androidx.fragment.app.DialogFragment;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.example.coftea.Cashier.order.CartItem;
 import com.example.coftea.data.OrderStatus;
 import com.example.coftea.databinding.DialogFragmentQueueOrderToProcessBinding;
 import com.example.coftea.utilities.PHPCurrencyFormatter;
+
+import java.util.ArrayList;
 
 
 public class QueueOrderToProcessDialogFragment extends DialogFragment {
@@ -41,7 +44,11 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
         btnQueueOrderReady = binding.btnQueueOrderToProcessReady;
         btnQueueOrderClose = binding.btnQueueOrderToProcessClose;
 
+        btnQueueOrderDone.setEnabled(false);
+        btnQueueOrderReady.setEnabled(false);
+
         btnQueueOrderReady.setVisibility(View.GONE);
+        btnQueueOrderDone.setVisibility(View.GONE);
 
         tvQueueOrderAmount = binding.tvQueueOrderToDoneAmount;
         tvQueueOrderCustomerName = binding.tvQueueOrderCustomerName;
@@ -58,7 +65,6 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
         rvQueueOrderList.setLayoutManager(new LinearLayoutManager(getContext()));
 
         rvQueueOrderList.setAdapter(queueOrderToProcessAdapter);
-
         queueViewModel.queueOrderToProcess.observe(getViewLifecycleOwner(), queueOrder -> {
             if(queueOrder == null) {
                 dismiss();
@@ -66,6 +72,8 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
             };
             if(queueOrder.getStatus() == OrderStatus.PENDING)
                 btnQueueOrderReady.setVisibility(View.VISIBLE);
+            if(queueOrder.getStatus() == OrderStatus.READY)
+                btnQueueOrderDone.setVisibility(View.VISIBLE);
             String price = formatter.formatAsPHP(queueOrder.getTotalPayment());
             tvQueueOrderCustomerName.setText(queueOrder.getCustomerName());
             tvQueueOrderAmount.setText(price);
@@ -73,14 +81,19 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
 
         queueViewModel.cartItemList.observe(getViewLifecycleOwner(), cartItems -> {
             if(cartItems == null) return;
+            this.cartItems = cartItems;
             queueOrderToProcessAdapter.UpdateList(cartItems);
+            btnQueueOrderDone.setEnabled(true);
+            btnQueueOrderReady.setEnabled(true);
         });
 
         btnQueueOrderReady.setOnClickListener(view -> {
-            queueViewModel.readyQueueOrder();
+            queueViewModel.readyQueueOrder(cartItems);
+            btnQueueOrderReady.setEnabled(false);
         });
         btnQueueOrderDone.setOnClickListener(view -> {
             queueViewModel.finishQueueOrder();
+            btnQueueOrderDone.setEnabled(false);
         });
 
         btnQueueOrderClose.setOnClickListener(view -> {
@@ -90,6 +103,8 @@ public class QueueOrderToProcessDialogFragment extends DialogFragment {
 
         return root;
     }
+
+    ArrayList<CartItem> cartItems;
 
     @Override
     public void onDestroyView() {

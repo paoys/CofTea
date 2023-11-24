@@ -63,8 +63,8 @@ public class QueueFragment extends Fragment {
         btnQueueOrderDone = binding.btnQueueOrderDone;
 
         btnQueueOrderPending.setEnabled(false);
-
         queueViewModel = new ViewModelProvider(this, new QueueViewModelFactory(OrderStatus.PENDING, getContext())).get(QueueViewModel.class);
+        queueViewModel.changeOrderStatusFilter(OrderStatus.PENDING);
 
         rvCashierQueueOrderList = binding.rvCashierQueueOrderList;
 

@@ -21,13 +21,13 @@ public class OrderDialogViewModel extends ViewModel {
         orderItemResult = _orderItemResult;
     }
     public void setOrderItem(Product product) {
-        CartItem cartItem = new CartItem(product.getId(), product.getId(), product.getName(), product.getPrice(), 1, product.getPrice());
+        CartItem cartItem = new CartItem(product.getId(), product.getId(), product.getName(), product.getPrice(), 1, product.getPrice(), product.getIngredientPath());
         cartItem.setImageUrl(product.getImageUrl());
         _orderItem.setValue(cartItem);
     }
 
     public void setOrderItem(Product product, Integer quantity) {
-        CartItem cartItem = new CartItem(product.getId(), product.getId(), product.getName(), product.getPrice(), quantity, product.getPrice());
+        CartItem cartItem = new CartItem(product.getId(), product.getId(), product.getName(), product.getPrice(), quantity, product.getPrice(), product.getIngredientPath());
         cartItem.setImageUrl(product.getImageUrl());
         _orderItem.setValue(cartItem);
     }
