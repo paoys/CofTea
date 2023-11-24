@@ -308,8 +308,6 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
     private void updateTable(ArrayList<ReceiptEntry> receiptEntries){
 
         ArrayList<ILineDataSet> dataSets = new ArrayList<>();
-        Log.e("Chart Display Filter", String.valueOf(filters));
-        Log.e("Chart Display Filter", String.valueOf(filters.size()));
         for (int i = 0; i < this.products.size(); i++) {
             Product product = this.products.get(i);
 
@@ -327,9 +325,6 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
                         .collect(Collectors.toCollection(ArrayList::new));
 
                 double total = cartItems.stream().mapToDouble(CartItem::getTotalPrice).sum();
-                Log.e("Chart Display", String.valueOf(cartItems));
-                Log.e("Chart Display", String.valueOf(total));
-                Log.e("===========", String.valueOf(filter.getLabel()));
                 filters.get(i1).addCartItems(cartItems);
                 filters.get(i1).addTotalPrice(total);
                 entries.add(new Entry(i1, (float) total));

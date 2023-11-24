@@ -27,13 +27,24 @@ public class CartItem {
         // Default constructor required for Firebase
     }
 
-    public CartItem(String id, String key,String name, Double price, int quantity, Double totalPrice) {
+    public String getIngredientPath() {
+        return ingredientPath;
+    }
+
+    public void setIngredientPath(String ingredientPath) {
+        this.ingredientPath = ingredientPath;
+    }
+
+    public String ingredientPath;
+
+    public CartItem(String id, String key,String name, Double price, int quantity, Double totalPrice, String ingredientPath) {
         this.id = id;
         this.key = key;
         this.name = name;
         this.price = price;
         this.quantity = quantity;
         this.totalPrice = totalPrice;
+        this.ingredientPath = ingredientPath;
     }
 
     public String getId() {
