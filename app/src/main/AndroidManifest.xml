@@ -30,6 +30,15 @@
         android:theme="@style/Theme.CofTea"
         tools:targetApi="31">
         <activity
+            android:name=".Cashier.settings.voucher.AddVoucher"
+            android:exported="false" />
+        <activity
+            android:name=".Cashier.settings.voucher.VoucherActivity"
+            android:exported="false" />
+        <activity
+            android:name=".Cashier.settings.inventory_report.InventoryReport"
+            android:exported="false" />
+        <activity
             android:name=".Cashier.settings.promos.AddPromoActivity"
             android:exported="false" />
         <activity
@@ -40,9 +49,13 @@
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.VIEW" />
+
                 <category android:name="android.intent.category.DEFAULT" />
                 <category android:name="android.intent.category.BROWSABLE" />
-                <data android:scheme="coftea" android:host="mobile" />
+
+                <data
+                    android:host="mobile"
+                    android:scheme="coftea" />
             </intent-filter>
         </activity>
         <activity
@@ -58,7 +71,7 @@
             android:name=".Cashier.stock.StockIngredients"
             android:exported="false" />
         <activity android:name=".Cashier.order.ProductListActivity" />
-        <activity android:name=".Cashier.order.ManageCartActivitiyList" />
+        <activity android:name=".Cashier.order.ManageCartActivityList" />
         <activity
             android:name=".Cashier.CashierMain"
             android:exported="false" />
@@ -73,9 +86,6 @@
             android:exported="false" />
         <activity
             android:name=".VerifyPhoneNo"
-            android:exported="false" />
-        <activity
-            android:name=".Dashboard"
             android:exported="false" />
         <activity
             android:name=".SignUp"

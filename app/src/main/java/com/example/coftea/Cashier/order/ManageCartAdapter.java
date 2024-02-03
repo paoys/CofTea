@@ -1,5 +1,6 @@
 package com.example.coftea.Cashier.order;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -149,27 +150,33 @@ public class ManageCartAdapter extends RecyclerView.Adapter<ManageCartAdapter.Pr
 
 
     private void showDeleteConfirmationDialog(CartItem product) {
-        AlertDialog.Builder builder = new AlertDialog.Builder(context);
-        builder.setTitle("Delete Item");
-        builder.setMessage("Are you sure you want to delete this item from the cart?");
+        if (context != null && context instanceof Activity && !((Activity) context).isFinishing()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(context);
+            builder.setTitle("Delete Item");
+            builder.setMessage("Are you sure you want to delete this item from the cart?");
 
-        builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                deleteItemFromDatabase(product.getId());
-                dialog.dismiss();
-            }
-        });
+            builder.setPositiveButton("Yes", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    deleteItemFromDatabase(product.getId());
+                    dialog.dismiss();
+                }
+            });
 
-        builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
-            @Override
-            public void onClick(DialogInterface dialog, int which) {
-                dialog.dismiss();
-            }
-        });
+            builder.setNegativeButton("No", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.dismiss();
+                }
+            });
 
-        builder.create().show();
+            builder.create().show();
+        } else {
+            Log.e("ContextError", "Context is null or invalid");
+        }
     }
+
+
 
     private void updateItemInDatabase(String itemId, CartItem updatedProduct) {
 
@@ -187,12 +194,10 @@ public class ManageCartAdapter extends RecyclerView.Adapter<ManageCartAdapter.Pr
 
 
     private void deleteItemFromDatabase(String itemId) {
-        FirebaseDatabase database = FirebaseDatabase.getInstance();
-        DatabaseReference cartRef = database.getReference("cart");
-
         DatabaseReference itemRef = cartRef.child(itemId);
         itemRef.removeValue()
                 .addOnSuccessListener(aVoid -> Log.d("CartDatabase", "Item deleted successfully"))
                 .addOnFailureListener(e -> Log.e("CartDatabase", "Failed to delete item: " + e.getMessage()));
     }
+
 }

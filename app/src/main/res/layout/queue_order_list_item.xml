@@ -32,6 +32,30 @@
         tools:text="Customer Name" />
 
     <TextView
+        android:id="@+id/tvQueueNumber"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toStartOf="@+id/tvQueueNumberValue"
+        app:layout_constraintTop_toTopOf="@+id/tvQueueOrderCustomerName"
+        tools:text="Queue #" />
+
+    <TextView
+        android:id="@+id/tvQueueNumberValue"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="8dp"
+        android:layout_marginRight="8dp"
+        android:textSize="18sp"
+        android:textColor="@android:color/black"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/tvQueueOrderCustomerName"
+        tools:text="1"
+        android:layout_marginEnd="8dp" />
+
+    <TextView
         android:id="@+id/tvQueueOrderCustomerPhone"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -84,6 +108,6 @@
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintTop_toTopOf="@+id/btnQueueOrderProcess"
-        android:visibility="gone"/>
+        android:visibility="visible"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

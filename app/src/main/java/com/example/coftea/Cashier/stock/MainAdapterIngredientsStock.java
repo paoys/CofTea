@@ -87,9 +87,12 @@ public class MainAdapterIngredientsStock extends FirebaseRecyclerAdapter<MainMod
                         map.put("name", name.getText().toString());
                         map.put("id", id.getText().toString());
 
-                        int newQty = originalQuantity + Integer.parseInt(qty.getText().toString());
+                        double newQty = originalQuantity + Double.parseDouble(qty.getText().toString());
+                        // Convert the double to a string with proper precision (if needed)
+                        String formattedQty = String.valueOf(newQty); // Convert double to string
 
-                        map.put("qty", String.valueOf(newQty));
+
+                        map.put("qty", formattedQty);
                         map.put("turl", turl.getText().toString());
                         map.put("measurement", measurement.getText().toString());
 

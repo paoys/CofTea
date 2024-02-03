@@ -50,7 +50,7 @@
         android:focusableInTouchMode="false"
         android:cursorVisible="false"
         android:layout_margin="16dp"
-        tools:visibility="visible" />
+        tools:visibility="gone" />
 
     <EditText
         android:id="@+id/productNameEditText"

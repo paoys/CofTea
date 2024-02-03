@@ -5,15 +5,66 @@
     android:padding="10dp"
     android:orientation="vertical">
 
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:src="@drawable/person"
+        android:layout_gravity="center" />
+
+    <TextView
+        android:id="@+id/name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Juan Dela Cruz"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:textSize="20sp"
+        android:textStyle="bold" />
+
+    <TextView
+        android:id="@+id/number"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="09123456789"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:textSize="15sp"/>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp" />
+
     <Button
         android:id="@+id/btnPromos"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
         android:text="PROMO" />
+
+    <Button
+        android:id="@+id/btnInventoryReport"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="10dp"
+        android:text="INVENTORY REPORT" />
+
+    <Button
+        android:id="@+id/btnVoucher"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="VOUCHER" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/btnLogout"
+            android:layout_marginBottom="10dp"/>
 
         <Button
             android:id="@+id/btnLogout"

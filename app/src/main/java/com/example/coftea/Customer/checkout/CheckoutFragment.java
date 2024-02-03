@@ -57,6 +57,7 @@ public class CheckoutFragment extends Fragment implements PaymongoCheckoutListen
     private FragmentCheckoutBinding binding;
     private TextView tvTotalAmountDue, tvCheckoutStatus, tvCheckoutDescription;
     private Button btnPayWithGCash;
+    private int queueNumber = 0; // Initialize the queue number
     CheckoutViewModel checkoutViewModel;
     OrderDatabase orderDatabase;
     private Order order;
@@ -201,9 +202,12 @@ public class CheckoutFragment extends Fragment implements PaymongoCheckoutListen
             btnPayWithGCash.setEnabled(false);
         }
 
+        // Setting the queue number before using it in QueueEntry
+        queueNumber = 123; // Replace 123 with your desired queue number
+
         Date date = new Date();
         ReceiptEntry receiptEntry = new ReceiptEntry(cartItems, paymongoPayload.getAmount(), userName, userMobileNo, date, OrderStatus.PENDING);
-        QueueEntry queueEntry = new QueueEntry(paymongoPayload.getAmount(), userName, userMobileNo, date, OrderStatus.PENDING);
+        QueueEntry queueEntry = new QueueEntry(paymongoPayload.getAmount(), userName, userMobileNo, date, OrderStatus.PENDING, queueNumber);
         queueEntry.setOnlineOrder(true);
 
         try {

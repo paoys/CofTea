@@ -157,7 +157,9 @@ public class LogIn extends AppCompatActivity {
                             // Check if the user is the cashier
                             if (userEnteredMobileNo.equals("9475774920")) {
                                 // User is the cashier, pass the specific mobile number to CashierOrders activity
+                                String nameFromDB = dataSnapshot.child("name").getValue(String.class);
                                 Intent intent = new Intent(getApplicationContext(), CashierMain.class);
+                                intent.putExtra("name", nameFromDB);
                                 intent.putExtra("mobileNo", "9475774920"); // Pass the specific mobile number for the cashier
                                 userProvider.setUser("Cashier","9475774920");
                                 startActivity(intent);

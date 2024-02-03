@@ -47,7 +47,7 @@ public class AdvanceOrderFragment extends Fragment {
 
     private static final double SHOP_LATITUDE = 14.823203862432846;
     private static final double SHOP_LONGITUDE = 120.90092092528322;
-    private static final double MINIMUM_DISTANCE_TO_SHOP = 1;
+    private static final double MINIMUM_DISTANCE_TO_SHOP = 20;
 
 
     private final UserProvider userProvider = UserProvider.getInstance();

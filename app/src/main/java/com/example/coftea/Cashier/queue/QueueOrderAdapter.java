@@ -51,7 +51,8 @@ public class QueueOrderAdapter extends RecyclerView.Adapter<QueueOrderAdapter.Qu
 
 
         QueueEntry queueEntry = queueEntryList.get(position);
-
+        holder.tvQueueTitle.setText(R.string.queue_number);
+        holder.tvQueueNumber.setText(String.valueOf(queueEntry.getQueueNumber()));
         String price = phpCurrencyFormatter.formatAsPHP(queueEntry.getTotalPayment());
         holder.tvCustomerName.setText(queueEntry.getCustomerName());
         holder.tvCustomerPhone.setText(queueEntry.getCustomerPhone());
@@ -63,16 +64,16 @@ public class QueueOrderAdapter extends RecyclerView.Adapter<QueueOrderAdapter.Qu
 
         if(status == OrderStatus.DONE ||  status == OrderStatus.CANCELLED){
             holder.btnQueueOrderProcess.setVisibility(View.GONE);
-            //holder.btnQueueOrderCancel.setVisibility(View.GONE);
+            holder.btnQueueOrderCancel.setVisibility(View.GONE);
             return;
         }
         else{
             holder.btnQueueOrderProcess.setVisibility(View.VISIBLE);
-            //holder.btnQueueOrderCancel.setVisibility(View.VISIBLE);
+            holder.btnQueueOrderCancel.setVisibility(View.VISIBLE);
         }
 
         holder.btnQueueOrderProcess.setOnClickListener(view -> queueViewModel.setQueueOrderToProcess(queueEntry));
-        //holder.btnQueueOrderCancel.setOnClickListener(view -> queueViewModel.setQueueOrderToCancel(queueEntry));
+        holder.btnQueueOrderCancel.setOnClickListener(view -> queueViewModel.setQueueOrderToCancel(queueEntry));
 
     }
 
@@ -82,18 +83,20 @@ public class QueueOrderAdapter extends RecyclerView.Adapter<QueueOrderAdapter.Qu
     }
 
     static class QueueOrderItemViewHolder extends RecyclerView.ViewHolder {
-        TextView tvCustomerName, tvCustomerPhone, tvQueueOrderAmount;
+        TextView tvCustomerName, tvCustomerPhone, tvQueueOrderAmount, tvQueueNumber, tvQueueTitle;
         Button btnQueueOrderProcess, btnQueueOrderCancel;
         LinearLayout llCartItemContainer;
         private Context context;
 
         QueueOrderItemViewHolder(View itemView) {
             super(itemView);
+            tvQueueTitle = itemView.findViewById(R.id.tvQueueNumber);
+            tvQueueNumber = itemView.findViewById(R.id.tvQueueNumberValue);
             tvCustomerName = itemView.findViewById(R.id.tvQueueOrderCustomerName);
             tvCustomerPhone = itemView.findViewById(R.id.tvQueueOrderCustomerPhone);
             tvQueueOrderAmount = itemView.findViewById(R.id.tvQueueOrderAmount);
             btnQueueOrderProcess = itemView.findViewById(R.id.btnQueueOrderProcess);
-            //btnQueueOrderCancel = itemView.findViewById(R.id.btnQueueOrderCancel);
+            btnQueueOrderCancel = itemView.findViewById(R.id.btnQueueOrderCancel);
             llCartItemContainer = itemView.findViewById(R.id.llCartItemContainer);
             context = itemView.getContext();
         }

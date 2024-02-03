@@ -66,5 +66,21 @@
         libero vel nunc consequat, quis tincidunt nisl eleifend. Cras bibendum enim a justo luctus
         vestibulum. Fusce dictum libero quis erat maximus, vitae volutpat diam dignissim.
     </string>
+    <string name="queue_number">Queue #</string>
+    <string name="privacy_policy_intro">Welcome to CofTea!\n\nProtecting your privacy is fundamental to us. This Privacy Policy describes how we collect,
+        use, and disclose your personal information when you sign up for our services.\n\n</string>
+    <string name="information_collection">Information We Collect\nDuring the signup process, we may collect the following types of personal information:\n\n
+        • Name: We ask for your name to personalize your experience with us.\n
+        • Mobile Number: We collect your mobile number to communicate important updates, verify your account, and enable service-related notifications.\n
+        • Location: For advance ordering purposes, we may request access to your location to provide location-based services and enhance your experience.\n\n</string>
+    <string name="information_usage">"How We Use Your Information\n""We use the information collected during signup for the following purposes:\n\n"
+        • Account Creation: Your name and mobile number are used to create and manage your account with us.\n
+        • Communications: We may use your mobile number to send you service-related notifications and updates.\n
+        • Location-based Services: Access to your location allows us to provide personalized services such as advance ordering based on your current location.\n\n"</string>
+    <string name="information_security">"Information Security\nWe prioritize the security of your personal information. We implement various security measures to protect against unauthorized access, alteration, disclosure, or destruction of your data.\n\n"</string>
+    <string name="information_sharing">"Information Sharing\nWe do not sell, trade, or otherwise transfer your personal information to outside parties without your consent, except as described in this Privacy Policy or as required by law.\n\n"</string>
+    <string name="consent">"Consent\nBy signing up for our services, you consent to the collection, use, and processing of your personal information as described in this Privacy Policy.\n\n"</string>
+    <string name="changes_to_privacy_policy">"Changes to Privacy Policy\nWe reserve the right to update or modify this Privacy Policy at any time. We encourage you to review this policy periodically for any changes.\n\n"</string>
+
 
 </resources>

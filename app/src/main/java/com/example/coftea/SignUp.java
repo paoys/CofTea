@@ -1,16 +1,22 @@
 package com.example.coftea;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.InputFilter;
+import android.text.SpannableStringBuilder;
 import android.text.Spanned;
 import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
@@ -84,6 +90,8 @@ public class SignUp extends AppCompatActivity {
                 String mobileNo = phoneNo.getEditText().getText().toString();
                 String regPassword = password.getEditText().getText().toString();
 
+                CheckBox checkboxPrivacy = findViewById(R.id.checkboxPrivacy);
+
                 if (TextUtils.isEmpty(regName) || TextUtils.isEmpty(mobileNo) || TextUtils.isEmpty(regPassword)) {
                     Toast.makeText(SignUp.this, "Please enter all the fields.", Toast.LENGTH_SHORT).show();
                 } else {
@@ -93,6 +101,8 @@ public class SignUp extends AppCompatActivity {
                         public void onDataChange(@NonNull DataSnapshot dataSnapshot) {
                             if (dataSnapshot.exists()) {
                                 Toast.makeText(SignUp.this, "Mobile number already registered.", Toast.LENGTH_SHORT).show();
+                            } else if (!checkboxPrivacy.isChecked()) {
+                                Toast.makeText(SignUp.this, "Please agree to the Data Privacy Policy.", Toast.LENGTH_SHORT).show();
                             } else {
                                 // If the mobile number is not registered, proceed with registration
                                 String hashedPassword = hashPassword(regPassword);
@@ -114,6 +124,18 @@ public class SignUp extends AppCompatActivity {
             }
         });
 
+        // Find and set onClickListener for the checkboxPrivacy
+        CheckBox checkboxPrivacy = findViewById(R.id.checkboxPrivacy);
+        checkboxPrivacy.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (checkboxPrivacy.isChecked()) {
+                    // If the checkbox is checked, show the Data Privacy Act
+                    showDataPrivacyActDialog();
+                }
+            }
+        });
+
         btn_SignIn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -123,6 +145,72 @@ public class SignUp extends AppCompatActivity {
             }
         });
     }
+
+    private void showDataPrivacyActDialog() {
+        // Create an AlertDialog to display the truncated Privacy Policy content
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        builder.setTitle("Privacy Policy");
+
+        // Truncated content for preview
+        String shortContent = "Welcome to CofTea! Protecting your privacy is important to us. By using our app, you agree to our Privacy Policy.";
+        builder.setMessage(shortContent);
+
+        // Set a "See More" button to show full content in a dialog
+        builder.setPositiveButton("See More", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                showFullPrivacyPolicy();
+            }
+        });
+
+        // Show the dialog
+        AlertDialog dialog = builder.create();
+        dialog.show();
+    }
+
+    // Method to show full Privacy Policy in a dialog
+    private void showFullPrivacyPolicy() {
+        // Inflate the custom layout for the Privacy Policy content
+        View view = getLayoutInflater().inflate(R.layout.privacy_policy_dialog_content, null);
+        TextView tvPrivacyPolicyContent = view.findViewById(R.id.tvPrivacyPolicyContent);
+
+        String privacyPolicyIntro = getString(R.string.privacy_policy_intro);
+        String informationCollection = getString(R.string.information_collection);
+        String informationUsage = getString(R.string.information_usage);
+        String informationSecurity = getString(R.string.information_security);
+        String informationSharing = getString(R.string.information_sharing);
+        String consent = getString(R.string.consent);
+        String changesToPrivacyPolicy = getString(R.string.changes_to_privacy_policy);
+
+        SpannableStringBuilder privacyPolicyContent = new SpannableStringBuilder();
+        privacyPolicyContent.append(privacyPolicyIntro);
+        privacyPolicyContent.append(informationCollection);
+        privacyPolicyContent.append(informationUsage);
+        privacyPolicyContent.append(informationSecurity);
+        privacyPolicyContent.append(informationSharing);
+        privacyPolicyContent.append(consent);
+        privacyPolicyContent.append(changesToPrivacyPolicy);
+
+        tvPrivacyPolicyContent.setText(privacyPolicyContent);
+
+        // Create a dialog to display the full Privacy Policy
+        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
+        dialogBuilder.setTitle("Privacy Policy");
+        dialogBuilder.setView(view);
+
+        // Add a button to dismiss the dialog
+        dialogBuilder.setPositiveButton("Close", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialogInterface, int i) {
+                dialogInterface.dismiss();
+            }
+        });
+
+        // Show the full Privacy Policy dialog
+        AlertDialog fullPrivacyPolicyDialog = dialogBuilder.create();
+        fullPrivacyPolicyDialog.show();
+    }
+
 
     private String hashPassword(String password) {
         BCrypt.Hasher hasher = BCrypt.withDefaults();

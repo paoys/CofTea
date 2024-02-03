@@ -61,12 +61,27 @@
             app:layout_constraintStart_toEndOf="@+id/ivCustomerProductImage"
             tools:text="PHP 10.00" />
 
+        <TextView
+            android:id="@+id/tvProductDesc"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="8dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginEnd="8dp"
+            android:layout_marginRight="8dp"
+            android:textSize="14sp"
+            app:layout_constraintTop_toBottomOf="@+id/tvCustomerProductPrice"
+            app:layout_constraintStart_toStartOf="@+id/ivCustomerProductImage"
+            app:layout_constraintEnd_toEndOf="@+id/tvCustomerProductPrice"
+            tools:text="Product Description" />
+
         <com.google.android.material.divider.MaterialDivider
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/tvCustomerProductPrice"
+            app:layout_constraintTop_toBottomOf="@+id/tvProductDesc"
             tools:layout_editor_absoluteX="5dp" />
     </androidx.constraintlayout.widget.ConstraintLayout>
 </LinearLayout>

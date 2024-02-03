@@ -2,7 +2,10 @@ package com.example.coftea.Cashier.report;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
@@ -47,12 +50,15 @@ import com.itextpdf.text.Chunk;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
 import com.itextpdf.text.Font;
+import com.itextpdf.text.Image;
 import com.itextpdf.text.Paragraph;
 import com.itextpdf.text.Phrase;
+import com.itextpdf.text.RectangleReadOnly;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
+import java.io.ByteArrayOutputStream;
 import java.io.OutputStream;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -365,6 +371,36 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
         }
     }
 
+    private void insertLogo(Document document) {
+        try {
+            // Load the logo from the drawable folder
+            Drawable logoDrawable = getResources().getDrawable(R.drawable.logo);
+
+            // Convert the drawable to a Bitmap
+            Bitmap logoBitmap = ((BitmapDrawable) logoDrawable).getBitmap();
+
+            // Scale the logo image as needed
+            int maxWidth = 150; // Set the maximum width for the logo
+            float aspectRatio = logoBitmap.getWidth() / (float) logoBitmap.getHeight();
+            int newHeight = (int) (maxWidth / aspectRatio);
+            Bitmap scaledLogo = Bitmap.createScaledBitmap(logoBitmap, maxWidth, newHeight, false);
+
+            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+            scaledLogo.compress(Bitmap.CompressFormat.PNG, 100, stream);
+            Image logoImage = Image.getInstance(stream.toByteArray());
+
+            // Set position and size of the logo on the document
+            logoImage.setAlignment(Element.ALIGN_CENTER);
+            logoImage.scaleToFit(100, 100);
+
+            // Add the logo to the document
+            document.add(logoImage);
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(requireContext(), "Error inserting logo", Toast.LENGTH_SHORT).show();
+        }
+    }
+
     private PHPCurrencyFormatter formatter = PHPCurrencyFormatter.getInstance();
 
     @RequiresApi(api = Build.VERSION_CODES.N)
@@ -379,9 +415,11 @@ public class ReportFragment extends Fragment implements ReportDatePickerFragment
                         if (uri != null) {
                             try (OutputStream outputStream = requireContext().getContentResolver().openOutputStream(uri)) {
                                 if (outputStream != null) {
-                                    Document document = new Document();
+                                    Document document = new Document(new RectangleReadOnly(842, 595), 0, 0, 0, 0); // A4 landscape
                                     PdfWriter.getInstance(document, outputStream);
                                     document.open();
+
+                                    insertLogo(document);
 
                                     Paragraph title = new Paragraph(reportType.toString().toUpperCase()+" REPORTS", new Font(Font.FontFamily.HELVETICA, 18, Font.BOLD));
                                     title.setAlignment(Element.ALIGN_CENTER);

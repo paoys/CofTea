@@ -2,48 +2,57 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:padding="10dp"
     android:orientation="vertical">
 
     <ImageView
         android:layout_width="100dp"
         android:layout_height="100dp"
         android:src="@drawable/person"
-        android:layout_gravity="center"
-        android:visibility="gone"/>
+        android:layout_gravity="center" />
 
     <TextView
-        android:id="@+id/text_settings_name"
-        android:layout_width="wrap_content"
+        android:id="@+id/name"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_gravity="center"
-        android:text="User's Name"
-        android:textSize="18sp"
-        android:textStyle="bold"
-        android:layout_marginTop="8dp"
-        android:visibility="gone"/>
+        android:text="Juan Dela Cruz"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:textSize="20sp"
+        android:textStyle="bold" />
 
     <TextView
-        android:id="@+id/text_settings_mobile"
-        android:layout_width="wrap_content"
+        android:id="@+id/number"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:textSize="16sp"
-        android:layout_marginTop="8dp"
-        android:layout_gravity="center"
-        android:text="User's Mobile Number"
-        android:visibility="gone"/>
+        android:text="09123456789"
+        android:textAlignment="center"
+        android:gravity="center_horizontal"
+        android:textSize="15sp"/>
+
+    <com.google.android.material.divider.MaterialDivider
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="20dp" />
 
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
 
+        <com.google.android.material.divider.MaterialDivider
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_above="@id/logout_button"
+            android:layout_marginBottom="10dp"/>
+
         <Button
             android:id="@+id/logout_button"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Logout"
-            android:layout_centerHorizontal="true"
             android:layout_alignParentBottom="true"
-            android:layout_margin="16dp" />
+            android:layout_centerHorizontal="true"
+            android:text="Logout" />
 
     </RelativeLayout>
 

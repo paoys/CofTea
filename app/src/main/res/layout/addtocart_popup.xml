@@ -15,7 +15,9 @@
         android:textSize="20sp"
         android:layout_marginTop="5dp"
         android:layout_marginBottom="5dp"
-        android:text="ID"/>
+        android:text="ID"
+        android:visibility="gone"/>
+
     <EditText
         android:id="@+id/productIDEditText"
         android:layout_width="265dp"
@@ -28,7 +30,8 @@
         android:focusable="false"
         android:focusableInTouchMode="false"
         android:cursorVisible="false"
-        android:inputType="none"/>
+        android:inputType="none"
+        android:visibility="gone"/>
     <TextView
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -93,6 +96,22 @@
         android:textSize="30dp"/>
 
     <Button
+        android:id="@+id/voucherButton"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="25dp"
+        android:layout_marginRight="25dp"
+        android:layout_marginTop="10dp"
+        android:backgroundTint="@color/black"
+        android:textColor="@color/white"
+        android:text="Use Voucher Code"
+        android:textSize="21dp"
+        android:textAllCaps="false"
+        android:background="@drawable/ripple_effect"
+        android:gravity="center"
+        android:visibility="gone"/>
+
+    <Button
         android:id="@+id/btnAddCart"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -106,7 +125,5 @@
         android:textAllCaps="false"
         android:background="@drawable/ripple_effect"
         android:gravity="center"/>
-
-
 
 </LinearLayout>

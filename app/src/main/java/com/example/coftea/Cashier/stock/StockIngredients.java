@@ -1,9 +1,11 @@
 package com.example.coftea.Cashier.stock;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.content.ClipData;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
@@ -19,6 +21,9 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class StockIngredients extends AppCompatActivity {
 
     RecyclerView recyclerView;
@@ -26,9 +31,7 @@ public class StockIngredients extends AppCompatActivity {
     FloatingActionButton floatingActionButton;
     Spinner spinnerCategory;
 
-    private boolean isSearchVisible = false;
-    private EditText editTextSearch;
-    private ImageView searchIcon;
+    private SearchView searchView;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -37,6 +40,35 @@ public class StockIngredients extends AppCompatActivity {
 
         recyclerView = findViewById(R.id.rv);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
+        searchView = findViewById(R.id.searchView);
+        searchView.clearFocus();
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Query query;
+                if (newText.isEmpty()) {
+                    query = FirebaseDatabase.getInstance().getReference().child("Ingredients");
+                } else {
+                    query = FirebaseDatabase.getInstance().getReference().child("Ingredients")
+                            .orderByChild("name").startAt(newText).endAt(newText + "\uf8ff");
+                }
+
+                FirebaseRecyclerOptions<MainModelIngredients> options = new FirebaseRecyclerOptions.Builder<MainModelIngredients>()
+                        .setQuery(query, MainModelIngredients.class)
+                        .build();
+
+                mainAdapter = new MainAdapterIngredientsStock(options);
+                recyclerView.setAdapter(mainAdapter);
+                mainAdapter.startListening();
+
+                return true;
+            }
+        });
 
         spinnerCategory = findViewById(R.id.category);
 
@@ -76,6 +108,7 @@ public class StockIngredients extends AppCompatActivity {
         });
     }
 
+
     private void filterItemsByCategory(String selectedCategory) {
         Query query;
         if ("All".equals(selectedCategory)) {
@@ -91,34 +124,6 @@ public class StockIngredients extends AppCompatActivity {
         mainAdapter.updateOptions(filteredOptions);
     }
 
-
-
-    public void toggleSearch() {
-        // Toggle the visibility of the search EditText and hide/show related views
-        isSearchVisible = !isSearchVisible;
-        editTextSearch.setVisibility(isSearchVisible ? View.VISIBLE : View.GONE);
-        searchIcon.setVisibility(isSearchVisible ? View.GONE : View.VISIBLE);
-        findViewById(R.id.category).setVisibility(isSearchVisible ? View.GONE : View.VISIBLE);
-
-        // Show the "X" button when the search is visible
-        findViewById(R.id.exitSearch).setVisibility(isSearchVisible ? View.VISIBLE : View.GONE);
-
-        // Handle any other UI changes or actions when search is toggled
-    }
-
-    public void exitSearch(View view) {
-        // Exit the search toggle
-        isSearchVisible = false;
-        editTextSearch.setVisibility(View.GONE);
-
-        // Show the search icon and category spinner
-        searchIcon.setVisibility(View.VISIBLE);
-        findViewById(R.id.category).setVisibility(View.VISIBLE);
-
-        // Hide the "X" button
-        findViewById(R.id.exitSearch).setVisibility(View.GONE);
-
-    }
 
     @Override
     protected void onStart() {

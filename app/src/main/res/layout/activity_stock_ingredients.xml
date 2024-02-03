@@ -7,25 +7,12 @@
     android:background="@color/white"
     tools:context=".Cashier.stock.StockIngredients">
 
-    <!-- App Bar Layout (if you have an app bar) -->
-    <!-- You can add an AppBarLayout here if needed -->
-
     <!-- Content Layout -->
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:orientation="vertical"
         android:padding="20dp">
-
-        <ImageView
-            android:id="@+id/btn_back"
-            android:onClick="btn_back"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginBottom="5dp"
-            android:src="@drawable/baseline_arrow_back_24"
-            app:tint="@color/black"
-            android:visibility="gone"/>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -43,43 +30,14 @@
                 android:background="@drawable/outline_bg"
                 android:visibility="gone"/>
 
-            <!-- Search Icon ImageView with outline -->
-            <ImageView
-                android:id="@+id/searchIcon"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:src="@drawable/baseline_search_24"
-                android:clickable="true"
-                android:onClick="toggleSearch"
-                android:padding="10dp"
+            <androidx.appcompat.widget.SearchView
+                android:id="@+id/searchView"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
                 android:background="@drawable/outline_bg"
-                android:visibility="gone"/>
+                app:queryHint="Search here..."
+                app:iconifiedByDefault="false" />
 
-            <!-- Search EditText -->
-            <EditText
-                android:id="@+id/editTextSearch"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:layout_weight="1"
-                android:background="@drawable/outline_bg"
-                android:hint="Search"
-                android:drawableStart="@drawable/baseline_search_24"
-                android:drawableLeft="@drawable/baseline_search_24"
-                android:paddingStart="8dp"
-                android:paddingEnd="8dp"
-                android:visibility="gone" />
-
-            <!-- "X" Button to exit search -->
-            <ImageView
-                android:id="@+id/exitSearch"
-                android:layout_width="50dp"
-                android:layout_height="50dp"
-                android:padding="10dp"
-                android:background="@drawable/outline_bg"
-                android:src="@drawable/baseline_close_24"
-                android:visibility="gone"
-                android:clickable="true"
-                android:onClick="exitSearch" />
         </LinearLayout>
 
         <!-- RecyclerView with height set to match parent -->

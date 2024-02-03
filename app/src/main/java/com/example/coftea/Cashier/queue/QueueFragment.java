@@ -2,7 +2,9 @@ package com.example.coftea.Cashier.queue;
 
 import android.Manifest;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
@@ -11,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
@@ -22,11 +25,16 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
+import com.example.coftea.Cashier.order.QueueEntry;
 import com.example.coftea.Order.OrderDialogFragment;
 import com.example.coftea.R;
 import com.example.coftea.data.OrderStatus;
 import com.example.coftea.databinding.FragmentQueueBinding;
 import com.example.coftea.utilities.SMSSender;
+
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class QueueFragment extends Fragment {
 
@@ -50,6 +58,15 @@ public class QueueFragment extends Fragment {
 
         init();
         listen();
+
+        //TextView queueNumberTextView = root.findViewById(R.id.tvQueueNumberValue);
+        //if (queueNumberTextView != null) {
+        //    int queueNumber = generateQueueNumber();
+        //    String queueNumberText = "Queue #" + queueNumber;
+        //    queueNumberTextView.setText(queueNumberText);
+        //}
+
+
 
         return root;
     }
@@ -166,4 +183,46 @@ public class QueueFragment extends Fragment {
         super.onDestroyView();
         binding = null;
     }
+
+    // Method to generate a queue number based on the current date
+    /*private int generateQueueNumber() {
+        Date currentDate = new Date();
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd", Locale.getDefault());
+        String formattedDate = dateFormat.format(currentDate);
+
+        String storedDate = getStoredDate();
+        int storedQueueNumber = getStoredQueueNumber();
+
+        if (storedDate != null && storedDate.equals(formattedDate)) {
+            // Date matches, increment the stored queue number
+            storedQueueNumber++;
+            saveDateAndQueueNumber(formattedDate, storedQueueNumber);
+            return storedQueueNumber;
+        } else {
+            // Date doesn't match, reset the queue number to 1
+            saveDateAndQueueNumber(formattedDate, 1);
+            return 1;
+        }
+    }
+
+    // Method to save the date and queue number to SharedPreferences
+    private void saveDateAndQueueNumber(String date, int queueNumber) {
+        SharedPreferences preferences = requireContext().getSharedPreferences("QueuePrefs", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.putString("storedDate", date);
+        editor.putInt("queueNumber", queueNumber);
+        editor.apply();
+    }
+
+    // Method to retrieve the stored date from SharedPreferences
+    private String getStoredDate() {
+        SharedPreferences preferences = requireContext().getSharedPreferences("QueuePrefs", Context.MODE_PRIVATE);
+        return preferences.getString("storedDate", null);
+    }
+
+    // Method to retrieve the stored queue number from SharedPreferences
+    private int getStoredQueueNumber() {
+        SharedPreferences preferences = requireContext().getSharedPreferences("QueuePrefs", Context.MODE_PRIVATE);
+        return preferences.getInt("queueNumber", 0);
+    }*/
 }

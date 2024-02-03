@@ -28,7 +28,8 @@
         android:textStyle="bold"
         android:layout_toRightOf="@+id/productImageView"
         android:layout_height="wrap_content"
-        android:text="Product ID" />
+        android:text="Product ID"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/productIdTextView"
@@ -37,7 +38,8 @@
         android:layout_toRightOf="@+id/productImageView"
         android:layout_below="@+id/productId"
         android:layout_height="wrap_content"
-        android:text="Product ID" />
+        android:text="Product ID"
+        android:visibility="gone"/>
 
     <TextView
         android:id="@+id/productName"
@@ -103,8 +105,8 @@
         android:text="Delete"
         android:layout_marginLeft="200dp"
         android:layout_marginTop="10dp"
-        android:backgroundTint="@color/black"
-        android:textColor="@color/white"
+        android:backgroundTint="@color/danger"
+        android:textColor="@color/danger_text"
         />
 
     <Button

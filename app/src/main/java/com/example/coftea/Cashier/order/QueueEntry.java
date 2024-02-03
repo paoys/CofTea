@@ -18,6 +18,7 @@ public class QueueEntry {
         return receiptID;
     }
     private String receiptID;
+    private int queueNumber;
     public QueueEntry() {
         // Default constructor required for Firebase
     }
@@ -53,7 +54,7 @@ public class QueueEntry {
 
     private Boolean onlineOrder;
     private String orderID;
-    public QueueEntry(double totalPayment, String customerName, String customerPhone, Date date, OrderStatus status) {
+    public QueueEntry(double totalPayment, String customerName, String customerPhone, Date date, OrderStatus status, int queueNumber) {
         this.products = new ArrayList<>();
         this.totalPayment = totalPayment;
         this.customerName = customerName;
@@ -63,6 +64,7 @@ public class QueueEntry {
         this.createdAt = date.getTime();
         this.status = status;
         this.onlineOrder = false;
+        this.queueNumber = queueNumber; // Set the queueNumber passed as an argument
     }
 
     public List<CartItem> getProducts() {
@@ -107,4 +109,13 @@ public class QueueEntry {
     public void setReceiptID(String receiptID){
         this.receiptID = receiptID;
     }
+
+    public int getQueueNumber() {
+        return queueNumber;
+    }
+
+    public void setQueueNumber(int queueNumber) {
+        this.queueNumber = queueNumber;
+    }
+
 }
